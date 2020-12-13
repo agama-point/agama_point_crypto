@@ -13,6 +13,8 @@
 
 Links:
 
+https://github.com/primal100/pybitcointools
+
 https://github.com/octopusengine/CryptFile
 
 https://github.com/octopusengine/krtek
