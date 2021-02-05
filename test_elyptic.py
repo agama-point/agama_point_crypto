@@ -1,4 +1,38 @@
-import ecdsa
+import math, ecdsa
+from ecdsa import SECP256k1
+from ecdsa.ecdsa import Public_key
+SECP256k1_GEN = SECP256k1.generator
+
+
+print("--- simple test ---")
+
+# y^2 = x^3 + a*x + b
+
+a = 1
+b = 1
+for x in range(-10,10):
+   temp = x*x*x + a*x + b
+   y = math.sqrt(abs(temp))
+   print(x, y, temp)
+
+print()
+
+
+# prime 281
+# (y^2 -x^3 + 3*x) mod p = 0
+
+print(" --- prime # mod ---")
+p = 281
+
+for x in range(100):
+   for y in range(100):
+      temp = (y*y - x*x*x + 3*x)
+
+      if(temp % p == 0):
+         print(x, y, temp, temp % p)
+
+
+print()
 
 """
 #Main Net (int dec prefix)
@@ -29,3 +63,46 @@ CURVE_TYPE = ecdsa.curves.Curve('secp256k1', secp256k1curve, secp256k1point, (1,
 #CURVE_TYPE = ecdsa.curves.SECP256k1
 
 print(CURVE_TYPE)
+
+print("-"*50)
+
+
+"""
+def serialize_curve_point(p):
+   x, y = K.x(), K.y()
+   if y & 1:
+      return b'\x03' + x.to_bytes(32, 'big')
+   else:
+      return b'\x02' + x.to_bytes(32, 'big')
+"""
+
+def curve_point_from_int(k):
+   return Public_key(SECP256k1_GEN, SECP256k1_GEN * k).point
+
+def fingerprint_from_private_key(k):
+   K = curve_point_from_int(k)
+   K_compressed = serialize_curve_point(K)
+   identifier = hashlib.new(
+      'ripemd160',
+      hashlib.sha256(K_compressed).digest(),
+   ).digest()
+   return identifier[:4]
+
+
+
+depth = 0
+parent_fingerprint = None
+child_number = None
+"""
+rivate_key = master_private_key
+chain_code = master_chain_code
+
+p = curve_point_from_int(private_key)
+
+print("curve_point_from_int",p)
+"""
+
+"""
+public_key_bytes = serialize_curve_point(p)
+print(f'public key: 0x{public_key_bytes.hex()}')
+"""
