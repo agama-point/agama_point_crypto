@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
 """
-    crypto_octopus
+crypto_agama
 """
 
