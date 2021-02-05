@@ -24,6 +24,7 @@ bin_to_str('110000111000101100011') # x?  b'\x18qc'
 bin8_to_hex?
 bin_to_str?
 int_to_bytes?
+bites_to_hex: >>> b'\xde\xad\xbe\xef'.hex() # 'deadbeef'
 
 short_str("abcdefghijklmnopqrtsuvwxyz")    # 'abcdefghijkl...opqrtsuvwxyz'
 short_str("abcdefghijklmnopqrtsuvwxyz",3)  # 'abc...xyz'

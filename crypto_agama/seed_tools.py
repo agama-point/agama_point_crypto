@@ -3,12 +3,11 @@
 
 # generate, to_seed, to_hd_master_key(seed), to_mnemonic
 
-
 from mnemonic import Mnemonic
 from .transform import str_to_hex, short_str, convert_to_base58
 from .cipher import caesar_encrypt
 from hashlib import sha256
-import hashlib, binascii, base58
+import hashlib, binascii, base58, hmac, hashlib
 
 
 DEBUG = True
@@ -105,7 +104,7 @@ def words_to_bip39nums(words):
       print(_w, _wnum, end=" ")
 
 
-def words_to_4ch(words,c=13,str_w=True):
+def words_to_4ch(words,c=13,separator=" ", str_w=True):
   _i = 0
   words4 = ""
   w_arr4 = words.split()
@@ -113,7 +112,7 @@ def words_to_4ch(words,c=13,str_w=True):
   for _w in w_arr4:
       if c: w_arr4[_i] = caesar_encrypt(_w[:4],c)
       else: w_arr4[_i] = _w[:4]
-      words4 += w_arr4[_i] + " "
+      words4 += w_arr4[_i] + separator
       _i += 1
 
   if str_w: return  words4
@@ -196,10 +195,7 @@ def wif_to_num(wifPriv):
 # ===============================================================================
 
 def create_root_key(seed_bytes,version_BYTES = "mainnet_private"):
-   import binascii, hmac, hashlib, base58
    # the HMAC-SHA512 `key` and `data` must be bytes:
-   ##binascii.unhexlify(seed)
-
    I = hmac.new(b'Bitcoin seed', seed_bytes, hashlib.sha512).digest()
    L, R = I[:32], I[32:]
    master_private_key = int.from_bytes(L, 'big')
@@ -218,7 +214,7 @@ def create_root_key(seed_bytes,version_BYTES = "mainnet_private"):
    child_number_bytes = b'\x00' * 4
    key_bytes = b'\x00' + L
    all_parts = (
-      version_bytes,       #  4 bytes  
+      version_bytes,       #  4 bytes
       depth_byte,          #  1 byte
       parent_fingerprint,  #  4 bytes
       child_number_bytes,  #  4 bytes
