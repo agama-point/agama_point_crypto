@@ -47,7 +47,7 @@ print(f"n * G = ({nG.x}, {nG.y})")
 
 print("-"*50)
 
-
+# pubKey = privKey * G
 
 curve = registry.get_curve('secp192r1')
 
