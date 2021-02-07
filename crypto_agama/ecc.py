@@ -56,7 +56,7 @@ def doubling_d(px,py,a=0,p=17): # grupe doubling // add?
 
 
 # transform P => -P (P(x,y)=>P(x,-y)) # (-) y: reflect
-def rellect_on_x(y, p):
+def reflect_on_x(y, p):
    s = p/2
    delta = abs(y - s)
    if y > s: _y = s - delta
