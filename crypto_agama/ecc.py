@@ -1,4 +1,5 @@
-# ecc
+# Agama_point 2020-21
+# crypto_agama.ecc
 
 # cyclic supbgroup
 # group operation: point addition: add P (+) Q = R / doubling P (+) P = 2P
@@ -42,3 +43,23 @@ def mult_inv(a, n):  # mult_inv(2*P_1.y, self.char))
     #If gcd(a,n) = 1, and gcd(a,n) = x*a + y*n, x is the multiplicative inverse of a
     else:
         return x % n
+
+
+def doubling_d(px,py,a=0,p=17): # grupe doubling // add?
+   s = (3*px*px + a) % p
+   t = mult_inv(2*py, p)
+   # print(s, t, s / t) # 2**-1 * 9 --- inversion ? --- 9*9 % 17 = 13 ok
+   s = t * s % p
+   x = (s*s - 2*px) % p
+   y = (s*(px -x) - py) % p
+   return x, y
+
+
+# transform P => -P (P(x,y)=>P(x,-y)) # (-) y: reflect
+def rellect_on_x(y, p):
+   s = p/2
+   delta = abs(y - s)
+   if y > s: _y = s - delta
+   if y < s: _y = s + delta
+
+   return int(_y)
