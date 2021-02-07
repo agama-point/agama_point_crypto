@@ -17,7 +17,7 @@ from ecdsa import SECP256k1
 from pygame.locals import * # MOUSEBUTTONDOWN...
 from datetime import datetime 
 from ecdsa.ecdsa import Public_key
-from crypto_agama.ecc import mult_inv
+from crypto_agama.ecc import mult_inv, rellect_on_x, doubling_d
 from tinyec.ec import SubGroup, Curve
 
 # Set up some variables containing the screeen size
@@ -71,25 +71,6 @@ print()
 # example of elliptic curve having cofactor = 1 is secp256k1 / cofactor = 8 is Curve25519 / cofactor = 4 is Curve448
 
 
-def rellect_on_x(y, p):
-   s = p/2
-   delta = abs(y - s)
-   if y > s: _y = s - delta
-   if y < s: _y = s + delta
-
-   return int(_y)
-
-
-def doubling_d(px,py,a=2,p=17): # grupe doubling // add?
-   s = (3*px*px + a) % p
-   t = mult_inv(2*py, p)
-   # print(s, t, s / t) # 2**-1 * 9 --- inversion ? --- 9*9 % 17 = 13 ok
-   s = t * s % p
-   x = (s*s - 2*px) % p
-   y = (s*(px -x) - py) % p
-   return x, y
-
-
 print("---ecc---")
 # (5,1) px = 5 / py = 1
 # # y^2 = x^3 + a*x + b
@@ -135,12 +116,12 @@ dx0, dy0 = 15, 13
 print(a, dx0, dy0, "---start---")
 
 
-for gi in range(1,20):
+for gi in range(1,8): #(1,20)
    if (gi == 1):
       pygame.draw.circle(win,colBlu,(x0+dx0*scale,y0-dy0*scale),3)
-      dx, dy = doubling_d(dx0, dy0, a, p) # 5,1
+      dx, dy = doubling_d(dx0, dy0, a=a, p=p) # 5,1
    else:
-      dx, dy = doubling_d(dx, dy, a, p)
+      dx, dy = doubling_d(dx, dy, a=a, p=p)
       # dy = rellect_on_x(dy,p)
       pygame.draw.circle(win,colRed,(x0+dx*scale,y0-dy*scale),3)
 
@@ -155,7 +136,7 @@ for gi in range(1,20):
 
 
    xp, yp = x0+dx*scale+5, y0-dy*scale+5
-   label = myFont.render(str(gi), 1, colWhi)
+   label = myFont.render(str(gi+1), 1, colWhi)
    win.blit(label, (xp, yp))
    pygame.display.flip()
 
