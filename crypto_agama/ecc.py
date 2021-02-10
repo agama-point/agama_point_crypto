@@ -5,22 +5,8 @@
 # group operation: point addition: add P (+) Q = R / doubling P (+) P = 2P
 # scalar multiplication
 
-"""
-XX, YY = X1 * X1 % p, Y1 * Y1 % p
-YYYY = YY * YY % p
-S = 2 * ((X1 + YY) ** 2 - XX - YYYY) % p
-M = 3 * XX + a
 
-T = (M * M - 2 * S) % p
-# X3 = T
-
-Y3 = (M * (S - T) - 8 * YYYY) % p
-//Z3 = 2 * Y1 % p
-
-return T, Y3, //Z3
-"""
-
-# --- Extended Euclidean algorithm
+# --- Extended Euclidean algorithm - gcd: greatest common divisor
 def _euclid(sml, big):
     #When the smaller value is zero, it's done, gcd = b = 0*sml + 1*big
     if sml == 0:
@@ -36,7 +22,7 @@ def _euclid(sml, big):
 
 # --- Compute the multiplicative inverse mod n of a with 0 < a < n
 def mult_inv(a, n):  # mult_inv(2*P_1.y, self.char))
-    g, x, y = _euclid(a, n)
+    g, x, y = _euclid(a, n) # g = x * a + y * n
     #If gcd(a,n) is not one, then a has no multiplicative inverse
     if g != 1:
         raise ValueError('multiplicative inverse does not exist')
@@ -45,7 +31,7 @@ def mult_inv(a, n):  # mult_inv(2*P_1.y, self.char))
         return x % n
 
 
-def doubling_d(px,py,a=0,p=17): # grupe doubling // add?
+def point_doubling(px,py,a=0,p=17): # grupe doubling // add?
    s = (3*px*px + a) % p
    t = mult_inv(2*py, p)
    # print(s, t, s / t) # 2**-1 * 9 --- inversion ? --- 9*9 % 17 = 13 ok
@@ -55,11 +41,37 @@ def doubling_d(px,py,a=0,p=17): # grupe doubling // add?
    return x, y
 
 
+def point_adding(px, py, qx, qy, p=17): # grupe doubling // add?
+    lam = ((qy-py)  % p) * mult_inv(((qx-px) % p), p)
+    rx = (lam*lam - px - qx) % p
+    ry = (lam*(px - rx) - py) % p
+    return rx, ry
+
+
 # transform P => -P (P(x,y)=>P(x,-y)) # (-) y: reflect
 def reflect_on_x(y, p):
-   s = p/2
+   s = p//2
    delta = abs(y - s)
    if y > s: _y = s - delta
    if y < s: _y = s + delta
 
-   return int(_y)
+   return _y % p
+
+
+# todo / inspiration
+# https://en.wikipedia.org/wiki/Elliptic_curve_point_multiplication
+
+"""
+XX, YY = X1 * X1 % p, Y1 * Y1 % p
+YYYY = YY * YY % p
+S = 2 * ((X1 + YY) ** 2 - XX - YYYY) % p
+M = 3 * XX + a
+
+T = (M * M - 2 * S) % p
+# X3 = T
+
+Y3 = (M * (S - T) - 8 * YYYY) % p
+//Z3 = 2 * Y1 % p
+
+return T, Y3, //Z3
+"""
