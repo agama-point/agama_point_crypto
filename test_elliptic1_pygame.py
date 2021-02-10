@@ -17,8 +17,9 @@ from ecdsa import SECP256k1
 from pygame.locals import * # MOUSEBUTTONDOWN...
 from datetime import datetime 
 from ecdsa.ecdsa import Public_key
-from crypto_agama.ecc import mult_inv, reflect_on_x, doubling_d
+from crypto_agama.ecc import point_adding, point_doubling
 from tinyec.ec import SubGroup, Curve
+
 
 # Set up some variables containing the screeen size
 size = 600
@@ -76,11 +77,12 @@ print("---ecc---")
 # # y^2 = x^3 + a*x + b
 # curve: "p1707" => y^2 = x^3 + 0x + 7 (mod 17)
 # =======================================================================================================
-a = 0 # 0 / 1 / 3
+a = 0 # 0 / 1 / / 2 / 3
 b = 7 # 7 / 3
 p = 17 # 17 / 11
 
-dx0, dy0 = 15, 13 # 15, 13
+dx0, dy0 = 15,13 # 6, 3 # 15, 13
+
 scale = 30 # 30
 print("a,b,g: ", a, b, p)
 
@@ -115,16 +117,23 @@ print("---doubling---")
 
 # x0, yo = 8, 3
 print(a, dx0, dy0, "---start---")
+oldx, oldy = dx0, dy0
 
+lines = True
 
-for gi in range(1,8): #(1,20)
+for gi in range(1,17): #(1,20)
    if (gi == 1):
       pygame.draw.circle(win,colBlu,(x0+dx0*scale,y0-dy0*scale),3)
-      dx, dy = doubling_d(dx0, dy0, a=a, p=p) # 5,1
+      dx, dy = point_doubling(dx0, dy0, a=a, p=p) # 5,1
    else:
-      dx, dy = doubling_d(dx, dy, a=a, p=p)
+      #dx, dy = doubling_d(dx, dy, a=a, p=p)
+      dx, dy = point_adding(dx0, dy0, dx, dy, p=p)
       # dy = rellect_on_x(dy,p)
       pygame.draw.circle(win,colRed,(x0+dx*scale,y0-dy*scale),3)
+
+   if lines: pygame.draw.line(win,colSilL,(x0+oldx*scale,y0-oldy*scale),(x0+dx*scale,y0-dy*scale),1)
+   oldx, oldy = dx,dy
+
 
    temp = (dy*dy - dx*dx*dx - a*dx - b)
    if(temp % p == 0):
@@ -184,3 +193,8 @@ print("="*50)
 
 
 time.sleep(60)
+
+"""
+y^2 = x^3 + 2x + 2 (mod 17)
+(5,1) -> 6,3
+"""
