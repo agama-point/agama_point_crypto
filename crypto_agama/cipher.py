@@ -87,13 +87,13 @@ f7_b = ((0,3),(1,0),(1,3),(2,1),(3,2),(4,1),(4,4),(4,6),(5,0),(5,5),(6,4),(6,6))
 f7_c = ((0,1),(0,5),(1,4),(2,0),(2,3),(2,6),(3,5),(4,2),(5,1),(5,4),(6,0),(6,3)) 
 
 # t48 = "123456789012345678901234567890123456789012345678x" #48+1
-# matrix 7x7: mf=7, ccw: counterclockwise
+# matrix 7x7: size=7, ccw: counterclockwise
 
-def fleissner_decrypt(text, f=f7_b, mf=7,center="B", ccw = True, debug=False):
-   f_temp ="-"*mf*mf
+def fleissner_decrypt(text, f=f7_b, size=7,center="B", ccw = True, debug=False):
+   f_temp ="-"*size*size
    print(text,len(text))
    # f_temp[0] = center
-   i = int(3*mf + 3)
+   i = int(3*size + 3)
    f_temp = f_temp[:i] + center + f_temp[i:]
    if debug: print(f_temp, len(f_temp))
 
@@ -109,10 +109,10 @@ def fleissner_decrypt(text, f=f7_b, mf=7,center="B", ccw = True, debug=False):
       _i = 0
 
       for xy in fl:
-         i = int(xy[0]*mf + xy[1])
+         i = int(xy[0]*size + xy[1])
          f_temp = f_temp[:i] + text[_ii] + f_temp[i+1:]
-         if ccw: fln[_i] = (mf - fl[_i][1] - 1, fl[_i][0])
-         else:   fln[_i] = (fl[_i][0], mf - fl[_i][1] - 1)
+         if ccw: fln[_i] = (size - fl[_i][1] - 1, fl[_i][0])
+         else:   fln[_i] = (fl[_i][1], size - fl[_i][0] - 1)
          # print(_i, i, "=== ", f[_i],  fl[_i], text[i])
          _i += 1
          _ii += 1
@@ -126,8 +126,8 @@ def fleissner_decrypt(text, f=f7_b, mf=7,center="B", ccw = True, debug=False):
       if debug: print("sorted ",fl)
 
    _j = 0
-   for x in range(mf):
-      for y in range(mf):
+   for x in range(size):
+      for y in range(size):
          print(f_temp[_j], end = " ")
          _j += 1
       print()
