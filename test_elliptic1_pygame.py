@@ -17,7 +17,7 @@ from ecdsa import SECP256k1
 from pygame.locals import * # MOUSEBUTTONDOWN...
 from datetime import datetime 
 from ecdsa.ecdsa import Public_key
-from crypto_agama.ecc import mult_inv, rellect_on_x, doubling_d
+from crypto_agama.ecc import mult_inv, reflect_on_x, doubling_d
 from tinyec.ec import SubGroup, Curve
 
 # Set up some variables containing the screeen size
@@ -80,6 +80,7 @@ a = 0 # 0 / 1 / 3
 b = 7 # 7 / 3
 p = 17 # 17 / 11
 
+dx0, dy0 = 15, 13 # 15, 13
 scale = 30 # 30
 print("a,b,g: ", a, b, p)
 
@@ -111,7 +112,7 @@ for x in range(p+5):
 
 
 print("---doubling---")
-dx0, dy0 = 15, 13
+
 # x0, yo = 8, 3
 print(a, dx0, dy0, "---start---")
 
@@ -182,4 +183,4 @@ for k in range(0, 10):
 print("="*50)
 
 
-time.sleep(10)
+time.sleep(60)
