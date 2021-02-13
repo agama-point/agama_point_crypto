@@ -8,6 +8,7 @@ from crypto_agama.seed_tools import *
 from priv_data import get_seeds, get_words # words
 from crypto_agama.agama_cryptos import create_wallet
 import base58
+from btclib.mnemonic import bip39
 
 TW = 80 # terminal width
 
@@ -39,10 +40,15 @@ print()
 
 print("--- BIP32 Root Key ---")
 root_key = create_root_key(seed_bytes)
-print("create_root_key(): ", root_key)
+print("create_root_key():   ", root_key)
 
 xprv = mnemo.to_hd_master_key(seed_bytes)
-print("to_hd_master_key:  ", xprv) 
+print("-mnemo_20-")
+print("to_hd_master_key:    ", xprv)
+
+rootxprv = bip39.mxprv_from_mnemonic(words, passphrase)
+print("-btclib_21-")
+print("mxprv_from_mnemonic: ",rootxprv)
 
 print("-"*TW)
 print()
