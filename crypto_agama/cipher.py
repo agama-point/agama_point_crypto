@@ -89,9 +89,9 @@ f7_c = ((0,1),(0,5),(1,4),(2,0),(2,3),(2,6),(3,5),(4,2),(5,1),(5,4),(6,0),(6,3))
 # t48 = "123456789012345678901234567890123456789012345678x" #48+1
 # matrix 7x7: size=7, ccw: counterclockwise
 
-def fleissner_decrypt(text, f=f7_b, size=7,center="B", ccw = True, debug=False):
+def fleissner_decrypt(text, f=f7_a, size=7,center="A", ccw = False, debug=False):
    f_temp ="-"*size*size
-   print(text,len(text))
+   if debug: print(text,len(text))
    # f_temp[0] = center
    i = int(3*size + 3)
    f_temp = f_temp[:i] + center + f_temp[i:]
@@ -113,7 +113,6 @@ def fleissner_decrypt(text, f=f7_b, size=7,center="B", ccw = True, debug=False):
          f_temp = f_temp[:i] + text[_ii] + f_temp[i+1:]
          if ccw: fln[_i] = (size - fl[_i][1] - 1, fl[_i][0])
          else:   fln[_i] = (fl[_i][1], size - fl[_i][0] - 1)
-         # print(_i, i, "=== ", f[_i],  fl[_i], text[i])
          _i += 1
          _ii += 1
 
@@ -122,7 +121,8 @@ def fleissner_decrypt(text, f=f7_b, size=7,center="B", ccw = True, debug=False):
          print("fln    ",fl)
       fl = fln
       if ccw: fl = sorted(fl, key=lambda tup: tup[0]*10+tup[1])
-      else: fl = sorted(fl, key=lambda tup: tup[1]*10+tup[0])
+      # else:   fl = sorted(fl, key=lambda tup: tup[1]*10+tup[0], reverse=True)
+      else:   fl = sorted(fl, key=lambda tup: tup[0]*10+tup[1])
       if debug: print("sorted ",fl)
 
    _j = 0
