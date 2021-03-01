@@ -80,7 +80,21 @@ def generate_seed11_num(numbers, multi=1): # multi: 1,2,3 max (3*999?)
     return words11
 
 
-def generate_seed11_txt(text, multi=1): # multi: 1,2,3 max (3*999?)
+def generate_seed11_num_list(num_list, multi=1): # (123,567,666,...)
+    words11 = ""
+    i = 0
+    for num in num_list: # 12 words: 11 + 1 chceksum
+        try:
+            word = bip39[int(num)]
+            words11 +=  word + " "
+            i += 1
+        except:
+            word = "err"
+    print("-> num nums: ", i)
+    return words11
+
+
+def generate_seed11_txt(text, multi=1):
     text_hex = str(str_to_hex(text))
     print(text_hex)
     bw = 11
