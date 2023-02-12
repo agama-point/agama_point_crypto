@@ -4,6 +4,7 @@ from trezorlib.tools import parse_path
 from trezorlib import btc, misc, ui
 from trezorlib.messages import InputScriptType
 import requests
+import datetime
 import base58
 
 
@@ -18,6 +19,7 @@ https://github.com/trezor/trezor-firmware
 """
 
 DEBUG = True
+DEBUG2 = False
 WIDTH = 60
 # -------------------------------- device -------------------------------------------
 
@@ -97,7 +99,7 @@ btc:
 
 # -------------------------------- address -------------------------------------------
 
-def get_btc_address(client,type="SPENDADDRESS",index = 0):
+def get_btc_address(client,type="SPENDADDRESS",index = 0,show_disp=False):
     # if type == "SPENDADDRESS":
     basic_prefix = "44'/0'/0'/0/"
     btc_script_type = InputScriptType.SPENDADDRESS
@@ -114,7 +116,7 @@ def get_btc_address(client,type="SPENDADDRESS",index = 0):
     path = basic_prefix+str(index)
 
     bip32_path = parse_path(path)
-    address = btc.get_address(client, "Bitcoin", bip32_path, True, script_type=btc_script_type)
+    address = btc.get_address(client, "Bitcoin", bip32_path, show_display=show_disp, script_type=btc_script_type)
     return address, path
 
 
@@ -204,7 +206,7 @@ class InputScriptType(IntEnum):
 
 def get_balance(address):
     url = f'https://blockchain.info/q/addressbalance/{address}'
-    if DEBUG:
+    if DEBUG2:
         print("-"*WIDTH) 
         print(url)
         print("-"*WIDTH)
@@ -218,17 +220,26 @@ def print_rawaddr(address):
     print("-"*WIDTH) 
     print(url)
     print("-"*WIDTH)
+    try:
+        response = requests.get(url)
+        data = response.json()
+        #  print("data", data)
 
-    response = requests.get(url)
-    data = response.json()
-    print("data", data)
 
-    transactions = data['txs']
-    for tx in transactions:
-        print("Transaction ID: ", tx['hash'])
-        print("Amount: ", tx['out'][0]['value'])
-        print("Address: ", tx['out'][0]['addr'])
-
+        transactions = data['txs']
+        for tx in transactions:
+            if DEBUG2:
+                print("."*WIDTH)
+                print(tx)
+                print("."*WIDTH)
+            print("Transaction ID: ", tx['hash'])
+            print("Time:   ", datetime.datetime.fromtimestamp(tx['time']).strftime('%Y-%m-%d %H:%M:%S'))
+            print("Amount: ", tx['out'][0]['value'])
+            print("Address:", tx['out'][0]['addr'])
+            print("Balance:", tx['out'][1]['value'])
+            print("-"*WIDTH)
+    except:
+        print("Err")
 
 # -------------------------------- transactions -----------------------------------------
 # ToDo
