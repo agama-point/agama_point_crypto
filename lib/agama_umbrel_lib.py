@@ -1,13 +1,15 @@
+import time, datetime
 import requests
 import json
-import datetime
 import subprocess
+
+__version__ = "0.23.2"
 
 DEBUG = True
 WIDTH = 50
 
-URL_BASE = 'http://192.168.0.220:3006/api/' # Umbrel - local IP
-#  url_base = 'https://mempool.space/api/'
+URL_BASE = 'http://192.168.0.220:3006/api/' # my Umbrel - local IP
+#URL_BASE = 'https://mempool.space/api/'
 
 # -------------------------------------------------------------------------------
 
@@ -21,7 +23,7 @@ def get_block_info(b, debug2 = False, tx_info = False):
        print('get_block:', b)
        print('- url', url)
 
-    response = requests.get(url, allow_redirects=True, timeout=20)  
+    response = requests.get(url, allow_redirects=True, timeout=50)  
     """
     curl -sSL > -L allow_redirects=True    
     """
@@ -34,12 +36,11 @@ def get_block_info(b, debug2 = False, tx_info = False):
     else:
         print("Request failed with status code:", response.status_code)
     
-
     url = URL_BASE + 'block/'+str(block_hash)
     response = requests.get(url, allow_redirects=True, timeout=10)
     data = response.text
     json_data =  json.loads(data)
-
+    
     if debug2: 
         print('===== json_data',json_data)
         print('- id',json_data["id"])
@@ -73,6 +74,9 @@ def get_block_info(b, debug2 = False, tx_info = False):
                     print("--- fee", json_data_tx["fee"])
                     print("--- vout", int(json_data_tx["vout"][0]["value"])/10**8)
                 """
+    return lentx, dt
+
+
 
 def get_tx_info(tx_id, debug2 = True):
     url = URL_BASE + 'tx/'+str(tx_id)
@@ -106,47 +110,74 @@ def get_tx_info(tx_id, debug2 = True):
                 print("*"*WIDTH)
                 print("- scriptpubkey",scriptpubkey)
                 print("*"*WIDTH)
-            op_return = scriptpubkey
 
 
-            print("- scriptpubkey_asm",output.get("scriptpubkey_asm"))
-            #op_return = output.get("scriptpubkey_asm").get("OP_PUSHBYTES_65")
-            """
-            op_pushbytes = data_tx['vout'][0]['scriptpubkey_asm'].split()[1]
-            if debug2: 
-                print("."*50)
-                print(op_pushbytes)
-                print("."*50)
-            op_return = op_pushbytes
-            """    
 
-            """
-            if output.get("scriptpubkey").get("hex").startswith("6a"):
-                op_return = output.get("scriptpubkey").get("hex")
-                break
-            """
+def get_opreturn(tx_id, debug2 = False):
+    url = URL_BASE + 'tx/'+str(tx_id)
 
-    if op_return is None:
-        raise ValueError("OP_RETURN/OP_PUSHBYTES_65 not found in transaction outputs")
+    if debug2: 
+        print("="*WIDTH)
+        print("tx_info url", url)
+    if len(tx_id) != 64:
+        raise ValueError("Invalid transaction ID")
 
-    # Získání textu opreturn
-    # op_return = op_return[10:].decode("hex")
-    # decoded_string = bytes.fromhex(op_return).decode('utf-8')
+    response = requests.get(url)   
+
+    if response.status_code == 404:
+        raise ValueError("Transaction not found")
     
-    try:
-        decoded_string = bytes.fromhex(op_return)
-        print(decoded_string)
+    if response.status_code != 200:
+        raise ValueError("Failed to retrieve transaction")
+
+    data_tx = response.json()
+    
+    if debug2: 
+        print("data",data_tx)
+    
+    outputs = data_tx.get("vout")
+
+    if debug2: 
+        print("===== outputs",outputs)
+
+    inputs = data_tx.get("vin")
+    if debug2: 
+        print("===== inputs",inputs)
+
+    """
+    ve vout.scriptsig hledam: 104455468652054696d657...            
+    """
+    
+    op_return = None
+    ns = 16
+
+    for input in inputs:
+            if debug2:
+                print("===== input",input)
+            
+            scriptsig = input.get("scriptsig")
+            
+            if DEBUG: 
+                print("scriptsig:",scriptsig)
+            if debug2:
+                print("scriptsig[ns:]:",scriptsig[ns:])
+                
+
+    """       
+    if op_return is None:
+        raise ValueError("OP_RETURN not found in transaction outputs")
+  
+    op_return_txt = scriptsig.decode("hex")
+    print("op_return_txt",op_return_txt)
+    """
+
+    try:  
+        decoded_string = bytes.fromhex(scriptsig[ns:]).decode('utf-8')
+        print("decoded_string: ",decoded_string)
     except ValueError:
         print("Not a hexadecimal string")
-    
 
-    """
-    if debug2: 
-        print()
-        print("===== json_data_tx",json_data_tx)
-        print("--- fee", json_data_tx["fee"])
-        print("--- vout", int(json_data_tx["vout"][0]["value"])/10**8)
-    """
+
 
 def get_addr(address, debug2 = True):
     url = URL_BASE + "address/" + address
@@ -233,7 +264,7 @@ def get_coins():
     response = requests.get(url)   
     # data = response.json()
     # data = response.text
-    data = int(response.text)
+    data = response.text
 
     try:
         print("blockchain/coins",data)

@@ -1,12 +1,14 @@
-from lib.agama_umbrel_lib import URL_BASE, get_addr, get_addr_txs, get_block_info, get_tx_info
+from lib.agama_umbrel_lib import URL_BASE, get_coins, get_addr, get_addr_txs, get_block_info, get_tx_info
 
 
 DEBUG = True
 
 print("start", URL_BASE)
 
-addr="bc1qdkknh0drs...xxx" # trezor
-addr="bc1pjp5mfnfgx...xxx" # umbrel
+#get_coins()
+
+addr="bc1qdkknh0drs79nqkq553umngh3dfmxzwsrp80cnp" # trezor
+addr="bc1pjp5mfnfgrer8fzjshy66xw5cec436yc774dflmfntu6a40uv56jss57t53" # umbrel
 
 get_addr(addr, True)
 
