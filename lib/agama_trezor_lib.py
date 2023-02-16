@@ -9,6 +9,7 @@ import base58
 
 
 __version__ = "0.23.2"
+
 """
 2023/02 - agamapoint
 
