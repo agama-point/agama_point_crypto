@@ -41,6 +41,7 @@ class Mempool():
 
 
     def get_block_info(self, b, debug2 = False, tx_info = False):
+        print("[get_block_info]")
         url = self.url_base  +"block-height/"+str(b)
 
         if debug2:
@@ -105,7 +106,8 @@ class Mempool():
 
 
 
-    def get_tx_info(self, tx_id, debug2 = True):
+    def get_tx_info(self, tx_id, debug2 = False):
+        print("[get_tx_info]")
         url = self.url_base + 'tx/'+str(tx_id)
 
         if debug2: 
@@ -125,20 +127,29 @@ class Mempool():
         data_tx = response.json()
         if debug2: 
             print("data",data_tx)
+
+        inputs = data_tx.get("vin") 
         outputs = data_tx.get("vout") # Získání seznamu výstupů transakce
-
-        op_return = None
-        for output in outputs: # Prohledání výstupů transakce a hledání textu opreturn
-                print("===== output",output)
-                print("- value",output.get("value"))
-                """zacina 6a pokud má scriptPubKey hodnotu "6a04616263646566", tak data "abcdef" byla uložena v rámci transakce."""
-                scriptpubkey = output.get("scriptpubkey")
+        # dt = datetime.datetime.fromtimestamp(data_tx.get("block_time"))
+        status = data_tx.get("status")
+        block_time = datetime.datetime.fromtimestamp(status.get("block_time"))
+        block_height = status.get("block_height")
+    
+        print(f"---input---value [BLOCK {block_height} | {block_time}]")
+        for input in inputs: # Prohledání výstupů transakce a hledání textu opreturn
                 if debug2: 
-                    print("*"*WIDTH)
-                    print("- scriptpubkey",scriptpubkey)
-                    print("*"*WIDTH)
-
-
+                    print(input)
+                print(input.get("value"))
+                
+        print("---output---value---scriptpubkey_type")
+        for output in outputs: # Prohledání výstupů transakce a hledání textu opreturn
+                if debug2:
+                    print(output)
+                print("scriptpubkey_address", output.get("scriptpubkey_address"))
+                print(output.get("value"), output.get("scriptpubkey_type"))
+                # scriptpubkey = output.get("scriptpubkey")
+                
+                
 
     def get_opreturn(self, tx_id, debug2 = False):
         url = self.url_base + 'tx/'+str(tx_id)
@@ -205,6 +216,7 @@ class Mempool():
 
 
     def get_addr(self, address, debug2 = True):
+        print("[get_addr]")
         url = self.url_base + "address/" + address
         if debug2:
             print()
@@ -227,6 +239,7 @@ class Mempool():
 
 
     def get_addr_txs(self, address, debug2 = True):
+        print("[get_addr_txs]")
         # url = f'https://blockchain.info/q/addressbalance/{address}'
         url = self.url_base + "address/" + address + "/txs"
         if debug2:
@@ -248,13 +261,12 @@ class Mempool():
         if False: print("===== json_data_txs",json_data_txs)
         json_data_txs =  json.loads(json_data_txs)
 
+        print("value","scriptpubkey_type")
         for tx in json_data_txs:
             if debug2: 
-                print("+"*50)
                 # print(tx)
                 # print("--- vin", tx["vin"][0]["value"])/10**8
-                print("+++ scriptpubkey_type", tx["vin"][0]["prevout"]["scriptpubkey_type"])
-                print("+++ value", tx["vin"][0]["prevout"]["value"])
+                print(tx["vin"][0]["prevout"]["value"], tx["vin"][0]["prevout"]["scriptpubkey_type"])
                 #funded_txo_sum = tx.get("chain_stats").get("funded_txo_sum")
             #funded_txo_sum = json_data_txs["chain_stats"]
             #print("funded_txo_sum",funded_txo_sum)
