@@ -24,6 +24,7 @@ class Mempool():
             print("class Mempool init")
             
         self.url_base = URL_BASE_LOCAL
+        self.debug = DEBUG # main global debug mode
         
     def set_url_base(self, val_str):  
         if val_str == "local":
@@ -32,16 +33,20 @@ class Mempool():
         if val_str == "remote":
             self.url_base = URL_BASE_REMOTE
 
-        if DEBUG:
-            print("-"* WIDTH)
-            print("set_url_base --- >",self.url_base)
-            
-    
+        print("-"* WIDTH)
+        print("set_url_base --- >",self.url_base)
+
+    def set_debug_mode(self, debug):
+        self.debug = debug
+        print("-"* WIDTH)
+        print("set_debug --- >",self.debug)
+
+
     # ------------------------------------------------------------
 
 
     def get_block_info(self, b, debug2 = False, tx_info = False):
-        if DEBUG: print("\r\n[get_block_info]")
+        if self.debug: print("\r\n[get_block_info]")
         url = self.url_base  +"block-height/"+str(b)
 
         if debug2:
@@ -107,7 +112,7 @@ class Mempool():
 
 
     def get_tx_info(self, tx_id, debug2 = False):
-        if DEBUG: print("\r\n[get_tx_info]")
+        if self.debug: print("\r\n[get_tx_info]")
         url = self.url_base + 'tx/'+str(tx_id)
 
         if debug2: 
@@ -152,7 +157,7 @@ class Mempool():
                 
 
     def get_opreturn(self, tx_id, debug2 = False):
-        if DEBUG: print("\r\n[get_opreturn]", tx_id)
+        if self.debug: print("\r\n[get_opreturn]", tx_id)
         url = self.url_base + 'tx/'+str(tx_id)
 
         if debug2: 
@@ -217,7 +222,7 @@ class Mempool():
 
 
     def get_addr(self, address, debug2 = True):
-        if DEBUG: print("\r\n[get_addr]")
+        if self.debug: print("\r\n[get_addr]")
         url = self.url_base + "address/" + address
         if debug2:
             print()
@@ -240,7 +245,7 @@ class Mempool():
 
 
     def get_addr_txs(self, address, debug2 = True):
-        if DEBUG: print("\r\n[get_addr_txs]")
+        if self.debug: print("\r\n[get_addr_txs]")
         # url = f'https://blockchain.info/q/addressbalance/{address}'
         url = self.url_base + "address/" + address + "/txs"
         if debug2:
