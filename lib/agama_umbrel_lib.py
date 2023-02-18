@@ -41,7 +41,7 @@ class Mempool():
 
 
     def get_block_info(self, b, debug2 = False, tx_info = False):
-        print("[get_block_info]")
+        if DEBUG: print("\r\n[get_block_info]")
         url = self.url_base  +"block-height/"+str(b)
 
         if debug2:
@@ -102,12 +102,12 @@ class Mempool():
                         print("--- fee", json_data_tx["fee"])
                         print("--- vout", int(json_data_tx["vout"][0]["value"])/10**8)
                     """
-        return lentx, dt
+        return lentx, dt, json_data_txs
 
 
 
     def get_tx_info(self, tx_id, debug2 = False):
-        print("[get_tx_info]")
+        if DEBUG: print("\r\n[get_tx_info]")
         url = self.url_base + 'tx/'+str(tx_id)
 
         if debug2: 
@@ -145,13 +145,14 @@ class Mempool():
         for output in outputs: # Prohledání výstupů transakce a hledání textu opreturn
                 if debug2:
                     print(output)
-                print("scriptpubkey_address", output.get("scriptpubkey_address"))
-                print(output.get("value"), output.get("scriptpubkey_type"))
+                #  print("scriptpubkey_address", output.get("scriptpubkey_address"))
+                print(f"{output.get('value'):12} {output.get('scriptpubkey_type'):12} {output.get('scriptpubkey_address')}")
                 # scriptpubkey = output.get("scriptpubkey")
                 
                 
 
     def get_opreturn(self, tx_id, debug2 = False):
+        if DEBUG: print("\r\n[get_opreturn]", tx_id)
         url = self.url_base + 'tx/'+str(tx_id)
 
         if debug2: 
@@ -216,7 +217,7 @@ class Mempool():
 
 
     def get_addr(self, address, debug2 = True):
-        print("[get_addr]")
+        if DEBUG: print("\r\n[get_addr]")
         url = self.url_base + "address/" + address
         if debug2:
             print()
@@ -239,7 +240,7 @@ class Mempool():
 
 
     def get_addr_txs(self, address, debug2 = True):
-        print("[get_addr_txs]")
+        if DEBUG: print("\r\n[get_addr_txs]")
         # url = f'https://blockchain.info/q/addressbalance/{address}'
         url = self.url_base + "address/" + address + "/txs"
         if debug2:
@@ -258,7 +259,7 @@ class Mempool():
         
 
         json_data_txs = response.text
-        if False: print("===== json_data_txs",json_data_txs)
+        # if debug2: print("===== json_data_txs",json_data_txs)
         json_data_txs =  json.loads(json_data_txs)
 
         print("value","scriptpubkey_type")
@@ -266,7 +267,13 @@ class Mempool():
             if debug2: 
                 # print(tx)
                 # print("--- vin", tx["vin"][0]["value"])/10**8
-                print(tx["vin"][0]["prevout"]["value"], tx["vin"][0]["prevout"]["scriptpubkey_type"])
+                txi = tx['vin'][0]['prevout']
+                try:
+                    txaddr = (txi["scriptpubkey_address"])
+                except:
+                    txaddr = None
+                # print(f"{txi['value']:12} {txi['scriptpubkey_type']:8} {txo['scriptpubkey_address']}")
+                print(f"{txi['value']:12} {txi['scriptpubkey_type']:8} {txaddr} ")
                 #funded_txo_sum = tx.get("chain_stats").get("funded_txo_sum")
             #funded_txo_sum = json_data_txs["chain_stats"]
             #print("funded_txo_sum",funded_txo_sum)
