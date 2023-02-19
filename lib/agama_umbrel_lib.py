@@ -78,7 +78,7 @@ class Mempool():
             print('- id',json_data["id"])
 
         dt = datetime.datetime.fromtimestamp(json_data["timestamp"])
-        print("["+str(b)+"]", block_hash, dt) # 1, 00000000839a8e6886ab5951d76f411475428afc90947ee320161bbf18eb6048
+        print(f"[{b}] {block_hash} | {dt}")
 
         # transactions
         url = self.url_base + 'block/'+str(block_hash)+'/txids'
@@ -94,7 +94,7 @@ class Mempool():
             if debug2: print('len', len(json_data_txs))
             if tx_info:
                 for tx_id in json_data_txs:
-                    self.get_tx_info(tx_id, debug2 = True)
+                    self.get_tx_info(tx_id, debug2 = self.debug)
                     """
                     print(tx)
                     #"https://mempool.space/api/tx/15e10745f15593a899cef391191bdd3d7c12412cc4696b7bcb669d0feadc8521"
@@ -116,7 +116,7 @@ class Mempool():
         url = self.url_base + 'tx/'+str(tx_id)
 
         if debug2: 
-            print("="*WIDTH)
+            print("-"*WIDTH)
             print("tx_info url", url)
         if len(tx_id) != 64:
             raise ValueError("Invalid transaction ID")
@@ -139,14 +139,17 @@ class Mempool():
         status = data_tx.get("status")
         block_time = datetime.datetime.fromtimestamp(status.get("block_time"))
         block_height = status.get("block_height")
-    
-        print(f"---input---value [BLOCK {block_height} | {block_time}]")
+        if debug2:
+            print(f"> input---value [BLOCK {block_height} | {block_time}]")
+        else:
+            print("> input---value")
+
         for input in inputs: # Prohledání výstupů transakce a hledání textu opreturn
                 if debug2: 
                     print(input)
                 print(input.get("value"))
                 
-        print("---output---value---scriptpubkey_type")
+        print("> output---value---scriptpubkey_type")
         for output in outputs: # Prohledání výstupů transakce a hledání textu opreturn
                 if debug2:
                     print(output)
