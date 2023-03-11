@@ -107,7 +107,7 @@ class Mempool():
                         print("--- fee", json_data_tx["fee"])
                         print("--- vout", int(json_data_tx["vout"][0]["value"])/10**8)
                     """
-        return lentx, dt, json_data_txs
+        return lentx, dt, json_data_txs, json_data["id"]
 
 
 
@@ -156,6 +156,8 @@ class Mempool():
                 #  print("scriptpubkey_address", output.get("scriptpubkey_address"))
                 print(f"{output.get('value'):12} {output.get('scriptpubkey_type'):12} {output.get('scriptpubkey_address')}")
                 # scriptpubkey = output.get("scriptpubkey")
+        
+        return inputs, outputs
                 
                 
 
