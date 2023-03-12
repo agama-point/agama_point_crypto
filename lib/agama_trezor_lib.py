@@ -113,6 +113,10 @@ def get_btc_address(client,type="SPENDADDRESS",index = 0,show_disp=False):
         basic_prefix = "84'/0'/0'/0/"
         btc_script_type = InputScriptType.SPENDWITNESS   
 
+    if type == "SPENDTAPROOT":
+        basic_prefix = "86'/0'/0'/0/"
+        btc_script_type = InputScriptType.SPENDTAPROOT  
+
 
     path = basic_prefix+str(index)
 
