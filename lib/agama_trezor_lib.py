@@ -8,7 +8,7 @@ import datetime
 import base58
 
 
-__version__ = "0.23.2"
+__version__ = "0.2.3"
 
 """
 2023/02 - agamapoint

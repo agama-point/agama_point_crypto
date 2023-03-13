@@ -24,10 +24,13 @@ s = "1-58f87a22d7aa12358e93a81e53217cb681bb4ec36b"
 print("-"*55)
 print(s)
 print("-"*55)
+print("[single_shamir_to_words]")
 print(single_shamir_to_words(s))
 
 words = 'rapid marble badge gadget drastic culture innocent tube device craft salad sure danger excite brave scale'
 
+print("-"*55)
+print("[words_to_single_shamir]")
 print(words_to_single_shamir(words,2))
 
 """

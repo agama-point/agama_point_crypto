@@ -1,10 +1,10 @@
 # single shamir: 1-58f87a22d7aa12358e93a81e53217cb681bb4ec36b
 # num-hexa (num max 9)
 
-from lib.transform import hex_to_bin, num_to_bin, short_str
+from lib.agama_transform_tools import hex_to_bin, num_to_bin, short_str
 from lib.seed_english_words import english_words_bip39
-import zlib, base64
 
+__version__ = "0.2.3"
 
 DEBUG = False
 bip39 = english_words_bip39.split(",")
@@ -90,17 +90,3 @@ words = 'rapid marble badge gadget drastic culture innocent tube device craft sa
 
 print(words_to_single_shamir(words,2))
 """
-
-
-def zip_compress(data): # b'ABC'
-    compressed_data = zlib.compress(data)
-    if DEBUG: print(data, "compressed to",compressed_data)
-    encoded_data = base64.b64encode(compressed_data)
-    return encoded_data
-
-
-def zip_decompress(encoded_data):
-    compressed_data = base64.b64decode(encoded_data)
-    data = zlib.decompress(compressed_data)
-    return data
-

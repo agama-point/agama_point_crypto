@@ -7,7 +7,7 @@ import os
 import webbrowser
 
 
-__version__ = "0.23.1"
+__version__ = "0.2.1"
 
 DEBUG = True
 WIDTH = 60

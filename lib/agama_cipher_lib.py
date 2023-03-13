@@ -1,12 +1,15 @@
 # Agama Point simple ciphers library
 # 2017-23
 
+__version__ = "0.2.3"
+
+
+
 """
 print "Plain Text : " + text
 print "Shift pattern : " + str(s)
 print "Cipher: " + caesar_encrypt(text,s)
 """
-
 
 # https://www.tutorialspoint.com/cryptography_with_python/cryptography_with_python_caesar_cipher.htm
 

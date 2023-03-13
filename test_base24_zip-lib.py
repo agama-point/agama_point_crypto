@@ -1,4 +1,5 @@
-from lib.agama_shamir_lib import zip_compress, zip_decompress
+from lib.agama_transform_tools import zip_compress, zip_decompress
+
 
 #                 1         2         3         4
 #        123456789012345678901234567890123456789012345678
@@ -16,5 +17,3 @@ print("decode")
 data = zip_decompress(encoded_data)
 
 print(data)
-
-

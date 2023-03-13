@@ -7,7 +7,7 @@ import time, datetime
 import requests, json
 # import subprocess
 
-__version__ = "0.23.03"
+__version__ = "0.2.3"
 
 DEBUG = True
 WIDTH = 50
