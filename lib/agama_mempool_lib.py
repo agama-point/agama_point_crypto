@@ -46,7 +46,7 @@ class Mempool():
 
 
     def get_block_info(self, b, debug2 = False, tx_info = True):
-        if self.debug: print("\r\n[get_block_info]")
+        if self.debug: print("[get_block_info]")
         url = self.url_base  +"block-height/"+str(b)
 
         if debug2:
@@ -101,7 +101,6 @@ class Mempool():
                     txs_data_list.append(self.get_tx_info(tx_id))
                     
         return json_data["id"], json_data["timestamp"], lentx, txs_list, txs_data_list
-
 
 
     def get_tx_info(self, tx_id, debug2 = False):
