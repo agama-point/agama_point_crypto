@@ -1,0 +1,6 @@
+Nostr má několik výhod oproti Twitteru a dalším centralizovaným sociálním sítím:
+1. Odolnost proti cenzuře: Nostr je navržen tak, aby byl odolný vůči cenzuře a byl decentralizovaný. Protože není řízen žádnou centrální entitou, není možné ho snadno cenzurovat nebo ovládat. To znamená, že uživatelé mohou mluvit svobodně a bez omezení.
+2. Soukromí: Nostr poskytuje uživatelům větší kontrolu nad svými daty a soukromím. Na rozdíl od centralizovaných sociálních sítí jako Twitter, které často shromažďují a prodávají uživatelská data třetím stranám, Nostr neukládá žádné osobní údaje a uživatelé mají plnou kontrolu nad svými daty.
+3. Bezplatnost: Nostr je zdarma a není spojen s žádnými poplatky nebo reklamami. To znamená, že uživatelé nemusí platit za používání služby ani se obávat, že budou obtěžováni reklamami.
+4. Otevřenost: Nostr je postaven na otevřeném protokolu, což znamená, že každý může vytvořit vlastní aplikaci nebo službu, která využívá Nostr. To podporuje inovaci a rozvoj nových aplikací a funkcí.
+5. Možnost vlastního výběru relays: Uživatelé Nostru mohou sami vybírat, ke kterým relays se připojí a které budou používat pro příjem a odesílání zpráv. To znamená, že uživatelé mohou mít větší kontrolu nad tím, kdo má přístup k jejich datům a s kým je budou sdílet.
