@@ -3,19 +3,19 @@
 
 # generate, to_seed, to_hd_master_key(seed), to_mnemonic
 
-from mnemonic import Mnemonic
 from .transform import str_to_hex, short_str, convert_to_base58
 from .cipher import caesar_encrypt
 from hashlib import sha256
 import hashlib, binascii, base58, hmac, hashlib
-
+from seed_english_words import english_words_bip39
+#from mnemonic import Mnemonic
 
 DEBUG = True
 TW = 80 # terminal width
 
 MAINNET_PREFIX = '80'
 TESTNET_PREFIX = 'EF'
-mnemo = Mnemonic("english")
+#mnemo = Mnemonic("english")
 
 BASE_58_CHARS = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
 BASE_58_CHARS_LEN = len(BASE_58_CHARS)
@@ -133,8 +133,8 @@ def words_to_4ch(words,c=13,separator=" ", str_w=True):
   else: return w_arr4
 
 
-def is_valid_wif(wifPriv):
-  return numToWIF(WIFToNum(wifPriv)) == wifPriv
+# def is_valid_wif(wifPriv):
+#   return numToWIF(WIFToNum(wifPriv)) == wifPriv
 
 
 def num_to_address(numPriv):
