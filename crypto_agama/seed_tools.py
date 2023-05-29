@@ -1,14 +1,14 @@
-# agama_point - crypto21 - seed_tools.py
-# https://wolovim.medium.com/ethereum-201-hd-wallets-11d0c93c87f7
+#!/usr/bin/env python
 
-# generate, to_seed, to_hd_master_key(seed), to_mnemonic
-
+import hashlib, binascii, base58, hmac
+from hashlib import sha256
+from .seed_english_words import english_words_bip39
 from .transform import str_to_hex, short_str, convert_to_base58
 from .cipher import caesar_encrypt
-from hashlib import sha256
-import hashlib, binascii, base58, hmac, hashlib
-from seed_english_words import english_words_bip39
 #from mnemonic import Mnemonic
+
+__version__ = "0.2.0" # 2023/05
+
 
 DEBUG = True
 TW = 80 # terminal width
@@ -133,6 +133,47 @@ def words_to_4ch(words,c=13,separator=" ", str_w=True):
   else: return w_arr4
 
 
+def mnemo_to_seed(mnemonic,passphrase=""):
+    PBKDF2_ROUNDS = 2048
+    # passphrase = "mnemonic" + passphrase
+    mnemonic_bytes = mnemonic.encode("utf-8")
+    passphrase_bytes = passphrase.encode("utf-8")
+    stretched = hashlib.pbkdf2_hmac("sha512", mnemonic_bytes, passphrase_bytes, PBKDF2_ROUNDS)
+    return stretched[:64]
+
+
+def create_root_key(seed_bytes,version_BYTES = "mainnet_private"):
+   # the HMAC-SHA512 `key` and `data` must be bytes:
+   I = hmac.new(b'Bitcoin seed', seed_bytes, hashlib.sha512).digest()
+   L, R = I[:32], I[32:]
+   master_private_key = int.from_bytes(L, 'big')
+   master_chain_code = R
+
+   VERSION_BYTES = {
+      'mainnet_public': binascii.unhexlify('0488b21e'), 'mainnet_private': binascii.unhexlify('0488ade4'),
+      'testnet_public': binascii.unhexlify('043587cf'), 'testnet_private': binascii.unhexlify('04358394'),
+   }
+
+   print("version_BYTES: ", version_BYTES)
+
+   version_bytes = VERSION_BYTES[version_BYTES] #  testnet_public
+   depth_byte = b'\x00'
+   parent_fingerprint = b'\x00' * 4
+   child_number_bytes = b'\x00' * 4
+   key_bytes = b'\x00' + L
+   all_parts = (
+      version_bytes,       #  4 bytes
+      depth_byte,          #  1 byte
+      parent_fingerprint,  #  4 bytes
+      child_number_bytes,  #  4 bytes
+      master_chain_code,   # 32 bytes
+      key_bytes,           # 33 bytes
+   )
+   all_bytes = b''.join(all_parts)
+   root_key = base58.b58encode_check(all_bytes).decode('utf8')
+   return root_key
+
+
 # def is_valid_wif(wifPriv):
 #   return numToWIF(WIFToNum(wifPriv)) == wifPriv
 
@@ -204,37 +245,3 @@ def wif_to_num(wifPriv):
 
     numPriv = numPriv/(2**32)%(2**256)
     return numPriv
-
-
-# ===============================================================================
-
-def create_root_key(seed_bytes,version_BYTES = "mainnet_private"):
-   # the HMAC-SHA512 `key` and `data` must be bytes:
-   I = hmac.new(b'Bitcoin seed', seed_bytes, hashlib.sha512).digest()
-   L, R = I[:32], I[32:]
-   master_private_key = int.from_bytes(L, 'big')
-   master_chain_code = R
-
-   VERSION_BYTES = {
-      'mainnet_public': binascii.unhexlify('0488b21e'), 'mainnet_private': binascii.unhexlify('0488ade4'),
-      'testnet_public': binascii.unhexlify('043587cf'), 'testnet_private': binascii.unhexlify('04358394'),
-   }
-
-   print("version_BYTES: ", version_BYTES)
-
-   version_bytes = VERSION_BYTES[version_BYTES] #  testnet_public
-   depth_byte = b'\x00'
-   parent_fingerprint = b'\x00' * 4
-   child_number_bytes = b'\x00' * 4
-   key_bytes = b'\x00' + L
-   all_parts = (
-      version_bytes,       #  4 bytes
-      depth_byte,          #  1 byte
-      parent_fingerprint,  #  4 bytes
-      child_number_bytes,  #  4 bytes
-      master_chain_code,   # 32 bytes
-      key_bytes,           # 33 bytes
-   )
-   all_bytes = b''.join(all_parts)
-   root_key = base58.b58encode_check(all_bytes).decode('utf8')
-   return root_key

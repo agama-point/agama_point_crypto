@@ -1,3 +1,6 @@
+
+# pip install trezor
+
 from cryptos import * # pip install wheel, pbkdf2, cryptos
 from mnemonic import Mnemonic
 from crypto_agama.seed_tools import create_root_key

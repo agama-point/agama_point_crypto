@@ -29,6 +29,12 @@ try:
     print("env key:",ekey)
 
     print("-"*39)
+    bkey_hex = get_env_key("ANDREAS1") # andreas BTC - seed1 hexa
+    print("seed1 key_hex ANDREAS1:",bkey_hex)
+    bkey = base64.urlsafe_b64encode(bytes.fromhex(bkey_hex))
+    print("bkey base64:",bkey)
+    
+    print("-"*39)
     nkey_hex = get_env_key("KNH") # key nostr hexa
     print("nostr key_hex KNH:",nkey_hex)
     # Fernet key must be 32 url-safe base64-encoded bytes
@@ -39,6 +45,7 @@ except:
 
 
 key = nkey
+# key = bkey
 
 cipher_suite = Fernet(key)
 
