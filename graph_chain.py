@@ -1,6 +1,6 @@
 import pygame
 import time, datetime
-from lib.agama_umbrel_lib import get_block_info
+from crypto_agama.agama_umbrel import get_block_info
 
 DEBUG = False
 TXT_FILE = False

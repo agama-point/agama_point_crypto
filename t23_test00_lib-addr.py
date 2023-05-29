@@ -1,4 +1,4 @@
-from lib.agama_trezor_lib import t_connect,t_connect_first, get_btc_address
+from crypto_agama.agama_trezor import t_connect,t_connect_first, get_btc_address
 
 
 print("start")

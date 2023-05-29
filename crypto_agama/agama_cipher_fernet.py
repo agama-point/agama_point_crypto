@@ -3,7 +3,7 @@
 
 from cryptography.fernet import Fernet
 # from crypto_agama.tools import get_env_key
-# import base64
+import base64
 
 
 __version__ = "0.1.0" # 2023/05/29

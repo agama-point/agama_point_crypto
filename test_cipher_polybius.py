@@ -1,4 +1,4 @@
-from lib.agama_cipher import polybius_decrypt
+from crypto_agama.agama_cipher import polybius_decrypt
 
 """ polybius code
 - 1 2 3 4 5

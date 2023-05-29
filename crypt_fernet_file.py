@@ -5,8 +5,7 @@ from cryptography.fernet import Fernet
 from crypto_agama.tools import get_env_key
 import base64
 
-from crypto_agama.cipher_fernet import Agama_fernet
-
+from crypto_agama.agama_cipher_fernet import Agama_fernet
 
 input_file_fernet = "data/nostr1_fernet.txt"
 

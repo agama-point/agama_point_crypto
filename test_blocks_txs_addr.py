@@ -1,4 +1,4 @@
-from lib.agama_umbrel_lib import Mempool
+from crypto_agama.agama_umbrel import Mempool
 
 DEBUG = True
 

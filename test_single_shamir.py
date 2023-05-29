@@ -14,7 +14,7 @@ Share [3/3]: 1-58f87a22d7aa12358e93a81e53217cb681bb4ec36b
 Resulting secret: kobyla ma maly bok 23
 """
 
-from lib.agama_shamir_lib import single_shamir_to_words, words_to_single_shamir
+from crypto_agama.agama_shamir import single_shamir_to_words, words_to_single_shamir
 
 
 # test

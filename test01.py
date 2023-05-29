@@ -1,21 +1,17 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
-from crypto_agama.transform import seedWords
+from crypto_agama.seed_tools import seed_words, mnemonic_info, words_to_4ch
 
 print("-"*30)
-bip39 = seedWords()
+bip39 = seed_words()
 testBip = bip39[777],bip39[333]
 print("testBip: ", testBip)
-
 
 from data import test
 print("test.pk1: ",test.pk1)
 
-
-from crypto_agama.tools import addLog
+from lib.tools import addLog
 # addLog(test.pk1)
-
 
 from crypto_agama.transform import *
 

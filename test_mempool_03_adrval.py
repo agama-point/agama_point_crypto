@@ -1,8 +1,8 @@
 """
 AgamaPoint23 - simple Mempool experiment
 """
-from lib.agama_mempool_lib import Mempool
-from lib.agama_blockchain_db import init_tables, add_block, add_tx, add_adrval, blocks_list, get_tx_uid, get_addr, delete_all, db_close
+from crypto_agama.agama_mempool import Mempool
+from crypto_agama.agama_blockchain_db import init_tables, add_block, add_tx, add_adrval, blocks_list, get_tx_uid, get_addr, delete_all, db_close
 # url_base, set_url_base, get_addr, get_addr_txs, get_block_info, get_tx_info
 
 DEBUG = True

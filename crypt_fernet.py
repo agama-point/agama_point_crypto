@@ -29,7 +29,7 @@ try:
     print("env key:",ekey)
 
     print("-"*39)
-    bkey_hex = get_env_key("ANDREAS1") # andreas BTC - seed1 hexa
+    bkey_hex = get_env_key("AND1") # andreas BTC - seed1 hexa
     print("seed1 key_hex ANDREAS1:",bkey_hex)
     bkey = base64.urlsafe_b64encode(bytes.fromhex(bkey_hex))
     print("bkey base64:",bkey)

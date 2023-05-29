@@ -1,4 +1,4 @@
-from lib.agama_cipher import fleissner_decrypt
+from crypto_agama.agama_cipher import fleissner_decrypt
 # inspir: https://github.com/Zetsuban/Fleissner-Grid/blob/master/fleissner.py
 
 

@@ -1,4 +1,4 @@
-from lib.agama_transform_tools import zip_compress, zip_decompress
+from crypto_agama.agama_transform_tools import zip_compress, zip_decompress
 
 
 #                 1         2         3         4

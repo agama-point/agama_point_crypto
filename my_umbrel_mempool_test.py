@@ -1,7 +1,7 @@
 """
 AgamaPoint23 - simple Mempool experiment
 """
-from lib.agama_umbrel_lib import Mempool
+from crypto_agama.agama_umbrel import Mempool
 # url_base, set_url_base, get_addr, get_addr_txs, get_block_info, get_tx_info
 
 DEBUG = True

@@ -1,4 +1,4 @@
-from lib.agama_cipher_lib import caesar_encrypt
+from crypto_agama.agama_cipher import caesar_encrypt
 
 s = 13
 text = "pokus agama 123 a nějaký špeky" # so better just no spaces without diacritics and numbers
