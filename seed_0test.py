@@ -14,3 +14,11 @@ words_andreas = "army van defense carry jealous true garbage claim echo media ma
 
 mnemonic_info(words_andreas)
 print(words_to_4ch(words_andreas))
+
+"""
+--- test_seed_tools.py ---
+army van def... make crunch ( 12 )
+96 1929 459 279 956 1866 764 333 559 1107 1076 423 
+validate:  (True, True)
+ARMY VAN DEFE CARR JEAL TRUE GARB CLAI ECHO MEDI MAKE CRUN
+"""
