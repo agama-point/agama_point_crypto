@@ -3,6 +3,15 @@
 
 from crypto_agama.agama_seed_tools import seed_words, mnemonic_info, words_to_4ch, mnemo_to_seed
 from crypto_agama.tools import get_env_key
+from lib.logger import logger_init
+
+
+# debug logging 
+log = logger_init(log_file='data/debug_seed.log')
+
+log_msg = "[seet] test"
+log.debug(log_msg)
+
 
 bip39 = seed_words()
 
@@ -13,8 +22,16 @@ try:
 except:
     print("Err. - set .env")
 
+"""
+Warning!
+It's very important to know exactly what you're doing.
+If possible, NEVER save seeds to your computer disk 
+in a similar way. 
+This is just a development and testing tool.
+"""
 print("--- test_seed_tools ---")
 words_andreas = "army van defense carry jealous true garbage claim echo media make crunch"
+log.debug("words_andreas")
 
 mnemonic_info(words_andreas)
 

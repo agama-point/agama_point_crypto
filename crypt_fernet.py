@@ -4,13 +4,21 @@
 from cryptography.fernet import Fernet
 from crypto_agama.tools import get_env_key
 import base64
+from lib.logger import logger_init
 
 
 input_file = "data/nostr1.txt"
 
+# debug logging 
+log = logger_init(log_file='data/debug_fernet.log')
+
+log_msg = "[crypt_fernet] test / init key_hex:"
+log.debug(log_msg)
+
 key = Fernet.generate_key()
 print("key:",key)
 print("key_hex:",key.hex())
+log.debug(key.hex())
 
 """
 key: b'9kZwyLuh49uumNusqelD4FSdpYUCkS0-ywDBp_17lio='
@@ -46,6 +54,7 @@ except:
 
 key = nkey
 # key = bkey
+log.debug(key)
 
 cipher_suite = Fernet(key)
 
@@ -60,6 +69,7 @@ encrypted_text = ciphertext.decode()
 print("-"*39)
 print("Encrypted text:", encrypted_text)
 print(len(encrypted_text))
+log.debug(encrypted_text)
 
 print("-"*39)
 decrypted_text = cipher_suite.decrypt(ciphertext).decode()

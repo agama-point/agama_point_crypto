@@ -1,7 +1,13 @@
 from crypto_agama.agama_trezor import get_default_client, t_connect,t_connect_first
+from lib.logger import logger_init
 
 
-print("start")
+# debug logging 
+log = logger_init(log_file='data/debug_trezor.log')
+
+log_msg = "[trezor] t_connect_first"
+log.debug(log_msg)
+
 client = t_connect_first() 
 # client = get_default_client()    
 
