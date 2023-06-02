@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# crypto_agama.transform 2016-21
+# crypto_agama.transform 2016-23
 
 import hashlib, binascii
 from hashlib import sha256
 # import ecdsa
+
+__version__ = "0.2.1"
 
 DEBUG = True
 
@@ -42,7 +44,6 @@ wif_to_num
 is_valid_wif
 seed_words 
 num_to_address
-
 """
 
 
