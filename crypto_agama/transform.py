@@ -149,7 +149,15 @@ def short_str(s,l=12):
   return str(s[:l])+"..."+str(s[-l:])
 
 
-# nostr58?
+"""
+from agama_nostr.client import Client 
+nc = Client(sk, False) # nostr_client, sec_key, relays offline
+pk = nc.public_key.bech32()
+#pk4 = pk[5:9]
+"""
+
+
+# nostr1abcd...io > nostr1abcd...j0
 def str_to_nostr(s):
   nostr = ""
   for ch in s:
@@ -161,6 +169,20 @@ def str_to_nostr(s):
     else:
         nostr += ch
   return nostr
+
+
+# nostr1abcd...j0 > nostr1abcd...io
+def nostr_to_str(s):
+  den = ""
+  for ch in s:
+    ch = ch.lower()
+    if ch == 'j':
+        den += 'i'
+    elif ch == '0':
+        den += 'o'
+    else:
+        den += ch
+  return den
 
 
 def arr_to_nostr(arr, add1=True):
