@@ -148,6 +148,28 @@ def short_str(s,l=12):
   return str(s[:l])+"..."+str(s[-l:])
 
 
+# nostr58?
+def str_to_nostr(s):
+  nostr = ""
+  for ch in s:
+    ch = ch.lower()
+    if ch == 'i':
+        nostr += 'j'
+    elif ch == 'o':
+        nostr += '0'
+    else:
+        nostr += ch
+  return nostr
+
+
+def arr_to_nostr(arr, add1=True):
+  new_arr = []
+  for it in arr:
+     nit = "1"+str_to_nostr(it)
+     new_arr.append(nit)
+  return new_arr
+
+
 # ------------------------ hexdump -------------------------
 def group(a, *ns):
   for n in ns:
