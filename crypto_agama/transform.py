@@ -6,7 +6,7 @@ import hashlib, binascii
 from hashlib import sha256
 # import ecdsa
 
-__version__ = "0.2.1"
+__version__ = "0.2.2"
 
 DEBUG = True
 
@@ -113,10 +113,25 @@ def bin8_to_hex(strh):
    return tBs
 
 
-def str_to_hex(str_txt):
-  s = str_txt.encode('utf-8')
+def str_to_hex(str_txt, code=""):
+  # 'utf-8'
+  # hex_data = bytes.fromhex(string).hex()
+  # hex_data = string.encode('latin-1').hex()
+  if len(code)>0:
+     s = str_txt.encode(code)
+  else:
+     s = str_txt.encode()
   return s.hex()
 
+
+def hex_to_str(hex_data,code=""):
+  # string = bytes.fromhex(hex_data).decode('latin-1')
+  if len(code)>0:
+     string = bytes.fromhex(hex_data).decode(code)
+  else:
+     string = bytes.fromhex(hex_data).decode()
+  return string
+   
 
 def str_to_bin(str_txt):
   # res = bin(reduce(lambda x, y: 256*x+y, (ord(c) for c in str), 0))
