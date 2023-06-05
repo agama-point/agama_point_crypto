@@ -1,7 +1,7 @@
 # Agama Point simple ciphers library
 # 2017-23
 
-__version__ = "0.2.3"
+__version__ = "0.2.5"
 
 
 """
@@ -134,3 +134,10 @@ def fleissner_decrypt(text, f=f7_a, size=7,center="A", ccw = False, debug=False)
          print(f_temp[_j], end = " ")
          _j += 1
       print()
+
+
+def xor_crypt(data,key): # simple XOR
+    data_int = int(data, 16)
+    key_int = int(key, 16)
+    result = data_int ^ key_int
+    return hex(result)[2:]
