@@ -140,4 +140,5 @@ def xor_crypt(data,key): # simple XOR
     data_int = int(data, 16)
     key_int = int(key, 16)
     result = data_int ^ key_int
+    # hex(result)[2:].zfill(len(data))
     return hex(result)[2:]
