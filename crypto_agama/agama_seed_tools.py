@@ -7,7 +7,7 @@ from .transform import str_to_hex, short_str, convert_to_base58
 from .cipher import caesar_encrypt
 #from mnemonic import Mnemonic
 
-__version__ = "0.2.0" # 2023/05
+__version__ = "0.2.1" # 2023/06
 
 
 DEBUG = True
@@ -135,6 +135,23 @@ def words_to_4ch(words,c=13,separator=" ", str_w=True):
 
   if str_w: return  words4
   else: return w_arr4
+
+
+def w42w(we4, debug = True):
+    if debug: print("[w4_2_w]")
+    wr = "Err."
+    for w in bip39: # words
+        if w.startswith(we4):
+            if debug: print(w, "="*5)
+            wr = w
+            break
+        else:
+            if w.startswith(we4[:3]):
+                if len(w)==3:
+                    if debug: print(w, "-"*5)
+                    wr=w
+                    break
+    return wr
 
 
 def mnemo_to_seed(mnemonic,passphrase=""):
