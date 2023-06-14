@@ -1,12 +1,14 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-# crypto_agama.transform 2016-23
-
+"""
+crypto_agama/
+agama_transform_tools 2016-23
+-----------------------------
+"""
 from hashlib import sha256
 import binascii, zlib, base64
 import hashlib, ecdsa
 
-__version__ = "0.2.3"
+__version__ = "0.2.6" # 2023/06
 
 DEBUG = True
 
@@ -18,6 +20,7 @@ num_to_hex(255)    # '0xff'
 hex_to_num('0xff') # 255
 num_to_bin(123)    # '0b1111011'
 num_to_bin(123, True) # '1111011' # to string
+num_to_bin(123, True,11) # '00001111011' # to string 11
 hex_to_bin('0xff') # '0b11111111'
 bin_to_hex('0b11111111') # '0xff'
 str_to_hex("abc")  # '616263' # ASCII
@@ -84,10 +87,19 @@ def hex_to_bin(hexn, to_string = False):
     return _bin
 
 
-def num_to_bin(num, to_string = False):
+def pad_string_left(text, length=11, padding_char='0'):
+    padding_length = length - len(text)
+    if padding_length <= 0:
+        return text
+    else:
+        padded_text = padding_char * padding_length + text
+        return padded_text
+
+
+def num_to_bin(num, to_string = False, length=11):
   _bin = bin(int(num))
   if to_string:
-    return str(_bin)[2:]
+    return pad_string_left(str(_bin)[2:],length)
   else:
     return _bin
 
