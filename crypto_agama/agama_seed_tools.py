@@ -1,9 +1,13 @@
 #!/usr/bin/env python
-
+"""
+crypto_agama/
+agama_seed_tools 2016-23
+-----------------------------
+"""
 import hashlib, binascii, base58, hmac
 from hashlib import sha256
 from .seed_english_words import english_words_bip39
-from .transform import str_to_hex, short_str, convert_to_base58
+from .agama_transform_tools import str_to_hex, short_str, convert_to_base58
 from .cipher import caesar_encrypt
 #from mnemonic import Mnemonic
 
@@ -135,23 +139,6 @@ def words_to_4ch(words,c=13,separator=" ", str_w=True):
 
   if str_w: return  words4
   else: return w_arr4
-
-
-def w42w(we4, debug = True):
-    if debug: print("[w4_2_w]")
-    wr = "Err."
-    for w in bip39: # words
-        if w.startswith(we4):
-            if debug: print(w, "="*5)
-            wr = w
-            break
-        else:
-            if w.startswith(we4[:3]):
-                if len(w)==3:
-                    if debug: print(w, "-"*5)
-                    wr=w
-                    break
-    return wr
 
 
 def mnemo_to_seed(mnemonic,passphrase=""):
