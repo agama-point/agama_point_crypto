@@ -141,6 +141,23 @@ def words_to_4ch(words,c=13,separator=" ", str_w=True):
   else: return w_arr4
 
 
+def w42w(we4, debug = True):
+    if debug: print("[w4_2_w]")
+    wr = "Err."
+    for w in bip39: # words
+        if w.startswith(we4):
+            if debug: print(w, "="*5)
+            wr = w
+            break
+        else:
+            if w.startswith(we4[:3]):
+                if len(w)==3:
+                    if debug: print(w, "-"*5)
+                    wr=w
+                    break
+    return wr
+
+
 def mnemo_to_seed(mnemonic,passphrase=""):
     PBKDF2_ROUNDS = 2048
     # passphrase = "mnemonic" + passphrase
