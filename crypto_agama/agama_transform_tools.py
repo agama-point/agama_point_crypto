@@ -6,9 +6,9 @@ agama_transform_tools 2016-23
 """
 from hashlib import sha256
 import binascii, zlib, base64
-import hashlib, ecdsa
+# import hashlib, ecdsa
 
-__version__ = "0.2.6" # 2023/06
+__version__ = "0.2.7" # 2023/06
 
 DEBUG = True
 
@@ -23,6 +23,7 @@ num_to_bin(123, True) # '1111011' # to string
 num_to_bin(123, True,11) # '00001111011' # to string 11
 hex_to_bin('0xff') # '0b11111111'
 bin_to_hex('0b11111111') # '0xff'
+bin_to_hex('0b11111111',True,5) # '000ff'
 str_to_hex("abc")  # '616263' # ASCII
 str_to_bin("abc")  #'110000111000101100011'
 bin_to_str('110000111000101100011') # x?  b'\x18qc'
@@ -104,9 +105,11 @@ def num_to_bin(num, to_string = False, length=11):
     return _bin
 
 
-def bin_to_hex(binx):
-   return hex(int(binx, 2))
-
+def bin_to_hex(binx, to_string = False, length=8):
+   if to_string:
+      return pad_string_left(str(hex(int(binx, 2)))[2:],length)
+   else:
+      return hex(int(binx, 2))
 
 def bin8_to_hex(strh):	
    tB = []
@@ -114,7 +117,7 @@ def bin8_to_hex(strh):
    #print("len:"+str(len(strh)))
    try:
      for ib in range (0,160):
-       Bapp = binToHex("0b"+str(strh)[2+ib*8:2+ib*8+8])	 
+       Bapp = bin_to_hex("0b"+str(strh)[2+ib*8:2+ib*8+8])	 
        tB.append(Bapp)
        print(Bapp,end="")
        tBs = tBs+tB[ib][2:4]
