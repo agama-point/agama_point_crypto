@@ -4,16 +4,14 @@ crypto_agama/
 agama_transform_tools 2016-23
 -----------------------------
 """
+from math import ceil
 from hashlib import sha256
 import binascii, zlib, base64
 # import hashlib, ecdsa
 
-__version__ = "0.2.8" # 2023/06
+__version__ = "0.2.9" # 2023/06
 
 DEBUG = True
-
-BASE_58_CHARS = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
-BASE_58_CHARS_LEN = len(BASE_58_CHARS)
 
 """
 num_to_hex(255)    # '0xff'
@@ -49,7 +47,12 @@ is_valid_wif
 seed_words 
 num_to_address
 
+---- adv arr
+bin_arr_from_str(string, 32, False)     # bin_data32 arr from ascii str latin1
+bin_data = bin_arr_from_str(string, 64) # bin_data64 str\n
 """
+BASE_58_CHARS = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
+BASE_58_CHARS_LEN = len(BASE_58_CHARS)
 
 
 def hash_sha256_str(string):
@@ -211,3 +214,39 @@ def zip_decompress(encoded_data):
     compressed_data = base64.b64decode(encoded_data)
     data = zlib.decompress(compressed_data)
     return data
+
+# --------------- adv. arr --------------------------
+def bin_arr_from_str(s, bits=64, to_str=True):
+    if to_str:
+        bin_data = ""
+    else:
+        bin_data = []
+
+    hex_data = str_to_hex(s,'latin-1')
+    parts_num = ceil(len(hex_data)/8)
+    padded_hex = hex_data.ljust(int(parts_num*bits/64*16), "5")
+    #if bits == 64:
+    #    padded_hex = hex_data.ljust(parts_num*bits/64*16, "5")
+    #else:
+    #    padded_hex = hex_data.ljust(parts_num*8, "5")
+    if DEBUG:
+      print(padded_hex)
+      print('latin-1 hex: 345678901234567890123456789012345678901234567890123')
+      print('          1         2         3         4         5         6   ')
+      print(hex_data, len(hex_data), len(hex_data)/8)
+      print(padded_hex, len(padded_hex), parts_num)
+      print(hex_to_str(hex_data,'latin-1'))
+    
+    bp = int(bits/32)
+    for part in range(int(parts_num)):
+        part8 = padded_hex[bp*part*8:(bp*part+1)*8]
+        if bits == 64:
+            part8 += part8 + padded_hex[bp*part*8+8:(bp*part+1)*8+8]
+        bin_part = num_to_bin(hex_to_num(part8),True,bits)
+        # print(part, part8, bin_part)
+        if to_str:
+            bin_data += bin_part + "\n"
+        else:
+            bin_data.append(bin_part)
+
+    return bin_data
