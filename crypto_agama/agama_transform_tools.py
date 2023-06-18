@@ -11,7 +11,7 @@ import binascii, zlib, base64
 
 __version__ = "0.2.9" # 2023/06
 
-DEBUG = True
+DEBUG = False
 
 """
 num_to_hex(255)    # '0xff'
@@ -223,8 +223,9 @@ def bin_arr_from_str(s, bits=64, to_str=True):
         bin_data = []
 
     hex_data = str_to_hex(s,'latin-1')
-    parts_num = ceil(len(hex_data)/8)
-    padded_hex = hex_data.ljust(int(parts_num*bits/64*16), "5")
+    delx = int(bits/64*16)
+    parts_num = ceil(len(hex_data)/delx)
+    padded_hex = hex_data.ljust(int(parts_num*delx), "5") # 32/64*16=8, 64>16
     #if bits == 64:
     #    padded_hex = hex_data.ljust(parts_num*bits/64*16, "5")
     #else:
@@ -237,13 +238,10 @@ def bin_arr_from_str(s, bits=64, to_str=True):
       print(padded_hex, len(padded_hex), parts_num)
       print(hex_to_str(hex_data,'latin-1'))
     
-    bp = int(bits/32)
+    bp = int(bits/32) # 32: 1 / 64: 2
     for part in range(int(parts_num)):
-        part8 = padded_hex[bp*part*8:(bp*part+1)*8]
-        if bits == 64:
-            part8 += part8 + padded_hex[bp*part*8+8:(bp*part+1)*8+8]
+        part8 = padded_hex[bp*part*8:bp*part*8+8*bp]
         bin_part = num_to_bin(hex_to_num(part8),True,bits)
-        # print(part, part8, bin_part)
         if to_str:
             bin_data += bin_part + "\n"
         else:
