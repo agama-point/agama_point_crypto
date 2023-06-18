@@ -9,7 +9,7 @@ from hashlib import sha256
 import binascii, zlib, base64
 # import hashlib, ecdsa
 
-__version__ = "0.2.9" # 2023/06
+__version__ = "0.3.0" # 2023/06
 
 DEBUG = False
 
@@ -215,6 +215,7 @@ def zip_decompress(encoded_data):
     data = zlib.decompress(compressed_data)
     return data
 
+
 # --------------- adv. arr --------------------------
 def bin_arr_from_str(s, bits=64, to_str=True):
     if to_str:
@@ -248,3 +249,16 @@ def bin_arr_from_str(s, bits=64, to_str=True):
             bin_data.append(bin_part)
 
     return bin_data
+
+
+def str_from_bin_arr(bin_data):
+  hex_data = ""
+  s = ""
+  for line in bin_data.splitlines():
+      # cleaned_line = line.strip() # for arr
+      str1 = bin_to_hex(str(line),True,8)
+      try:
+          s += hex_to_str(str1,'latin-1')
+      except:
+          s += "???"
+  return(s)
