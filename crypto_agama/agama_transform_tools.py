@@ -9,7 +9,7 @@ from hashlib import sha256
 import binascii, zlib, base64
 # import hashlib, ecdsa
 
-__version__ = "0.3.0" # 2023/06
+__version__ = "0.3.2" # 2023/07
 
 DEBUG = False
 
@@ -34,6 +34,11 @@ short_str("abcdefghijklmnopqrtsuvwxyz")    # 'abcdefghijkl...opqrtsuvwxyz'
 short_str("abcdefghijklmnopqrtsuvwxyz",3)  # 'abc...xyz'
 text_to_bits("abc")                        # '011000010110001001100011'
 text_from_bits('011000010110001001100011') # 'abc'
+
+pattern = hex_to_bin(str_to_hex("ab8"),to_string=True)
+# 11000010110001000111000
+bin_normalize8("11000010110001000111") # 11000010110001000111000 [len 8]
+bin_to_str("11000010110001000111000")  # ab8
 
 hash_sha256_str("agama") # '52589fac98630c603bd5c2b08cb0f6ccf273cc4a4772f0ff28d49a01bc7d2f4b'
 
@@ -262,3 +267,11 @@ def str_from_bin_arr(bin_data):
       except:
           s += "???"
   return(s)
+
+
+def bin_normalize8(bin_str):
+    pattern = bin_str.rstrip('0')
+    remainder = len(pattern) % 8
+    if DEBUG: print("remainder",remainder)
+    pattern += "0" * (7 - remainder) if remainder != 0 else ""
+    return pattern
