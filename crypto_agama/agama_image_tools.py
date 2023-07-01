@@ -1,11 +1,9 @@
 # Agama Point 2015-23
-# $ pip install Pillow, numpy
 
 from PIL import Image
 import numpy as np
 
-
-__version__ = "0.2.5"
+__version__ = "0.2.7" # 2023/07
 # png - gray scale / rgb-alpha color 
 # bmp - "1bit"
 
@@ -16,7 +14,6 @@ def hexa_noise_to_png(hex_data,image_path):
     """
     width = int(np.sqrt(len(num_data)))
     height = len(num_data) // width
-
     image_array = np.reshape(num_data, (height, width))
     """
     width = int(np.ceil(np.sqrt(len(num_data))))
@@ -31,8 +28,7 @@ def hexa_noise_to_png(hex_data,image_path):
 
 
 def noise_png_to_hexa(image_path):
-    image = Image.open(image_path)
-   
+    image = Image.open(image_path)   
     image_array = np.array(image)    
     num_data = image_array.flatten()    
     byte_data = bytes(num_data)
@@ -97,6 +93,29 @@ def noise_bmp_to_hexa_arr(image_path):
         hex_array_data.append(hex_data)
 
     return hex_array_data
+
+
+def cut_image(image_path,image_name,m=3,n=3):
+    input_image_path = f"{image_path}/{image_name}.png"
+
+    original_image = Image.open(input_image_path)
+    width, height = original_image.size
+
+    print(f"src: {width}x{height} Px")
+
+    small_images = []
+    for i in range(n):
+        for j in range(m):
+            x = j * int(width / m)
+            y = i * int(height / n)
+            cropped_image = original_image.crop((x, y, x + int(width / m), y + int(height / n)))
+            small_images.append(cropped_image)
+
+    # save m x n images
+    for index, image in enumerate(small_images):
+        image_index = str(index+1).zfill(2)
+        image.save(f'{image_path}/{image_name}_{image_index}.png')
+        print(f'{image_path}/{image_name}_{image_index}.png')
 
 
 # ----------------- pgt/.png ---------------
