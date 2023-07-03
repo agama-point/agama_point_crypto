@@ -3,7 +3,7 @@
 from PIL import Image
 import numpy as np
 
-__version__ = "0.2.7" # 2023/07
+__version__ = "0.2.8" # 2023/07
 # png - gray scale / rgb-alpha color 
 # bmp - "1bit"
 
@@ -141,8 +141,8 @@ def print_rgb(img,width=32,height=32,xy=True,all=True,len=32):
     print()
 
 
-def infilt_patt(img,bit_patt,width=32,height=32,ch ="R"):
-    print("DEBUG infilt_patt",int(len(bit_patt)/(width-1)))
+def infilt_patt(img,bit_patt,width=32,height=32,ch ="R",debug=False):
+    if debug: print("DEBUG infilt_patt",int(len(bit_patt)/(width-1)))
     for j in range(int(len(bit_patt)/(width-1))+1):
         for i in range(width):
             try:
@@ -155,10 +155,10 @@ def infilt_patt(img,bit_patt,width=32,height=32,ch ="R"):
                     if ch=="B":
                         img.set_at((i, j),(r,g,b+1,a))
                 
-                print(f"[{i},{j},{i+j*width}]",bit_patt[i+j*width],r, end="")
+                if debug: print(f"[{i},{j},{i+j*width}]",bit_patt[i+j*width],r, end="")
             except:
-                print(f"[{i},{j}]", end="!")
-        print()
+                if debug: print(f"[{i},{j}]", end="!")
+        if debug: print()
       
     return img
 

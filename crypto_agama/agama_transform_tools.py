@@ -9,36 +9,43 @@ from hashlib import sha256
 import binascii, zlib, base64
 # import hashlib, ecdsa
 
-__version__ = "0.3.2" # 2023/07
+__version__ = "0.3.5" # 2023/07
 
 DEBUG = False
 
 """
-num_to_hex(255)    # '0xff'
-hex_to_num('0xff') # 255
-num_to_bin(123)    # '0b1111011'
-num_to_bin(123, True) # '1111011' # to string
-num_to_bin(123, True,11) # '00001111011' # to string 11
-hex_to_bin('0xff') # '0b11111111'
-bin_to_hex('0b11111111') # '0xff'
+num_to_hex(255)           # '0xff'
+hex_to_num('0xff')        # 255
+num_to_bin(123)           # '0b1111011'
+num_to_bin(123, True)     # '1111011' # to string
+num_to_bin(123, True,11)  # '00001111011' # to string 11
+hex_to_bin('0xff')        # '0b11111111'
+hex_to_bin('0x3',True)    # 11 / to_string=True
+hex_to_bin4('0x3')        # 0011
+
+bin_to_hex('0b11111111')  # '0xff'
 bin_to_hex('0b11111111',True,5) # '000ff'
-str_to_hex("abc")  # '616263' # ASCII
-str_to_bin("abc")  #'110000111000101100011'
+
+bin_to_hex( "110011001")  # 0x199  1100110011 / L9
+bin8_to_hex("110011001")  # 0xcc01 110011001 00000001 / L16 last?
+
+str_to_hex("abc")         # '616263' # ASCII
+str_to_bin("abc")         #'110000111000101100011'
 bin_to_str('110000111000101100011') # x?  b'\x18qc'
 bin8_to_hex?
 bin_to_str?
 int_to_bytes?
 bytes_to_hex: >>> b'\xde\xad\xbe\xef'.hex() # 'deadbeef'
 
-short_str("abcdefghijklmnopqrtsuvwxyz")    # 'abcdefghijkl...opqrtsuvwxyz'
-short_str("abcdefghijklmnopqrtsuvwxyz",3)  # 'abc...xyz'
-text_to_bits("abc")                        # '011000010110001001100011'
-text_from_bits('011000010110001001100011') # 'abc'
+short_str("abcdefghijklmnopqrtsuvwxyz")     # 'abcdefghijkl...opqrtsuvwxyz'
+short_str("abcdefghijklmnopqrtsuvwxyz",3)   # 'abc...xyz'
+text_to_bits("abc")                         # '011000010110001001100011' # ASCII code
+text_from_bits('011000010110001001100011')  # 'abc'
 
 pattern = hex_to_bin(str_to_hex("ab8"),to_string=True)
 # 11000010110001000111000
-bin_normalize8("11000010110001000111") # 11000010110001000111000 [len 8]
-bin_to_str("11000010110001000111000")  # ab8
+bin_normalize8("11000010110001000111")      # 11000010110001000111000 [len 8]
+bin_to_str("11000010110001000111000")       # ab8
 
 hash_sha256_str("agama") # '52589fac98630c603bd5c2b08cb0f6ccf273cc4a4772f0ff28d49a01bc7d2f4b'
 
@@ -56,6 +63,7 @@ num_to_address
 bin_arr_from_str(string, 32, False)     # bin_data32 arr from ascii str latin1
 bin_data = bin_arr_from_str(string, 64) # bin_data64 str\n
 """
+
 BASE_58_CHARS = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
 BASE_58_CHARS_LEN = len(BASE_58_CHARS)
 
@@ -87,13 +95,18 @@ def hex_to_num(hex):
   return int(hex, 16)
 
 
-def hex_to_bin(hexn, to_string = False):
+def hex_to_bin(hex_number, to_string = False):
   #bin(private_key1.to_bin())
-  _bin = bin(int(hexn, base=16))
+  _bin = bin(int(hex_number, base=16))
   if to_string:
     return str(_bin)[2:]
   else:
     return _bin
+
+
+def hex_to_bin4(hex_number):
+    binary_number = "".join(format(int(c, 16), "04b") for c in hex_number)
+    return binary_number
 
 
 def pad_string_left(text, length=11, padding_char='0'):
@@ -119,10 +132,21 @@ def bin_to_hex(binx, to_string = False, length=8):
    else:
       return hex(int(binx, 2))
 
-def bin8_to_hex(strh):	
+
+def bin8_to_hex(binary_number):
+    hex_number = ""
+    chunks = [binary_number[i:i+8] for i in range(0, len(binary_number), 8)]
+    for chunk in chunks:
+        hex_digit = hex(int(chunk, 2))[2:] #.zfill(2)
+        hex_number += hex_digit
+
+    hex_number = "0x" + hex_number
+    return hex_number
+
+
+def bin8_to_hex_old(strh):	
    tB = []
    tBs ="0x"	
-   #print("len:"+str(len(strh)))
    try:
      for ib in range (0,160):
        Bapp = bin_to_hex("0b"+str(strh)[2+ib*8:2+ib*8+8])	 
@@ -133,18 +157,18 @@ def bin8_to_hex(strh):
    except: 
      err=True
      print(ib,end="")
-
    return tBs
 
 
 def str_to_hex(str_txt, code='utf-8'):   # 'utf-8' / 'latin-1'
+  # string_to_ascii
   # hex_data = bytes.fromhex(string).hex()
   # hex_data = string.encode('latin-1').hex()
   if len(code)>0:
-     s = str_txt.encode(code)
+     ascii_hex = str_txt.encode(code).hex()
   else:
-     s = str_txt.encode()
-  return s.hex()
+     ascii_hex = str_txt.encode("ascii").hex()
+  return ascii_hex
 
 
 def hex_to_str(hex_data,code='utf-8'):
