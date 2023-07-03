@@ -9,7 +9,7 @@ from hashlib import sha256
 import binascii, zlib, base64
 # import hashlib, ecdsa
 
-__version__ = "0.3.5" # 2023/07
+__version__ = "0.3.6" # 2023/07
 
 DEBUG = False
 
@@ -53,11 +53,8 @@ hashhex = hash_sha256_str("agama")
 hashnum = int(hashhex, 16)
 convert_to_base58(hashnum) # '6YSp1VMaYGo5enJRFFwhhcNmrhGWPmJgSZqiS2sv3fwQ'
 
-num_to_wif 
-wif_to_num 
-is_valid_wif
-seed_words 
-num_to_address
+num_to_wif | wif_to_num | is_valid_wif
+seed_words | num_to_address
 
 ---- adv arr
 bin_arr_from_str(string, 32, False)     # bin_data32 arr from ascii str latin1
@@ -77,7 +74,6 @@ def hash_sha256_str(string):
 
 def convert_to_base58(num):
     sb = ''
-
     while (num > 0):
         r = num % 58   # divide by 58 and gives the remainder
         sb = sb + BASE_58_CHARS[r]

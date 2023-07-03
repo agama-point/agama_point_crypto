@@ -3,7 +3,7 @@
 from PIL import Image
 import numpy as np
 
-__version__ = "0.2.8" # 2023/07
+__version__ = "0.2.9" # 2023/07
 # png - gray scale / rgb-alpha color 
 # bmp - "1bit"
 
