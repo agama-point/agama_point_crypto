@@ -3,7 +3,7 @@
 from PIL import Image
 import numpy as np
 
-__version__ = "0.2.9" # 2023/07
+__version__ = "0.3.0" # 2023/07
 # png - gray scale / rgb-alpha color 
 # bmp - "1bit"
 
@@ -116,6 +116,24 @@ def cut_image(image_path,image_name,m=3,n=3):
         image_index = str(index+1).zfill(2)
         image.save(f'{image_path}/{image_name}_{image_index}.png')
         print(f'{image_path}/{image_name}_{image_index}.png')
+
+
+def margin_cut_image(image_path,image_name,mx=3,my=-1,mx2=-1,my2=-1,save=False):
+    if my == -1: my = mx
+    if mx2 == -1: mx2 = mx
+    if my2 == -1: my2 = mx
+    input_image_path = f"{image_path}/{image_name}.png"
+
+    original_image = Image.open(input_image_path)
+    width, height = original_image.size
+    print(f"src size: {width}x{height} Px")
+    cropped_image = original_image.crop((mx, my, width-mx2, height-my2))
+    width, height = cropped_image.size
+    print(f"cut size: {width}x{height} Px")
+    if save:
+        cropped_image.save(f"{image_path}/{image_name}m{mx}{my}.png")
+
+    return cropped_image
 
 
 # ----------------- pgt/.png ---------------
