@@ -1,15 +1,16 @@
 #!/usr/bin/env python
 """
 crypto_agama/
-agama_transform_tools 2016-23
+agama_transform_tools 2016-24
 -----------------------------
 """
 from math import ceil
 from hashlib import sha256
 import binascii, zlib, base64
+import re
 # import hashlib, ecdsa
 
-__version__ = "0.3.6" # 2023/07
+__version__ = "0.3.7" # 2024/01
 
 DEBUG = False
 
@@ -225,6 +226,63 @@ def hexdump(data):
   cs = make(toChr, ' ', '')
   for i, (h, c) in enumerate(zip(hs, cs)):
     print ('{:010X}: {:48}  {:16}'.format(i * 16, h, c))
+
+# -------------------------- extract numbers from string
+def extract_numbers(s):
+    nums = re.findall(r'\d+', s)
+    return ''.join(nums)
+
+# -------------------------- hard split human readable "11bits" from long number
+def split_numbers(result_string):
+    numbers = []
+    current_number = ''
+    
+    for digit in result_string:
+        current_number += digit
+        if int(current_number) >= 2048:
+            numbers.append(int(current_number[:-1]))
+            current_number = digit
+    
+    # Add the last remaining number to the list
+    numbers.append(int(current_number))
+    
+    return numbers
+
+# ----- numeral systems /  conversions -------------------------
+def decimal_to_base(number, base, zfill=5):
+    if number == 0:
+        return '0'
+
+    result = ''
+    while number:
+        number, remainder = divmod(number, base)
+        result = str(remainder) + result
+
+
+    return result.zfill(zfill) if result else '0'
+
+
+def base_to_decimal(base_number, base):
+    if base == 4:
+        valid_digits = set('0123')
+    elif base == 5:
+        valid_digits = set('012345')
+    elif base == 6:
+        valid_digits = set('012345')
+    elif base == 7:
+        valid_digits = set('0123456')
+    else:
+        return "Invalid base"
+
+    if any(digit not in valid_digits for digit in base_number):
+        return "Invalid input"
+
+    decimal = 0
+    power = len(base_number) - 1
+    for digit in base_number:
+        decimal += int(digit) * (base ** power)
+        power -= 1
+    return decimal
 
 
 # ---------------------------zip -------------------------------
