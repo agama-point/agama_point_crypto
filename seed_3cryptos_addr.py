@@ -9,11 +9,19 @@ from crypto_agama.seed_tools import seed_words, mnemonic_info, words_to_4ch
 from priv_data import words_book #, get_seeds, get_words
 
 
-def wallet_info(wallet):
+def coin_info(b):
+    print("[ - coin_info - ]")
+    print("coin_symbol:",b.coin_symbol)
+    print("is_testnet: ",b.is_testnet)
+    # print("is_segwit:  ",b.is_segwit)
+    # print(b.current_block_height)
+
+
+def wallet_info(w):
     print("[ - wallet_info - ]")
-    print(wallet.keystore.root_derivation)
-    print("xprv: ",wallet.keystore.xprv)
-    print("xpub:",wallet.keystore.xpub)
+    print(w.keystore.root_derivation)
+    print("xprv: ",w.keystore.xprv)
+    print("xpub:",w.keystore.xpub)
     print("-"*16)
 
 
@@ -38,6 +46,7 @@ print(keystore.bip39_is_checksum_valid(words))
 
 coin = Bitcoin() # Main default
 # coin = Bitcoin(testnet=True)
+coin_info(coin)
 
 print("\n","="*32)
 print("BIP39-BIP44 | Standard Wallets:")
@@ -63,6 +72,10 @@ army van def... make crunch ( 12 )
 96 1929 459 279 956 1866 764 333 559 1107 1076 423 
 validate:  (True, True)
 (True, True)
+
+[ - coin_info - ]
+coin_symbol: BTC
+is_testnet:  False
 
  ================================
 BIP39-BIP44 | Standard Wallets:
