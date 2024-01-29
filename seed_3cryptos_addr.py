@@ -8,32 +8,40 @@ from cryptos import *
 from crypto_agama.seed_tools import seed_words, mnemonic_info, words_to_4ch
 from priv_data import words_book #, get_seeds, get_words
 
+## = OBJ / ToDo
 
 def coin_info(b):
     print("[ - coin_info - ]")
     print("coin_symbol:",b.coin_symbol)
     print("is_testnet: ",b.is_testnet)
-    # print("is_segwit:  ",b.is_segwit)
-    # print(b.current_block_height)
+    ## print("is_segwit:  ",b.is_segwit)
+    ## print(b.current_block_height)
 
 
-def wallet_info(w):
+def wallet_info(c,w):
     print("[ - wallet_info - ]")
     print(w.keystore.root_derivation)
+    #? print("address_prefixes: ",c.address_prefixes)
     print("xprv: ",w.keystore.xprv)
     print("xpub:",w.keystore.xpub)
+    ## print("coin:",w.coin)
+    ## print("details:",w.details)
+    ## print("balance:",w.balance)
+    ## print("pubkey_receiving",w.pubkey_receiving)
+
     print("-"*16)
 
 
-def addr3(wallet):
+def addr3(c,w):
+    wallet_info(c,w)
     print("[ - add3 - ]")
     addr0 = wallet.new_receiving_address()
     print("0",addr0)
-    addr1 = wallet.new_receiving_address()
+    addr1 = wallet.new_change_address()
     print("1",addr1)
-    addr2 = wallet.new_receiving_address()
+    addr2 = wallet.new_change_address()
     print("2",addr2)
-
+    print("last_change_index: ",wallet.last_change_index)
 
 # words = entropy_to_words(os.urandom(16))
 words = words_book ### get_words()
@@ -51,20 +59,17 @@ coin_info(coin)
 print("\n","="*32)
 print("BIP39-BIP44 | Standard Wallets:")
 wallet = coin.wallet(words)
-wallet_info(wallet)
-addr3(wallet)
+addr3(coin,wallet)
 
 print("\n","="*32)
 print("BIP39-BIP49 | Segwit Wallets:")
 wallet = coin.p2wpkh_p2sh_wallet(words)
-wallet_info(wallet)
-addr3(wallet)
+addr3(coin,wallet)
 
 print("\n","="*32)
 print("BIP39-BIP84 | New Segwit Wallets:")
 wallet = coin.p2wpkh_wallet(words)
-wallet_info(wallet)
-addr3(wallet)
+addr3(coin,wallet)
 
 
 """
@@ -72,7 +77,6 @@ army van def... make crunch ( 12 )
 96 1929 459 279 956 1866 764 333 559 1107 1076 423 
 validate:  (True, True)
 (True, True)
-
 [ - coin_info - ]
 coin_symbol: BTC
 is_testnet:  False
@@ -86,8 +90,9 @@ xpub: xpub6Cy7dUR4ZKF22HEuVq7epRgRsoXfL2MK1RE81CSvp1ZySySoYGXk5PUY9y9Cc5ExpnSwXy
 ----------------
 [ - add3 - ]
 0 1HQ3rb7nyLPrjnuW85MUknPekwkn7poAUm
-1 1PJaTiHLZA2dWPFRHNBWogiiXhezuzqqqt
-2 142wFtNCL3cpCSju6rVQJYHWbgbs1c4oVa
+1 12Co6qiQ7zrehMz4PugN5tYMNZ7UozUjSv
+2 16gLEe3z2BULAEhieF5zESeW7VzhSocDF4
+last_change_index:  2
 
  ================================
 BIP39-BIP49 | Segwit Wallets:
@@ -98,8 +103,9 @@ xpub: ypub6X3kyqj26sfxwiForu1pxgYVkuK9qgGZbxpFhx4SUP6v65c7d9yP3Nafv1SrMF3uhyu4hz
 ----------------
 [ - add3 - ]
 0 3FEQ7b7rMMRK3VmP778dUJCeQjBcQ4arXZ
-1 3NxpyZsjsvkS54WcXksDsFpBKLvtDKcNMb
-2 3P3oqY8EJRW47r54v98WmXKWsvhiGtdL61
+1 3DMveQocjGHzEAzZQBM7W9LbtWPpKzTN7B
+2 3Pru2QHnLj8uLq9n8eaoP4ekRUVGBtiBGL
+last_change_index:  2
 
  ================================
 BIP39-BIP84 | New Segwit Wallets:
@@ -110,8 +116,9 @@ xpub: zpub6rMRRntHrvMM2EPvnrZ7HmbnNr74JAxmCXFbAwfjNKqGXJbHve9yWMk9SzsF9jQHM6RsaE
 ----------------
 [ - add3 - ]
 0 bc1qg0azlj4w2lrq8jssrrz6eprt2fe7f7edm4vpd5
-1 bc1qqvn0gszrg2a7d87z06sr40naq4pxr07ags3ucj
-2 bc1q080ttrpeanusgz6qtvnuu7s5zjmvxme4zl2m66
+1 bc1q57swnsnzhrdjmlj7wexe7x8emgrhwd04n2gktd
+2 bc1qpvsc52v2h2856mg67tx0z804c86f5cu6apg3un
+last_change_index:  2
 
 """
 
