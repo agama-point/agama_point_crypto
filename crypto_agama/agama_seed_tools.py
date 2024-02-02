@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 """
 crypto_agama/
-agama_seed_tools 2016-23
+agama_seed_tools 2016-24
 -----------------------------
 """
+
 import hashlib, binascii, base58, hmac
 from hashlib import sha256
 from .seed_english_words import english_words_bip39
@@ -11,7 +12,7 @@ from .agama_transform_tools import str_to_hex, short_str, convert_to_base58
 from .cipher import caesar_encrypt
 #from mnemonic import Mnemonic
 
-__version__ = "0.2.1" # 2023/06
+__version__ = "0.3.0" # 2024/02
 
 
 DEBUG = True
@@ -199,9 +200,74 @@ def create_root_key(seed_bytes,version_BYTES = "mainnet_private"):
    return root_key
 
 
+# --- josh-kean/BIP39 --- 2018
+#class containing all the hashing functions
+class HashingFunctions:
+    def __init__(self, entropy = None, result_word_list = None):
+        self.word_list = open('crypto_agama/words.txt', 'r').readlines()
+        self.word_list = [word[:-1] for word in self.word_list]
+        self.word_list_length = len(self.word_list)
+        self.entropy = entropy
+        self.entropy_bin = None
+        self.result_word_list = result_word_list
+        self.binary_seed = None
+        self.passphrase = 'TREZOR'
+        self.check_sum = None
+
+
+    def create_binary_ent(self):
+        b = len(self.entropy)*4
+        if b <= 128:
+            self.entropy_bin = format(int(self.entropy, 16), "0128b")
+        elif b <= 160:
+            self.entropy_bin = format(int(self.entropy, 16), "0160b")
+        elif b <= 192:
+            self.entropy_bin = format(int(self.entropy, 16), "0192b")
+        elif b <= 224:
+            self.entropy_bin = format(int(self.entropy, 16), "0224b")
+        elif b <= 256:
+            self.entropy_bin = format(int(self.entropy, 16), "0256b")
+
+
+    def get_input(self, user_input):
+        self.entropy = user_input
+        #need cases to ensure binary is 128, 160, 192, 224, or 256 bits long
+        self.create_binary_ent()
+
+
+    #checksum is created by taking the first len(ent) (in this case 256 bits)/32 bits of sha256 of entropy
+    def create_check_sum(self):
+        entropy_hash = hashlib.sha256(bytes.fromhex(self.entropy)).hexdigest()
+        entropy_hash = format(int(entropy_hash,16), "0256b")#converts entropy hash to binary
+        self.check_sum = entropy_hash[:len(self.entropy_bin)//32]
+
+
+    def create_word_list(self):
+        ent_and_chk = f'{self.entropy_bin}{self.check_sum}'
+        self.result_word_list = ' '.join([self.word_list[int(ent_and_chk[11*x:11*(x+1)],2)] for x in range(len(ent_and_chk)//11
+)])
+
+    def create_binary_seed(self):
+        self.binary_seed = hashlib.pbkdf2_hmac('sha512', str.encode(self.result_word_list), str.encode('mnemonic'+self.passphrase), 2048).hex()
+
+
+    def master_key(self):
+        entropy = self.get_input()
+        chk_sum = self.check_sum()
+        word_list = self.create_word_list()
+        master_k = self.create_master_key()
+
+
+    def entropy_to_phrase(self, entropy):
+        self.get_input(entropy)
+        self.create_check_sum()
+        self.create_word_list()
+        phrase = self.result_word_list
+        return phrase
+
+
 # def is_valid_wif(wifPriv):
 #   return numToWIF(WIFToNum(wifPriv)) == wifPriv
-
 
 def num_to_address(numPriv):
     pko = ecdsa.SigningKey.from_secret_exponent(numPriv, CURVE_TYPE)
