@@ -10,6 +10,7 @@ from unicodedata import normalize
 from hashlib import sha256
 from .seed_english_words import english_words_bip39
 from .agama_transform_tools import str_to_hex, short_str, convert_to_base58
+from .agama_transform_tools import bin_to_hex, hex_to_bin
 from .cipher import caesar_encrypt
 #from mnemonic import Mnemonic
 
@@ -46,6 +47,28 @@ def seed_words():
     return english_words_bip39.split(",")
 
 bip39 = seed_words()
+
+
+def entropy_normalize(entropy):
+    if len(entropy) < 39: # -> hexa
+        print("[ hex input ]")
+        bin_entropy = hex_to_bin(entropy)
+    if len(entropy) > 127: # -> bin
+        print("[ bin input ]")
+        bin_entropy = entropy.replace(" ", "")
+        entropy = bin_to_hex(bin_entropy)
+        
+        existing_hex_str = str(entropy)[2:]  # delete "0x"
+        desired_length = 32
+
+        if len(existing_hex_str) < desired_length:
+            padding_length = desired_length - len(existing_hex_str)
+            # print("padding_length",padding_length)
+            existing_hex_str = '0' * padding_length + existing_hex_str
+
+        entropy = existing_hex_str # without 0x
+    return entropy
+
 
 
 def mnemonic_info(words,short=True):
