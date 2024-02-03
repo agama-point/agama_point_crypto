@@ -3,7 +3,7 @@ https://github.com/josh-kean/BIP39/blob/master/test_functions.py
 https://github.com/scgbckbone/btc-hd-wallet
 """
 from mnemonic import Mnemonic
-from crypto_agama.agama_seed_tools import HashingFunctions, mnemo_to_seed, mnemonic_info, create_root_key
+from crypto_agama.agama_seed_tools import BIP39Functions, mnemo_to_seed, mnemonic_info, create_root_key
 from cryptos import *
 from crypto_agama.agama_cryptos import coin_info, wallet_info, addr3
 # from crypto_agama.seed_tools import seed_words, mnemonic_info, words_to_4ch
@@ -11,16 +11,18 @@ from crypto_agama.agama_cryptos import coin_info, wallet_info, addr3
 
 def phrase_to_key(phrase): 
     #tests to see if word list converts to desired master key
-    hashes = HashingFunctions(None, phrase)
+    hashes = BIP39Functions(None, phrase)
     hashes.create_binary_seed()
     return hashes.binary_seed
 
 
 def seed_test(entropy, passphrase=""):
     print("="*50)
-    hashes = HashingFunctions()
+    print("input entropy:", entropy)
+    hashes = BIP39Functions()
     phrase = hashes.entropy_to_phrase(entropy)
     print("HashingFunctions - phrase:",phrase)
+    print("is_valid | reverese_entropy:", hashes.is_checksum_valid(phrase, reverse_entropy=True))
     mnemonic_info(phrase)
     
     #hashes = HashingFunctions(None, phrase)
@@ -55,7 +57,17 @@ seed_test("ffffffffffffffffffffffffffffffff")
 
 """
 ==================================================
+test: https://iancoleman.io/bip39/ (2312 ok)
+ent to mnemo: phrase = hashes.entropy_to_phrase(entropy)
+mnemo to ent: hashes.is_checksum_valid(phrase, reverse_entropy=True))
+BIP39 seed
+BIP32 root key
+
+
+==================================================
+input entropy: 00000000000000000000000000000000
 HashingFunctions - phrase: abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about
+is_valid | reverese_entropy: (True, True, '00000000000000000000000000000000')
 --------------------------------------------------------------------------------
 [mnemonic_info]
 abandon aban...bandon about ( 12 )
@@ -71,8 +83,11 @@ seed_bytes b'^\xb0\x0b\xbd\xdc\xf0i\x08H\x89\xa8\xab\x91UV\x81e\xf5\xc4S\xcc\xb8
 version_BYTES:  mainnet_private
 xprv9s21ZrQH143K3GJpoapnV8SFfukcVBSfeCficPSGfubmSFDxo1kuHnLisriDvSnRRuL2Qrg5ggqHKNVpxR86QEC8w35uxmGoggxtQTPvfUu
 
+
 ==================================================
+input entropy: 000102030405060708090a0b0c0d0e0f
 HashingFunctions - phrase: abandon amount liar amount expire adjust cage candy arch gather drum buyer
+is_valid | reverese_entropy: (True, True, '000102030405060708090a0b0c0d0e0f')
 --------------------------------------------------------------------------------
 [mnemonic_info]
 abandon amou...r drum buyer ( 12 )
@@ -88,8 +103,11 @@ seed_bytes b'7y\xb0A\xfa\xb4%\xe9\xc0\xfdU\x84k*\x03\xe9\xa3\x88\xfb\x12x@g\xbd\
 version_BYTES:  mainnet_private
 xprv9s21ZrQH143K2XojduRLQnU8D8K59KSBoMuQKGx8dW3NBitFDMkYGiJPwZdanjZonM7eXvcEbxwuGf3RdkCyyXjsbHSkwtLnJcsZ9US42Gd
 
+
 ==================================================
+input entropy: ffffffffffffffffffffffffffffffff
 HashingFunctions - phrase: zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo wrong
+is_valid | reverese_entropy: (True, True, 'ffffffffffffffffffffffffffffffff')
 --------------------------------------------------------------------------------
 [mnemonic_info]
 zoo zoo zoo ...oo zoo wrong ( 12 )
