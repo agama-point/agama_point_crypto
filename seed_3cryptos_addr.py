@@ -37,15 +37,16 @@ def addr3(c,w):
     print("[ - add3 - ]")
     addr0 = wallet.new_receiving_address()
     print("0",addr0)
-    addr1 = wallet.new_change_address()
+    #addr1 = wallet.new_change_address()
+    addr1 = wallet.new_receiving_address()
     print("1",addr1)
-    addr2 = wallet.new_change_address()
+    addr2 = wallet.new_receiving_address()
     print("2",addr2)
-    print("last_change_index: ",wallet.last_change_index)
+    # print("last_change_index: ",wallet.last_change_index)
 
 # words = entropy_to_words(os.urandom(16))
 words = words_book ### get_words()
-
+words = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
 ### print(words)
 mnemonic_info(words)
 # mnemo_seed = mnemo_to_seed(words)
@@ -73,8 +74,8 @@ addr3(coin,wallet)
 
 
 """
-army van def... make crunch ( 12 )
-96 1929 459 279 956 1866 764 333 559 1107 1076 423 
+abandon aban...bandon about ( 12 )
+0 0 0 0 0 0 0 0 0 0 0 3
 validate:  (True, True)
 (True, True)
 [ - coin_info - ]
@@ -85,40 +86,37 @@ is_testnet:  False
 BIP39-BIP44 | Standard Wallets:
 [ - wallet_info - ]
 m/44'/0'/0'
-xprv:  xprv9yymDxtAiwgiooASPoaeTHjhKmhAvZdTeCJXCp3KFg2zaB7ezjDVXbA4JgKqhsdtzYGuFeorgfc26kTCGY6of1PYNH9oQqYmvpS8V1oZjzc
-xpub: xpub6Cy7dUR4ZKF22HEuVq7epRgRsoXfL2MK1RE81CSvp1ZySySoYGXk5PUY9y9Cc5ExpnSwXyimQAsVhyyPDNDrfj4xjDsKZJNYgsHXoEPNCYQ
+xprv:  xprv9xpXFhFpqdQK3TmytPBqXtGSwS3DLjojFhTGht8gwAAii8py5X6pxeBnQ6ehJiyJ6nDjWGJfZ95WxByFXVkDxHXrqu53WCRGypk2ttuqncb
+xpub: xpub6BosfCnifzxcFwrSzQiqu2DBVTshkCXacvNsWGYJVVhhawA7d4R5WSWGFNbi8Aw6ZRc1brxMyWMzG3DSSSSoekkudhUd9yLb6qx39T9nMdj
 ----------------
 [ - add3 - ]
-0 1HQ3rb7nyLPrjnuW85MUknPekwkn7poAUm
-1 12Co6qiQ7zrehMz4PugN5tYMNZ7UozUjSv
-2 16gLEe3z2BULAEhieF5zESeW7VzhSocDF4
-last_change_index:  2
+0 1LqBGSKuX5yYUonjxT5qGfpUsXKYYWeabA
+1 1Ak8PffB2meyfYnbXZR9EGfLfFZVpzJvQP
+2 1MNF5RSaabFwcbtJirJwKnDytsXXEsVsNb
 
  ================================
 BIP39-BIP49 | Segwit Wallets:
 [ - wallet_info - ]
 m/49'/0'/0'
-xprv:  yprvAJ4QaLC8GW7fjEBLksUpbYbmCsUfSDYiEjteuZepv3ZwDHGy5cf8VaGC4iREzgEBjP1f1YWGaxzBsqp47LtDYgBDqnSujQNaLd3d1jvVMzW
-xpub: ypub6X3kyqj26sfxwiForu1pxgYVkuK9qgGZbxpFhx4SUP6v65c7d9yP3Nafv1SrMF3uhyu4hzHPptQj8NajcT6YVSUfZ6mNDe2Kqyg7nvNj9Ye
+xprv:  yprvAHwhK6RbpuS3dgCYHM5jc2ZvEKd7Bi61u9FVhYMpgMSuZS613T1xxQeKTffhrHY79hZ5PsskBjcc6C2V7DrnsMsNaGDaWev3GLRQRgV7hxF
+xpub: ypub6Ww3ibxVfGzLrAH1PNcjyAWenMTbbAosGNB6VvmSEgytSER9azLDWCxoJwW7Ke7icmizBMXrzBx9979FfaHxHcrArf3zbeJJJUZPf663zsP
 ----------------
 [ - add3 - ]
-0 3FEQ7b7rMMRK3VmP778dUJCeQjBcQ4arXZ
-1 3DMveQocjGHzEAzZQBM7W9LbtWPpKzTN7B
-2 3Pru2QHnLj8uLq9n8eaoP4ekRUVGBtiBGL
-last_change_index:  2
+0 37VucYSaXLCAsxYyAPfbSi9eh4iEcbShgf
+1 3LtMnn87fqUeHBUG414p9CWwnoV6E2pNKS
+2 3B4cvWGR8X6Xs8nvTxVUoMJV77E4f7oaia
 
  ================================
 BIP39-BIP84 | New Segwit Wallets:
 [ - wallet_info - ]
 m/84'/0'/0'
-xprv:  zprvAdN52HMQ2Yo3okKTgq26vdf3ppGZtiEuqJKzNZG7ozJHeWG9P6qixZRfbjudets6Bbw14d7Y53bRngmzC121kKiofQ5kdFWRqaAHFAv7jep
-xpub: zpub6rMRRntHrvMM2EPvnrZ7HmbnNr74JAxmCXFbAwfjNKqGXJbHve9yWMk9SzsF9jQHM6RsaExfmAjyypn369i5dT3uXrRyiDra5nqpCjuPmWT
+xprv:  zprvAdG4iTXWBoARxkkzNpNh8r6Qag3irQB8PzEMkAFeTRXxHpbF9z4QgEvBRmfvqWvGp42t42nvgGpNgYSJA9iefm1yYNZKEm7z6qUWCroSQnE
+xpub: zpub6rFR7y4Q2AijBEqTUquhVz398htDFrtymD9xYYfG1m4wAcvPhXNfE3EfH1r1ADqtfSdVCToUG868RvUUkgDKf31mGDtKsAYz2oz2AGutZYs
 ----------------
 [ - add3 - ]
-0 bc1qg0azlj4w2lrq8jssrrz6eprt2fe7f7edm4vpd5
-1 bc1q57swnsnzhrdjmlj7wexe7x8emgrhwd04n2gktd
-2 bc1qpvsc52v2h2856mg67tx0z804c86f5cu6apg3un
-last_change_index:  2
+0 bc1qcr8te4kr609gcawutmrza0j4xv80jy8z306fyu
+1 bc1qnjg0jd8228aq7egyzacy8cys3knf9xvrerkf9g
+2 bc1qp59yckz4ae5c4efgw2s5wfyvrz0ala7rgvuz8z
 
 """
 
