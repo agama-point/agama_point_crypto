@@ -14,7 +14,7 @@ from .agama_transform_tools import bin_to_hex, hex_to_bin
 from .cipher import caesar_encrypt
 #from mnemonic import Mnemonic
 
-__version__ = "0.3.0" # 2024/02
+__version__ = "0.3.1" # 2024/02
 
 
 DEBUG = True
@@ -263,6 +263,14 @@ def words_to_bip39nums(words):
   for _w in w_arr:
       _wnum = bip39.index(_w)
       print(_w, _wnum, end=" ")
+
+
+def bip39nums_to_words(num_arr):
+  words = ""
+  for _i in num_arr:
+      _w = bip39[_i]
+      words +=  _w + " "
+  return words.rstrip()
 
 
 def words_to_4ch(words,c=13,separator=" ", str_w=True):
