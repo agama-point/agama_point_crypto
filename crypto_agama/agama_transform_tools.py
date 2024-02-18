@@ -10,7 +10,7 @@ import binascii, zlib, base64
 import re
 # import hashlib, ecdsa
 
-__version__ = "0.3.7" # 2024/01
+__version__ = "0.3.8" # 2024/02
 
 DEBUG = False
 
@@ -206,6 +206,19 @@ def int_to_bytes(i):
 def short_str(s,l=12):
   return str(s[:l])+"..."+str(s[-l:])
 
+
+def num_to_2ch(num):
+    if num < 0 or num > 2048:
+        return "Mimo rozsah"
+    else:
+        if num < 1352:
+            ch1 = chr(num // 52 + 97)
+            ch2 = chr(num % 52 + 97) if (num % 52) < 26 else chr((num % 52) - 26 + 65)
+        else:
+            ch1 = chr((num - 1352) // 26 + 65)
+            ch2 = chr((num - 1352) % 26 + 97)
+        if ch1 == "[": ch1 = "*"
+        return ch1 + ch2
 
 # ------------------------ hexdump -------------------------
 def group(a, *ns):
