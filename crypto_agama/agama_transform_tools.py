@@ -10,7 +10,7 @@ import binascii, zlib, base64
 import re
 # import hashlib, ecdsa
 
-__version__ = "0.3.8" # 2024/02
+__version__ = "0.3.9" # 2024/02
 
 DEBUG = False
 
@@ -89,16 +89,20 @@ def num_to_hex(num):
 
 
 def hex_to_num(hex):
-  return int(hex, 16)
+    return int(hex, 16)
 
 
-def hex_to_bin(hex_number, to_string = False):
-  #bin(private_key1.to_bin())
-  _bin = bin(int(hex_number, base=16))
-  if to_string:
-    return str(_bin)[2:]
-  else:
-    return _bin
+def hex_to_bin(hex_number, to_string = False, len_s=0):
+   #bin(private_key1.to_bin())
+   _bin = bin(int(hex_number, base=16))[2:]
+
+   if len_s > 0:
+      _bin = _bin.zfill(len_s)
+
+   if to_string:
+      return _bin
+   else:
+      return int(_bin, 2)
 
 
 def hex_to_bin4(hex_number):
