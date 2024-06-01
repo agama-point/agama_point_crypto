@@ -259,10 +259,14 @@ def generate_seed11_txt(text, multi=1):
 
 
 def words_to_bip39nums(words):
+  num_list = [] 
   w_arr = words.split()
   for _w in w_arr:
       _wnum = bip39.index(_w)
-      print(_w, _wnum, end=" ")
+      print(_w, _wnum, end=" |")
+      num_list.append(_wnum)
+    
+  return num_list
 
 
 def bip39nums_to_words(num_arr):
