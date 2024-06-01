@@ -10,7 +10,7 @@ import binascii, zlib, base64
 import re
 # import hashlib, ecdsa
 
-__version__ = "0.3.9" # 2024/02
+__version__ = "0.5.0" # 2025/06
 
 DEBUG = False
 
@@ -275,7 +275,6 @@ def decimal_to_base(number, base, zfill=5):
         number, remainder = divmod(number, base)
         result = str(remainder) + result
 
-
     return result.zfill(zfill) if result else '0'
 
 
@@ -285,9 +284,9 @@ def base_to_decimal(base_number, base):
     elif base == 5:
         valid_digits = set('012345')
     elif base == 6:
-        valid_digits = set('012345')
-    elif base == 7:
         valid_digits = set('0123456')
+    elif base == 7:
+        valid_digits = set('01234567')
     else:
         return "Invalid base"
 
