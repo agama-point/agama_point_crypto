@@ -282,11 +282,11 @@ def base_to_decimal(base_number, base):
     if base == 4:
         valid_digits = set('0123')
     elif base == 5:
-        valid_digits = set('012345')
+        valid_digits = set('01234')
     elif base == 6:
-        valid_digits = set('0123456')
+        valid_digits = set('012345')
     elif base == 7:
-        valid_digits = set('01234567')
+        valid_digits = set('0123456')
     else:
         return "Invalid base"
 
