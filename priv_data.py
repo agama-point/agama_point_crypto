@@ -6,9 +6,11 @@ w_808080 = "letter advice cage absurd amount doctor acoustic avoid letter advice
 # https://iancoleman.io/bip39/
 words_book = "army van defense carry jealous true garbage claim echo media make crunch"
 entro_book = "0c1e24e5917779d297e14d45f14e1a1a"
+andreas_cz = "bouda vzpoura hrdina doufat nejprve vrhat limetka facka kapela operace ofsajd hoboj"
 
 words_trezor = "inside label dolphin print depart zone earth fix senior identify net surprise"
 entro_trezor = "752f85035563adff915ac0c3ae1252ed"
+trezor_cz = "nasadit nutit jelen puberta hryzat zvukovod kanibal kultura smysl muzikant penalta ujednat"
 
 words_tbtc = "major easy ignore body rule stay gorilla eager arch actor scan thank" # www
 
