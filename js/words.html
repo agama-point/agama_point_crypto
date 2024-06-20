@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="css/app.css">
+  <title>words</title>
+  <script src="js/jquery.min.js"></script> 
+  <script src="js/agama_functions.js"></script>
+  <script src="js/wordlist_english.js"></script>
+
+<script>
+function getWordByIndex(index) {
+  const wordlist = WORDLISTS["english"];
+  const adjustedIndex = index; // -1: Přizpůsobení indexu pro 0-based array
+  if (adjustedIndex >= 0 && adjustedIndex < wordlist.length) {
+     return wordlist[adjustedIndex];
+     } else {
+     return null; // Změněno na null pro lepší zpracování neplatného indexu
+  }
+}
+
+function getIndexByWord(word) {
+   const wordlist = WORDLISTS["english"];
+   const index = wordlist.indexOf(word);
+   if (index !== -1) {
+        return index + 1; // Přizpůsobení indexu pro 1-based array
+   } else {
+       return null; // Změněno na null pro lepší zpracování neplatného slova
+   }
+}
+
+function getIndex(word) {
+  var wordList = WORDLISTS["english"]; // Získání pole slov z objektu WORDLISTS
+  var index = wordList.indexOf(word);  // Použití metody indexOf pro nalezení indexu slova
+  
+  return index;  // Vrácení indexu (nebo -1 pokud slovo nenalezeno)
+}
+
+
+function getWords(inputStr) {
+   const wordlist = WORDLISTS["english"];
+   return wordlist.filter(word => word.startsWith(inputStr));}
+
+$(document).ready(function(){
+  $("#myInput").on("keyup", function() {
+    //var value = $(this).val().toLowerCase();
+   var value = $(this).val();
+   var index = parseInt(value);
+   const word = getWordByIndex(index);
+   //const $resultDiv = $("#result"); //const resultDiv = document.getElementById("result");
+   const binaryIndex = toBinaryString(index, 11);
+   const diceIndex = numToDice(index, 5); // Volání nové externí funkce
+   const hexa3 = index.toString(16).padStart(3, '0');
+
+   $("#result").html(`<br /><b>${index}</b> | ${word} <br />Dice: <i>${diceIndex}</i> | Bin: ${binaryIndex} | Hex: ${hexa3} |`); 
+   //resultDiv.innerHTML =  `<b>${index}</b>...
+   $("#result2").animate({letterSpacing: "+=20px"});
+   //$("#result").animate({fontSize: "2em"});
+   $("#result2").animate({letterSpacing: "-=20px"});
+   //$("#result").animate({fontSize: "1em"});
+
+  });
+
+  $("#myInput2").on("keyup", function() {
+    //var value = $(this).val().toLowerCase();
+   var value = $(this).val();
+   
+   const $resultDiv = $("#result");
+   const words = getWords(value);
+   const wordCount = words.length;
+   var separ = " ";
+   if (wordCount >= 9) {separ = ' | ';} else { separ = '<br />'; }
+   $resultDiv.html(`<p>words found: <b>${wordCount}</b></p>` + words.map(word => `${word}`).join(separ));
+   
+   if (wordCount == 1){ 
+     var w = words.map(word => `${word}`); //.trimEnd(); //wordlist.indexOf(value); //getIndexByWord(words.map(word)); //
+     const index = getIndex(String(w));
+     const diceIndex = numToDice(index, 5);
+     const binaryIndex = toBinaryString(index, 11);
+     const bech32 = binaryStringToBech32String(binaryIndex);
+     const hexa3 = index.toString(16).padStart(3, '0');
+
+     $("#result").html(`<br /><b>${index}</b> | ${w} <br />Dice: <i>${diceIndex}</i> | Bin: ${binaryIndex} | Hex: ${hexa3} |Bech32: ${bech32} |`);
+     $("#result2").animate({letterSpacing: "+=20px"});
+     $("#result2").animate({letterSpacing: "-=20px"}); 
+   }
+    
+   });
+
+   $('#convertToBech32').on('click', function() {
+        var binaryInput = $('#binaryInput').val();
+        var binaryString = binaryInput;
+        while (binaryString.length % 5 !== 0) {binaryString = '0' + binaryString;}
+
+        var bech32Result = binaryStringToBech32String(binaryInput);
+        $('#bech32Output').html(`${binaryString}: ${bech32Result}<br />`); 
+
+    });
+
+    $('#convertToBinary').on('click', function() {
+        var bech32Input = $('#bech32Input').val();
+        var binaryResult = bech32StringToBinaryString(bech32Input);
+        $('#binaryOutput').html(`${binaryResult}<br />`);
+    });
+
+
+});
+</script>
+
+</head>
+
+<body>
+<div class="wrap">
+  | <a href="https://www.agamapoint.com/">AgamaPoint</a> | <a href="https://www.agamapoint.com/bip39/">bip39</a> | words | <a href="https://www.agamapoint.com/bip39/entropy.html">entropy</a> | <a href="https://www.agamapoint.com/games">g_m_s</a>
+<hr /><br />
+ 
+ <input id="myInput" type="text" placeholder="Search... (index)"> | <input id="myInput2" type="text" placeholder="...word"><br>
+ <div id="result"></div>
+ <div id="result2">.....</div><br>
+ 
+<hr />
+<h1>word list</h1>
+_dice_ :: ____bin____ | hex | b32 | <b>index</b> | No. word
+<div id="wordlist"></div>  
+<script>
+  // Funkce pro vykreslení slov s indexy
+  function displayWordlist() {
+     const wordlistContainer = document.getElementById("wordlist");
+     const wordlist = WORDLISTS["english"];
+            
+      wordlist.forEach((word, index) => {
+         const wordElement = document.createElement("div");
+         const diceIndex = numToDice(index, 5);
+         const binaryIndex = toBinaryString(index, 11);
+         const bech32 = binaryStringToBech32String(binaryIndex);
+         const hexa3 = index.toString(16).padStart(3, '0');
+
+         wordElement.innerHTML = `<i>${diceIndex}</i> :: ${binaryIndex} | ${hexa3} | ${bech32} | <b>${index}</b> | ${index+1}. ${word}`;
+         wordlistContainer.appendChild(wordElement);
+        });
+     }
+     // Zavolání funkce po načtení skriptu
+     displayWordlist();
+</script>
+</div>
+
+</body>
+</html>

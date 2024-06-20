@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <link rel="stylesheet" href="css/bootstrap.css">
+ <link rel="stylesheet" href="css/app.css">
+ <title>entropy | sha | xor</title>
+ <script src="js/jquery.min.js"></script> 
+ <script src="js/agama_functions.js?cache_bust=${new Date().getTime()}"></script>
+
+<script>
+// Použití jQuery pro manipulaci s DOM a událostmi
+$(document).ready(function() {
+   let fullHash = '';
+   $("#bech32").hide();
+   $("#examples").hide();
+   $("#xbutt").hide();
+   $("#b32").click(function(){ $("#bech32").slideToggle("slow"); });
+   $("#ex").click(function(){ $("#examples").slideToggle("slow"); });
+
+
+   $('#hashForm').on('submit', async function(event) {
+        event.preventDefault(); // Zamezení výchozího chování formuláře
+        
+        const inputText = $('#inputText').val();
+        fullHash = await sha256(inputText);        
+        $('#input2').val(fullHash);
+        $('#result1').html(`<br />${fullHash}`); 
+    });
+
+   $('#leftButton').on('click', function() {        
+       const leftHalf = fullHash.substring(0, fullHash.length / 2);
+       $('#result2').html(`<br /><b>${leftHalf}</b><br /><br />`);
+       displayHexAsGrid(leftHalf,"gridContainer1");
+       $("#xbutt").show();        
+    });
+
+    $('#leftButton3').on('click', function() { 
+       const inputText3 = $('#input3').val();       
+       const leftHalf = inputText3.substring(0, 32);
+       $('#result2').html(`<br /><b>${leftHalf}</b><br /><br />`);
+       displayHexAsGrid(leftHalf,"gridContainer1");
+       $("#xbutt").show();        
+    });
+
+
+    $('#rightButton').on('click', function() {        
+       const rightHalf = fullHash.substring(fullHash.length / 2);
+       $('#result2').html(`<br /><b>${rightHalf}</b><br /><br />`);
+       displayHexAsGrid(rightHalf,"gridContainer1"); 
+       $("#xbutt").show();       
+    });
+
+    $('#xdButton').on('click', function() {        
+       var textContent = $('#result2').text();
+       $('#input_data').val(textContent);
+    });
+    
+    $('#xkButton').on('click', function() {        
+       var textContent = $('#result2').text();
+       $('#input_key').val(textContent);
+    });
+
+    $('#xorButton').on('click', function() {
+       const inputData = $('#input_data').val().trim();
+       const inputKey = $('#input_key').val().trim();
+        
+       if (inputData.length === 0 || inputKey.length === 0) {
+         $('#xorResult').html('Please enter both input data and key.'); return;}
+        
+        //if (inputData.length !== inputKey.length) {
+        //   $('#xorResult').html('Input data and key must be of the same length.'); return;}
+        
+        try {
+            const xorResult = xorHexStrings(inputData, inputKey);
+            const data32 = inputData.padStart(32, '0');
+            const key32 = inputKey.padStart(32, '0');
+
+            $('#xorResult').html(`<br>${data32}<br />${key32}<br /> XOR Result-> <br /><b>${xorResult}</b><br /><br />`);
+            displayHexAsGrid(xorResult,"gridContainer2"); 
+        } catch (error) {
+            $('#xorResult').html(`<br>${inputData}<br>${inputKey}<br>Invalid hex input.`);
+        }
+    });
+
+   $('#convertToBech32').on('click', function() {
+        var binaryInput = $('#binaryInput').val();
+        var binaryString = binaryInput;
+        while (binaryString.length % 5 !== 0) {binaryString = '0' + binaryString;}
+
+        var bech32Result = binaryStringToBech32String(binaryInput);
+        $('#bech32Output').html(`${binaryString}: ${bech32Result}<br /><br />`); 
+
+    });
+
+    $('#convertToBinary').on('click', function() {
+        var bech32Input = $('#bech32Input').val();
+        var binaryResult = bech32StringToBinaryString(bech32Input);
+        $('#binaryOutput').html(`${binaryResult}<br />`);
+    });
+
+});
+</script>
+
+</head>
+
+<body>
+<div class="wrap">
+| <a href="https://www.agamapoint.com/">AgamaPoint</a> | <a href="https://www.agamapoint.com/bip39/">bip39</a> | <a href="https://www.agamapoint.com/bip39/words.html">words</a> | entropy | <a href="https://www.agamapoint.com/games">g_m_s</a>
+<hr /><br />
+
+  <h1>Entropy | SHA | XOR</h1>
+  <h2>SHA256 > 128 L/R</h2>
+  <form id="hashForm">
+     <label for="inputText">Input text:</label>
+     <input class="w250" type="text" id="inputText" name="inputText" required>
+     <button class="btn btn-warning" type="submit">SHA-256</button>
+
+  <hr />
+  <label for="input2">SHA-256 Hash:</label>
+  <input class="custom-input" type="text" id="input2" readonly>
+  <button class="btn btn-warning" id="leftButton">Left</button>
+  <button class="btn btn-warning" id="rightButton">Right</button>
+
+  <br />/alt input<br />
+  <input class="custom-input3" type="text" id="input3">
+  <button class="btn btn-warning" id="leftButton3">Left</button> 
+  </form>
+
+
+  <div class="fc" id="result1"></div> 
+  <div class="fc" id="result2"></div> 
+  <div id="gridContainer1" class="mt-3"></div>
+  <div id="xbutt">
+  <br />
+  <button class="btn btn-success" id="xdButton">-> xData</button>
+  <button class="btn btn-success" id="xkButton">-> xKey</button>
+  <br />
+  <label for="input_note">Note</label>
+  <input type="text" id="input_note" name="note">
+  </div>
+
+<br /><br />
+<hr />
+<h2>XOR</h2>
+    <label for="input_data">Data (hex):</label>
+    <input type="text" id="input_data" name="input_data">
+    <br>
+    <label for="input_key">Key (hex):</label>
+    <input type="text" id="input_key" name="input_key">
+
+    <button class="btn btn-warning" id="xorButton">XOR</button>
+    <div class="fc" id="xorResult"></div>
+    <div id="gridContainer2" class="mt-3"></div>
+
+<br /><br /><br />
+<hr />
+<br />
+<button class="btn btn-warning" id="b32">Bech32...</button><br /><br />
+
+<div class="fc" id="bech32">
+<label for="binaryInput">Enter binary number (5-bits):</label>
+    <input type="text" id="binaryInput">
+    <button class="btn btn-warning" id="convertToBech32">Convert to BECH32</button>
+    <div id="bech32Output">...<br /></div>
+
+    <label for="bech32Input">Enter BECH32 string:</label>
+    <input type="text" id="bech32Input">
+    <button class="btn btn-warning" id="convertToBinary">Convert BECH32 to Binary</button>
+    <div id="binaryOutput">...</div>
+
+</div>
+<hr />
+<br />
+<button class="btn btn-warning" id="ex">Examples...</button><br /><br />
+
+<div class="fc" id="examples">
+<b>sha(agama)</b> | agama_py: hash_sha256_str("agama")<br />
+52589fac98630c603bd5c2b08cb0f6ccf273cc4a4772f0ff28d49a01bc7d2f4b<br />
+L: <b>52589fac98630c603bd5c2b08cb0f6cc</b><br />
+R:    f273cc4a4772f0ff28d49a01bc7d2f4b<br />
+<br><i>LS: false shaft twenty ... grain diet occur</i><br />
+LXR: <b>a02b53e6df11fc9f130158b130cdd987</b><br />
+<i>XS: parent fold whale ... major island autumn</i>
+<br /><br />
+<hr />
+
+<b>sha(AgamaPoint)</b><br />
+6cfdf76d0f2112db138c801825051e99efc8e7affc532fce4a088ad19844418e<br /> 
+L: <b>6cfdf76d0f2112db138c801825051e99</b><br />
+R:    efc8e7affc532fce4a088ad19844418e<br />
+<br /><i>LS: hollow use swap ... choice element critic</i><br />
+<br /><br />
+<hr />
+
+<b>e(andreas)</b><br />
+0c1e24e5917779d297e14d45f14e1a1a<br />
+<br />
+<i>left(sha(agama)) xor e(andreas):</i><br />
+5e46bb49091475b2ac348ff57dfeecd6
+<br />
+<br />
+<hr />
+
+<b>e(trezor)</b><br />
+752f85035563adff915ac0c3ae1252ed<br />
+<br /><br />
+<hr />
+
+...r(s(yenda)) x e(trezor):<br />
+41abbe611bc73d06baaae964ecaf3fe2<br />
+<br /><i>double fuel obscure ... grace soup shift</i>
+<br /><br />
+<hr />
+
+(e=entropy | L=left | R=right | S=seed | X=XoR | ...
+</div>
+
+<hr />
+<br />
+<h2>Links</h2>
+test: <a href="https://github.com/trezor/python-mnemonic/blob/master/vectors.json">bip39_vectors</a>
+
+<br />
+<hr />
+</div>   
+</body>
+</html>
