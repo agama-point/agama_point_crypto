@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="utf-8" />
+    <title>iTing</title>
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="css/app.css">
+    <link rel="stylesheet" href="css/iting.css">
+    <script src="js/jquery.min.js"></script> 
+    <script src="js/iting.js"></script> 
+</head>
+
+<body>
+<div class="wrap">
+<h2> iTing 6a fix0</h2> <br>
+
+<script>
+    function createHexagramElement(binary) {
+            const container = document.createElement("span");
+            for (let i = 0; i < binary.length; i++) {
+                const line = document.createElement("div");
+                if (binary[i] === "1") {
+                    line.className = "hexagram-line full-line";
+                } else {
+                    line.className = "hexagram-line broken-line";
+                    const part1 = document.createElement("div");
+                    const part2 = document.createElement("div");
+                    line.appendChild(part1);
+                    line.appendChild(part2);
+                }
+                container.appendChild(line);
+            }
+            return container;
+        }
+
+    function show(num) {
+        //var num = $('#input_num').val();
+        const result = numToIChing(num-1); 
+        const bin1 = result.bin.slice(0, 3);
+        const bin2 = result.bin.slice(3, 6);       
+       $('#out1').html(`<br />${result.i} / ${num}. <b>${bin1} ${bin2}</b> > <i>${result.ch}</i> <br /> ${result.en} (${result.cz})<br /><br />`); 
+       $('#out1').append(createHexagramElement(result.bin));
+    };
+    
+   $(document).ready(function() { 
+    $("#list").hide();
+    $("#btn_list").click(function(){ $("#list").slideToggle("slow"); }); 
+    $("#info").hide();
+    $("#btn_info").click(function(){ $("#info").slideToggle("slow"); });  
+    
+    $('#btn_show').on('click', function() {
+    var num = $('#input_num').val();   
+    show(num);   
+    });
+
+    $('#btn_plus').on('click', function() {
+        var num = parseInt($('#input_num').val());
+        //var textContent = $('#result2').text();
+       $('#input_num').val(num+1);
+       show(num+1);   
+    });
+
+    $('#btn_minus').on('click', function() {
+        var num = parseInt($('#input_num').val());
+        //var textContent = $('#result2').text();
+       $('#input_num').val(num-1);
+       show(num-1);   
+    });
+});      
+</script>
+<div id="out0" class="mt-3">...</div>
+<hr />
+
+<div id="container">
+    <div class="box" id="tr1"><b> 乾 <br />Qian</b> heaven <i>nebe</i></div>
+    <div class="box" id="tr2"><b> 巽 <br />Xun</b> wind <i>vitr</i></div>
+    <div class="box" id="tr3"><b> 坎 <br />Kan</b> water <i>voda</i></div>
+    <div class="box" id="tr4"><b> 艮 <br />Gen</b> mountain <i>hora</i></div>
+    <div class="box" id="tr5"><b> 坤 <br />Kun</b> earth <i>zeme</i></div>
+    <div class="box" id="tr6"><b> 震 <br />Zhen</b> thunder <i>hrom</i></div>
+    <div class="box" id="tr7"><b> 离 <br />Li</b><br /> fire <i>ohen</i></div>
+    <div class="box" id="tr8"><b> 兑 <br />Dui</b> lake <i>jezero</i></div>
+</div>
+<script>
+    $('#tr1').append(createHexagramElement("111"));
+    $('#tr1').append("NW <br>?2");
+    $('#tr2').append(createHexagramElement("110"));
+    $('#tr2').append("SE <br>???");
+    $('#tr3').append(createHexagramElement("010"));
+    $('#tr3').append("N <br>1982");
+    $('#tr4').append(createHexagramElement("100"));
+    $('#tr4').append("NE <br>1156");
+    $('#tr5').append(createHexagramElement("000"));
+    $('#tr5').append("SW <br>555");
+    $('#tr6').append(createHexagramElement("001"));
+    $('#tr6').append("E <br>1804");
+    $('#tr7').append(createHexagramElement("101"));
+    $('#tr7').append("S <br>697");
+    $('#tr8').append(createHexagramElement("011"));
+    $('#tr8').append("W <br>997");
+</script>
+<br /><br />
+<label for="inputText">Input dec. (1-64)</label>
+<input class="w250" type="text" id="input_num" name="inputText">
+<button class="btn btn-warning" id="btn_show">show</button>
+<button class="btn btn-warning" id="btn_plus"> + </button>
+<button class="btn btn-warning" id="btn_minus"> - </button>
+<div id="out1" class="mt-3">...</div>
+<br />
+<hr />
+
+<button class="btn btn-warning" id="btn_list">List...</button><br />
+<div id="list"></div> 
+<table> 
+<script>
+  // Funkce pro vykreslení slov s indexy
+  function displayList() {
+        const listContainer = document.getElementById("list");            
+        iChingHexagrams.forEach((hexagram) => {
+            const hexagramElement = document.createElement("tr");
+            const bin1 = hexagram.binary.slice(0, 3);
+            const bin2 = hexagram.binary.slice(3, 6);
+            hexagramElement.innerHTML = `
+            <td> ${hexagram.index}. </td>
+            <td> <strong>${hexagram.ch}</strong> </td>
+            <td> <b>${bin1} ${bin2}</b> </td> 
+            <td> ${hexagram.en} </td> 
+            <td> <i>${hexagram.cz} </i></td>                                         
+            `;
+            listContainer.appendChild(hexagramElement);
+            });
+        }
+     displayList();
+</script>
+</table> 
+<br />
+<hr />
+
+<button class="btn btn-warning" id="btn_info">Info...</button><br />
+<div id="info">
+<pre>
+b2:
+b3: Trigram
+b6: Hexahram [2T]
+11: 4T-1 / 3T+2
+
+</pre>
+</div> 
+
+</div>
+</body> 
