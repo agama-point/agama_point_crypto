@@ -1,34 +1,49 @@
 import pygame
 import sys
+#from crypto_agama.agama_seed_tools import seed_words, mnemonic_info, words_to_bip39nums
+#from crypto_agama.agama_seed_tools import BIP39Functions
+#hashes = BIP39Functions()
 
-# Inicializace Pygame
+
 pygame.init()
-
-# Nastavení velikosti okna
-window_size = (640, 320)
+window_size = (680, 320)
 screen = pygame.display.set_mode(window_size)
 pygame.display.set_caption("Cisyercial Numerus")
 
 black = (0, 0, 0)
 white = (255, 255, 255)
-pen = 3 # pen size
+silver = (128,128,128)
+red = (255,0,0,)
+blue = (0,0,255)
 
-# Velikost buňky a odsazení
-cell_size = 10
-padding = 35
+#col_bg, col_pen = white, black # standardmode
+#col_bg, col_pen = silver, red # colormode
+col_bg, col_pen = black, white # darkmode
 
-# Body
-ca = (0, 3)
-cb = (2, 3)
-cc = (0, 1)
-cd = (2, 1)
+cell_size, pen, padding = 10, 3, 35 # standard
+distance = 60
+#cell_size, pen, padding = 2, 1, 10 # small
+#distance = 15
 
-# transormace tx,ty
+# points
+ca, cb = (0, 3), (2, 3)
+cc, cd = (0, 1), (2, 1)
+
+# standard transforms tx,ty
 t1 = (1,1)  # 1
 t2 = (-1,1)   # 10
 t3 = (1,-1)  # 100
 t4 = (-1,-1) # 1000
-# Definice čárek pro jednotlivé číslice
+
+"""
+# mirror transforms tx,ty
+t2 = (1,1)  # 1
+t1 = (-1,1)   # 10
+t4 = (1,-1)  # 100
+t3 = (-1,-1) # 1000
+"""
+
+# lines
 numbers = {
     '0': [ca, cc],
     '1': [ca, cb],
@@ -58,27 +73,37 @@ def cistercial_digit(screen, digit, tx, x_offset):
     y_offset = padding
     dl = numbers[digit] # digit_lines
 
-    pygame.draw.line(screen, black, (x_offset, cell_size + padding) , (x_offset, 7* cell_size + padding), pen)
+    pygame.draw.line(screen, col_pen, (x_offset, cell_size + padding) , (x_offset, 7* cell_size + padding), pen)
         
     for i in range(len(dl) - 1):
             start_pos = (x_offset + tx[0] * dl[i][0] * cell_size, y_offset + (4 - tx[1] * dl[i][1]) * cell_size)
             end_pos = (x_offset + tx[0] * dl[i + 1][0] * cell_size, y_offset + (4 - tx[1] * dl[i + 1][1]) * cell_size)
-            pygame.draw.line(screen, black, start_pos, end_pos, pen)
+            pygame.draw.line(screen, col_pen, start_pos, end_pos, pen)
 
-# Hlavní smyčka programu
+# =====================================================================
 def main():
     running = True
-
+    """
+    en_hex = "80808080808080808080808080808080"
+    phrase = hashes.entropy_to_phrase(en_hex)
+    nums12 = words_to_bip39nums(phrase)
+    print("nums",nums12)
+    """
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
 
-        screen.fill(white)
+        screen.fill(col_bg)
 
         for i in range(10):
-             draw_digits(i+i*1000, i*60)
-        """  
+             draw_digits(i+i*1000, (i+1)*distance)
+        
+        """
+        for i, number in enumerate(nums12):
+            #print(i, number)
+            draw_digits(number, (i+1)*distance)
+        
         draw_digits(21, 100)
         draw_digits(1234, 200)
         draw_digits(2047, 300)
