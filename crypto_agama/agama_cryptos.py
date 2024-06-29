@@ -1,6 +1,6 @@
 from cryptos import * # pip install wheel, pbkdf2, cryptos
 from mnemonic import Mnemonic
-from crypto_agama.seed_tools import create_root_key
+from crypto_agama.agama_seed_tools import create_root_key
 
 # https://pypi.org/project/cryptos/
 # https://github.com/primal100/pybitcointools
