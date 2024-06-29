@@ -1,6 +1,6 @@
 # 2021-02-01
 
-from crypto_agama.btc_api import bitcoin_usd, btc_mempool_fees
+from crypto_agama.agama_btc_api import bitcoin_usd, btc_mempool_fees
 
 print("bitcoin - coinpaprika_api")
 btcusd = bitcoin_usd()
