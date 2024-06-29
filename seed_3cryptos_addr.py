@@ -7,29 +7,8 @@ verif.  https://iancoleman.io/bip39/
 from cryptos import *
 from crypto_agama.agama_seed_tools import seed_words, mnemonic_info, words_to_4ch
 from priv_data import words_book #, get_seeds, get_words
-
+from crypto_agama.agama_cryptos import coin_info, wallet_info
 ## = OBJ / ToDo
-
-def coin_info(b):
-    print("[ - coin_info - ]")
-    print("coin_symbol:",b.coin_symbol)
-    print("is_testnet: ",b.is_testnet)
-    ## print("is_segwit:  ",b.is_segwit)
-    ## print(b.current_block_height)
-
-
-def wallet_info(c,w):
-    print("[ - wallet_info - ]")
-    print(w.keystore.root_derivation)
-    #? print("address_prefixes: ",c.address_prefixes)
-    print("xprv: ",w.keystore.xprv)
-    print("xpub:",w.keystore.xpub)
-    ## print("coin:",w.coin)
-    ## print("details:",w.details)
-    ## print("balance:",w.balance)
-    ## print("pubkey_receiving",w.pubkey_receiving)
-
-    print("-"*16)
 
 
 def addr3(c,w):
