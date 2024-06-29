@@ -4,28 +4,27 @@ crypto_agama/
 agama_seed_tools 2016-24
 ---------------------------
 """
-
 import hashlib, binascii, base58, hmac
 from unicodedata import normalize
 from hashlib import sha256
 from .seed_english_words import english_words_bip39
 from .agama_transform_tools import str_to_hex, short_str, convert_to_base58
 from .agama_transform_tools import bin_to_hex, hex_to_bin
-from .cipher import caesar_encrypt
+from .agama_cipher import caesar_encrypt
 #from mnemonic import Mnemonic
 
-__version__ = "0.3.2" # 2024/06
+__version__ = "0.3.3" # 2024/06
 
 
-DEBUG = True
+#DEBUG = True
 TW = 80 # terminal width
 
 MAINNET_PREFIX = '80'
 TESTNET_PREFIX = 'EF'
-#mnemo = Mnemonic("english")
 
 BASE_58_CHARS = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
 BASE_58_CHARS_LEN = len(BASE_58_CHARS)
+PBKDF2_ROUNDS = 2048
 
 
 def safe_hexlify(a):
@@ -36,25 +35,24 @@ def safe_from_hex(s):
     return s.decode('hex')
 
 
-bh2u = safe_hexlify
-hfu = binascii.hexlify
-bfh = safe_from_hex
-hmac_sha_512 = lambda x, y: hmac.new(x, y, hashlib.sha512).digest()
-
-
 def seed_words():
     from crypto_agama.seed_english_words import english_words_bip39
     return english_words_bip39.split(",")
 
+
+bh2u = safe_hexlify
+hfu = binascii.hexlify
+bfh = safe_from_hex
+hmac_sha_512 = lambda x, y: hmac.new(x, y, hashlib.sha512).digest()
 bip39 = seed_words()
 
 
-def entropy_normalize(entropy):
+def entropy_normalize(entropy, debug_print=False):
     if len(entropy) < 39: # -> hexa
-        print("[ hex input ]")
+        if debug_print: print("[ hex input ]")
         bin_entropy = hex_to_bin(entropy)
     if len(entropy) > 127: # -> bin
-        print("[ bin input ]")
+        if debug_print: print("[ bin input ]")
         bin_entropy = entropy.replace(" ", "")
         entropy = bin_to_hex(bin_entropy)
         
@@ -70,11 +68,9 @@ def entropy_normalize(entropy):
     return entropy
 
 
-
-def mnemonic_info(words,short=True):
-  if DEBUG:
-      print("-" * TW) 
-      print("[mnemonic_info]")
+def mnemonic_info(words,short=True, debug_print=False):
+  print("-" * TW) 
+  print("[mnemonic_info]")
   from cryptos import keystore
   if short: print(short_str(words),end=" ")
   else: print(words)
@@ -314,18 +310,18 @@ def words_to_4ch(words,c=13,separator=" ", str_w=True):
   else: return w_arr4
 
 
-def w42w(we4, debug = True):
-    if debug: print("[w4_2_w]")
+def w42w(we4, debug_print=True):
+    if debug_print: print("[w4_2_w]")
     wr = "Err."
     for w in bip39: # words
         if w.startswith(we4):
-            if debug: print(w, "="*5)
+            if debug_print: print(w, "="*5)
             wr = w
             break
         else:
             if w.startswith(we4[:3]):
                 if len(w)==3:
-                    if debug: print(w, "-"*5)
+                    if debug_print: print(w, "-"*5)
                     wr=w
                     break
     return wr
@@ -422,16 +418,16 @@ def phrase_to_key(phrase):
     return hashes.binary_seed
 
 
-def num_to_wif(numPriv,prefix=MAINNET_PREFIX,leading="1",debug=DEBUG):
+def num_to_wif(numPriv,prefix=MAINNET_PREFIX,leading="1",debug_print=False):
   # base58.b58encode_check(bytes).decode('utf8')
   privKeyHex = prefix+hex(numPriv)[2:].strip('L').zfill(64)
   privKeySHA256Hash = sha256(binascii.unhexlify(privKeyHex)).hexdigest()
   privKeyDoubleSHA256Hash = sha256(binascii.unhexlify(privKeySHA256Hash)).hexdigest()
   checksum = privKeyDoubleSHA256Hash[:8]
   wifNum = int(privKeyHex + checksum, 16)
-  if debug: print("DEBUG-wifNum: ", wifNum)
+  if debug_print: print("DEBUG-wifNum: ", wifNum)
   wifNum58 = convert_to_base58(wifNum)
-  if debug: print("DEBUG-wifNum58: ", wifNum58)
+  if debug_print: print("DEBUG-wifNum58: ", wifNum58)
   return leading + wifNum58
 
 
