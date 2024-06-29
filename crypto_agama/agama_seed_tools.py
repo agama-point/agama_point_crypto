@@ -14,7 +14,7 @@ from .agama_transform_tools import bin_to_hex, hex_to_bin
 from .cipher import caesar_encrypt
 #from mnemonic import Mnemonic
 
-__version__ = "0.3.1" # 2024/02
+__version__ = "0.3.2" # 2024/06
 
 
 DEBUG = True
@@ -102,9 +102,10 @@ class BIP39Functions:
         self.word_list_length = len(self.word_list)
         self.entropy = entropy
         self.entropy_bin = None
+        self.entropy_hex = None
         self.result_word_list = result_word_list
         self.binary_seed = None
-        self.passphrase = 'TREZOR'
+        self.passphrase = 'agAma'
         self.check_sum = None
 
 
@@ -190,6 +191,27 @@ class BIP39Functions:
             return checksum == calculated_checksum, True, h
         else:
             return checksum == calculated_checksum, True
+
+
+    def words_to_entropy(self, words):
+        """mneno 2 entr + checksum"""
+        word_list = words.split()
+        indices = [self.word_list.index(word) for word in word_list]
+        bin_str = ''.join([f'{index:011b}' for index in indices])
+        
+        total_bits = len(bin_str)
+        num_words = len(word_list)
+        checksum_bits = num_words // 3
+        entropy_bits = total_bits - checksum_bits
+        
+        self.entropy_bin = bin_str[:entropy_bits]
+        self.check_sum = bin_str[entropy_bits:] if checksum_bits > 0 else ''
+
+        hex_str = hex(int(self.entropy_bin, 2))[2:]
+        # Zajistí, že délka hexadecimálního řetězce bude sudá (doplní nuly, pokud je potřeba)
+        self.entropy_hex = hex_str.zfill((len(hex_str) + 1) // 2 * 2)
+        
+        return self.entropy_hex # self.entropy_bin, self.check_sum
 
 
 def generate_seed11(pattern):
