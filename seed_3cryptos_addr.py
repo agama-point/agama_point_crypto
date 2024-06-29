@@ -5,7 +5,7 @@ verif.  https://iancoleman.io/bip39/
 """
 
 from cryptos import *
-from crypto_agama.seed_tools import seed_words, mnemonic_info, words_to_4ch
+from crypto_agama.agama_seed_tools import seed_words, mnemonic_info, words_to_4ch
 from priv_data import words_book #, get_seeds, get_words
 
 ## = OBJ / ToDo

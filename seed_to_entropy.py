@@ -1,4 +1,4 @@
-from crypto_agama.seed_tools import seed_words, mnemonic_info
+from crypto_agama.agama_seed_tools import seed_words, mnemonic_info
 from crypto_agama.agama_seed_tools import BIP39Functions
 from priv_data import words_book, words_trezor
 
