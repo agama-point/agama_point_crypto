@@ -2,7 +2,7 @@
 """
 crypto_agama/
 agama_seed_tools 2016-24
------------------------------
+---------------------------
 """
 
 import hashlib, binascii, base58, hmac
@@ -93,12 +93,12 @@ def mnemonic_info(words,short=True):
 
 
 
-# --- josh-kean/BIP39 --- 2018
-#class containing all the hashing functions
+# --- josh-kean/BIP39 --- 2018 #class containing all the hashing functions
 class BIP39Functions:
     def __init__(self, entropy = None, result_word_list = None):
-        self.word_list = open('crypto_agama/words.txt', 'r').readlines()
-        self.word_list = [word[:-1] for word in self.word_list]
+        ##self.word_list = open('crypto_agama/words.txt', 'r').readlines()
+        ##self.word_list = [word[:-1] for word in self.word_list]
+        self.word_list = seed_words()
         self.word_list_length = len(self.word_list)
         self.entropy = entropy
         self.entropy_bin = None
