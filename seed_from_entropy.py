@@ -1,27 +1,26 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# 2021-02-01
+# 2021-2024/06
 
 import time
 from mnemonic import Mnemonic
-from crypto_agama.btc_api import addr_info
+from crypto_agama.agama_btc_api import addr_info
 # from crypto_agama.tools import log_to_file
 from crypto_agama.agama_transform_tools import num_to_bin, bin_to_hex, hex_to_bin
 from cryptos import *
 from crypto_agama.agama_seed_tools import BIP39Functions, entropy_normalize, mnemo_to_seed, mnemonic_info, create_root_key, seed_words, generate_seed11_num
 from crypto_agama.agama_cryptos import coin_info, wallet_info, addr3, create_wallet
-# from crypto_agama.seed_tools import seed_words, mnemonic_info, words_to_4ch
 
 scan = True
 log = True
-# entropy: hexa / binary
+bip39f = BIP39Functions()
 
 
 def phrase_to_key(phrase): 
     #tests to see if word list converts to desired master key
-    hashes = BIP39Functions(None, phrase)
-    hashes.create_binary_seed()
-    return hashes.binary_seed
+    _bip39f = BIP39Functions(None, phrase)
+    _bip39f.create_binary_seed()
+    return _bip39f.binary_seed
 
 
 def seed_test(entropy, passphrase=""):
@@ -34,16 +33,12 @@ def seed_test(entropy, passphrase=""):
     print("input entropy:", entropy)
     print("binary:", bin_entropy)
 
-    hashes = BIP39Functions()
-    phrase = hashes.entropy_to_phrase(entropy)
+    phrase = bip39f.entropy_to_phrase(entropy)
     print("BIP39Functions - phrase:",phrase)
-    print("is_valid | reverese_entropy:", hashes.is_checksum_valid(phrase, reverse_entropy=True))
+    print("is_valid | reverese_entropy:", bip39f.is_checksum_valid(phrase, reverse_entropy=True))
     mnemonic_info(phrase)
-    
-    #hashes = HashingFunctions(None, phrase)
-    #binary_seed = hashes.phrase_to_key(phrase)
+
     binary_seed = phrase_to_key(phrase)
-    # binary_seed = hashes.create_binary_seed() # x None
 
     print("BIP39Functions - binary_seed:",binary_seed)
     words = phrase
@@ -51,11 +46,8 @@ def seed_test(entropy, passphrase=""):
     print("mnemo_to_seed_hex:?", mnemo_seed.hex())
 
     mnemo = Mnemonic("english")
-
-    # print("BIP39 Passphrase (optional): ", passphrase)
     seed_bytes = mnemo.to_seed(words, passphrase)
-    #seed_bytes = mnemo.to_seed(words, passphrase="")
-    # print("mnemo.to_seed = seed_bytes: ", seed_bytes)
+    
     print("seed_bytes",seed_bytes)
     print("--- BIP39 seed:")
     print(seed_bytes.hex()) # hexadecimal_string = some_bytes.hex()
@@ -63,6 +55,7 @@ def seed_test(entropy, passphrase=""):
     root_key = create_root_key(seed_bytes)
     print(root_key)
 
+# ========================================================
 
 seed_test("00000000000000000000000000000000") # 32
 seed_test("000102030405060708090a0b0c0d0e0f")

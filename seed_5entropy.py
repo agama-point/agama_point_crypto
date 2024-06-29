@@ -1,23 +1,19 @@
 from crypto_agama.agama_seed_tools import seed_words, mnemonic_info, words_to_bip39nums
 from crypto_agama.agama_seed_tools import BIP39Functions, entropy_normalize, seed_words
 
-hashes = BIP39Functions()
+bip39f = BIP39Functions()
 
 print("-"*32)
 print("[ --- test entropy --- ]")
 
-
 def seed_test(entropy, passphrase=""):
     # entropy = entropy_normalize(entropy)
     print("input entropy:", entropy)
-
-    phrase = hashes.entropy_to_phrase(entropy)
+    phrase = bip39f.entropy_to_phrase(entropy)
     print("BIP39Functions - phrase:",phrase)
-    print("is_valid | reverese_entropy:", hashes.is_checksum_valid(phrase, reverse_entropy=True))
+    print("is_valid | reverese_entropy:", bip39f.is_checksum_valid(phrase, reverse_entropy=True))
     mnemonic_info(phrase)
     return phrase
-
-bip39 = bip39 = seed_words()
 
 # ===================================================================
 en_hex = "80808080808080808080808080808080"
