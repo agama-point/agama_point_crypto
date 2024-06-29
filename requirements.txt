@@ -1,6 +1,7 @@
 python-dotenv
 pybitcoin
 pbkdf2
+base58
 cryptos
 bip_utils
 cryptography==39.0.1
