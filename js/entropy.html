@@ -5,84 +5,113 @@
  <meta name="viewport" content="width=device-width, initial-scale=1.0">
  <link rel="stylesheet" href="css/bootstrap.css">
  <link rel="stylesheet" href="css/app.css">
+ <link rel="stylesheet" href="css/matrix.css">
  <title>entropy | sha | xor</title>
- <script src="js/jquery.min.js"></script> 
+ <script src="js/jquery.min.js"></script>
+ <script src="js/qrcode.js"></script> 
  <script src="js/agama_functions.js?cache_bust=${new Date().getTime()}"></script>
 
 <script>
+// ..?cache_bust=${new Date().getTime()}
 // Použití jQuery pro manipulaci s DOM a událostmi
 $(document).ready(function() {
-   let fullHash = '';
-   $("#bech32").hide();
-   $("#examples").hide();
-   $("#xbutt").hide();
-   $("#b32").click(function(){ $("#bech32").slideToggle("slow"); });
-   $("#ex").click(function(){ $("#examples").slideToggle("slow"); });
+ let fullHash = '';
+ $("#bech32").hide();
+ $("#examples").hide();
+ $("#xbutt").hide();
+ $("#b32").click(function(){ $("#bech32").slideToggle("slow"); });
+ $("#ex").click(function(){ $("#examples").slideToggle("slow"); });
 
+ $('#hashForm').on('submit', async function(event) {
+      event.preventDefault(); // Zamezení výchozího chování formuláře
+     
+      const inputText = $('#inputText').val();
+      fullHash = await sha256(inputText);        
+      $('#input2').val(fullHash);
+      $('#result1').html(`<br />${fullHash}`); 
+  });
 
-   $('#hashForm').on('submit', async function(event) {
-        event.preventDefault(); // Zamezení výchozího chování formuláře
-        
-        const inputText = $('#inputText').val();
-        fullHash = await sha256(inputText);        
-        $('#input2').val(fullHash);
-        $('#result1').html(`<br />${fullHash}`); 
+ $('#leftButton').on('click', function() {        
+     var inputText = $('#input2').val();
+     var inputTextL = inputText.substring(0, 32).toLowerCase();
+
+     $('#result2').html(`<br /><b>${inputTextL}</b><br /><br />`);
+     displayHexAsGrid(inputTextL,"gridContainer1");
+     $("#xbutt").show();        
     });
 
-   $('#leftButton').on('click', function() {        
-       const leftHalf = fullHash.substring(0, fullHash.length / 2);
-       $('#result2').html(`<br /><b>${leftHalf}</b><br /><br />`);
-       displayHexAsGrid(leftHalf,"gridContainer1");
-       $("#xbutt").show();        
+  $('#leftButtonThis').on('click', function() { 
+     const inputText3 = $('#input3').val();       
+     const leftHalf = inputText3.substring(0, 32);
+     $('#result2').html(`<br /><b>${leftHalf}</b><br /><br />`);
+     displayHexAsGrid(leftHalf,"gridContainer1");
+     $("#xbutt").show();        
     });
 
-    $('#leftButton3').on('click', function() { 
-       const inputText3 = $('#input3').val();       
-       const leftHalf = inputText3.substring(0, 32);
-       $('#result2').html(`<br /><b>${leftHalf}</b><br /><br />`);
-       displayHexAsGrid(leftHalf,"gridContainer1");
-       $("#xbutt").show();        
+  $('#rightButton').on('click', function() {        
+     //const rightHalf = fullHash.substring(fullHash.length / 2);
+     var inputText = $('#input2').val();
+     var inputTextL = inputText.substring(32, 64).toLowerCase();
+
+     $('#result2').html(`<br /><b>${inputTextL}</b><br /><br />`);
+     displayHexAsGrid(inputTextL,"gridContainer1");
+     $("#xbutt").show();         
     });
 
-
-    $('#rightButton').on('click', function() {        
-       const rightHalf = fullHash.substring(fullHash.length / 2);
-       $('#result2').html(`<br /><b>${rightHalf}</b><br /><br />`);
-       displayHexAsGrid(rightHalf,"gridContainer1"); 
-       $("#xbutt").show();       
-    });
-
-    $('#xdButton').on('click', function() {        
-       var textContent = $('#result2').text();
-       $('#input_data').val(textContent);
+  $('#xdButton').on('click', function() {        
+     var textContent = $('#result2').text();
+     $('#input_data').val(textContent);
     });
     
-    $('#xkButton').on('click', function() {        
-       var textContent = $('#result2').text();
-       $('#input_key').val(textContent);
-    });
+  $('#xkButton').on('click', function() {        
+     var textContent = $('#result2').text();
+     $('#input_key').val(textContent);
+   });
 
-    $('#xorButton').on('click', function() {
-       const inputData = $('#input_data').val().trim();
-       const inputKey = $('#input_key').val().trim();
-        
-       if (inputData.length === 0 || inputKey.length === 0) {
-         $('#xorResult').html('Please enter both input data and key.'); return;}
-        
-        //if (inputData.length !== inputKey.length) {
-        //   $('#xorResult').html('Input data and key must be of the same length.'); return;}
-        
-        try {
-            const xorResult = xorHexStrings(inputData, inputKey);
-            const data32 = inputData.padStart(32, '0');
-            const key32 = inputKey.padStart(32, '0');
+  $('#btnA').on('click', function() {
+     const setKey = "0c1e24e5917779d297e14d45f14e1a1a";
+     $('#input_key').val(setKey);
+  });
 
-            $('#xorResult').html(`<br>${data32}<br />${key32}<br /> XOR Result-> <br /><b>${xorResult}</b><br /><br />`);
-            displayHexAsGrid(xorResult,"gridContainer2"); 
-        } catch (error) {
-            $('#xorResult').html(`<br>${inputData}<br>${inputKey}<br>Invalid hex input.`);
-        }
-    });
+  $('#btnT').on('click', function() {
+     const setKey = "752f85035563adff915ac0c3ae1252ed";
+     $('#input_key').val(setKey);
+  });
+
+  $('#btnZ').on('click', function() {
+     const setKey = "00000000000000000000000000000000";
+     $('#input_key').val(setKey);
+  });
+
+  $('#xorButton').on('click', function() {
+  const inputData = $('#input_data').val().trim();
+  const inputKey = $('#input_key').val().trim();
+        
+  if (inputData.length === 0 || inputKey.length === 0) {
+    $('#xorResult').html('Please enter both input data and key.'); return;}
+      
+        
+  //if (inputData.length !== inputKey.length) {
+  //$('#xorResult').html('Input data and key must be of the same length.'); return;}
+        
+  try {
+    const xorResult = xorHexStrings(inputData, inputKey);
+    const data32 = inputData.padStart(32, '0');
+    const key32 = inputKey.padStart(32, '0');
+
+    $('#xorResult').html(`<br>${data32}<br />${key32}<br /> XOR Result-> <br /><b>${xorResult}</b><br /><br />`);
+    displayHexAsGrid(xorResult,"gridContainer2");
+
+    //var valQR = $(xorResult).val();
+    $('#qrcode').empty();
+    new QRCode(document.getElementById("qrcode"), {
+       text: xorResult, width: 128, height: 128,
+       colorDark: "Orange", colorLight: "#000000" 
+       });  
+    } catch (error) {
+        $('#xorResult').html(`<br>${inputData}<br>${inputKey}<br>Invalid hex input.`);
+    }
+   });
 
    $('#convertToBech32').on('click', function() {
         var binaryInput = $('#binaryInput').val();
@@ -91,13 +120,13 @@ $(document).ready(function() {
 
         var bech32Result = binaryStringToBech32String(binaryInput);
         $('#bech32Output').html(`${binaryString}: ${bech32Result}<br /><br />`); 
-
     });
 
     $('#convertToBinary').on('click', function() {
         var bech32Input = $('#bech32Input').val();
         var binaryResult = bech32StringToBinaryString(bech32Input);
-        $('#binaryOutput').html(`${binaryResult}<br />`);
+        var num = binaryToNum(binaryResult);
+        $('#binaryOutput').html(`${binaryResult} (${num})<br />`);
     });
 
 });
@@ -107,26 +136,103 @@ $(document).ready(function() {
 
 <body>
 <div class="wrap">
-| <a href="https://www.agamapoint.com/">AgamaPoint</a> | <a href="https://www.agamapoint.com/bip39/">bip39</a> | <a href="https://www.agamapoint.com/bip39/words.html">words</a> | entropy | <a href="https://www.agamapoint.com/games">g_m_s</a>
+| <a href="https://www.agamapoint.com/">AgamaPoint</a> | <a href="https://www.agamapoint.com/bip39/">bip39</a> | <a href="https://www.agamapoint.com/bip39/words.html">words</a> | entropy | <a href="https://www.agamapoint.com/bip39/iting.html">iTing</a> | <a href="https://www.agamapoint.com/games">g_m_s</a>
 <hr /><br />
 
-  <h1>Entropy | SHA | XOR</h1>
+<h1>Entropy | SHA | XOR</h1>
+<div id="matrix"></div>
+
+<script src="js/matrix.js"></script>
+
+  random: <i><span id="numbers"></span></i><br />
+  Entropy: <b><span id="entropy">0</span></b><br /><br />
+  <button id="continueButton" class="btn btn-warning">CONTINUE</button>
+  <button id="stopButton" class="btn btn-warning">STOP/SET</button>
+  <p>entropy_hex: <span id="hexNumber"></span> (<b><span id="hexLength">..</span></b>)</p>
+<br />
+
+ <script>
+   const numbers = [];
+   const numbersElement = $('#numbers');
+   const entropyElement = $('#entropy');
+   const hexNumberElement = $('#hexNumber');
+   const hexLengthElement = $('#hexLength');
+   let intervalId;
+   let generateInterval = 300; // 0.3 sekundy
+   let slowGenerateInterval = 3000; // 5 sekund
+   let currentInterval = generateInterval;
+   let entropyThreshold = 3.2; // Entropie pro změnu intervalu na slowGenerateInterval
+   let autoUpdateHexInterval = 6000; // aktualizace hex každých 5 sekund
+   let maxHexLength = 129; // Max délka hex čísla, po které je stop
+
+   function generateRandomNumber() {
+       const randomNumber = Math.floor(Math.random() * 10); // RND 0-9
+       numbers.push(randomNumber);
+       numbersElement.text(numbers.join('')); // 123...
+       const entropy = calculateEntropy(numbers);
+       entropyElement.text(entropy.toFixed(4));
+
+       // Změna intervalu na 3 spo dosažení entropie 3.2
+       if (entropy >= entropyThreshold && currentInterval !== slowGenerateInterval) {
+           clearInterval(intervalId);
+           currentInterval = slowGenerateInterval;
+           intervalId = setInterval(generateRandomNumber, currentInterval);
+       }
+
+        // Automatická aktualizace hexadecimálního čísla každých 5 sekund
+       if (numbers.length % (autoUpdateHexInterval / generateInterval) === 0) {
+           updateHexNumber();
+       }
+
+       // Zastavení generování, pokud délka hexadecimálního čísla přesáhne 128 znaků
+       if (hexNumberElement.text().length > maxHexLength) {
+           clearInterval(intervalId);
+       }
+   }
+      
+
+   function updateHexNumber() {
+       const { hexString, hexLength } = convertToHex(numbers);
+       hexNumberElement.text(hexString);
+       hexLengthElement.text(hexLength);
+       $('#input2').val(hexString).toLowerCase();
+       //var hexLength2 = val(hexString).length;
+       //hexLengthElement.text(hexLength);
+       
+   }
+
+   $('#continueButton').on('click', function() {
+       intervalId = setInterval(generateRandomNumber, currentInterval);
+   });
+
+   $('#stopButton').on('click', function() {
+       clearInterval(intervalId);
+       updateHexNumber(); // Aktualizace hexadecimálního čísla při zastavení
+   });
+
+   // Původní start interval
+   intervalId = setInterval(generateRandomNumber, currentInterval);
+</script>
+ 
+  <br />
+  <hr /> 
   <h2>SHA256 > 128 L/R</h2>
   <form id="hashForm">
      <label for="inputText">Input text:</label>
      <input class="w250" type="text" id="inputText" name="inputText" required>
      <button class="btn btn-warning" type="submit">SHA-256</button>
+  </form>
 
   <hr />
-  <label for="input2">SHA-256 Hash:</label>
+  <label for="input2">SHA-256 Hash / hex_entropy:</label>
   <input class="custom-input" type="text" id="input2" readonly>
   <button class="btn btn-warning" id="leftButton">Left</button>
   <button class="btn btn-warning" id="rightButton">Right</button>
 
   <br />/alt input<br />
   <input class="custom-input3" type="text" id="input3">
-  <button class="btn btn-warning" id="leftButton3">Left</button> 
-  </form>
+  <button class="btn btn-warning" id="leftButtonThis">This</button> 
+ 
 
 
   <div class="fc" id="result1"></div> 
@@ -144,15 +250,22 @@ $(document).ready(function() {
 <br /><br />
 <hr />
 <h2>XOR</h2>
-    <label for="input_data">Data (hex):</label>
-    <input type="text" id="input_data" name="input_data">
-    <br>
-    <label for="input_key">Key (hex):</label>
-    <input type="text" id="input_key" name="input_key">
+  <label for="input_data">Data (hex):</label>
+  <input type="text" id="input_data" name="input_data">
+  <br>
+  <label for="input_key">Key (hex):       <u>A</u>ndreas | <u>T</u>REZOR | <u>Z</u>ER0 |</label>
+  <input type="text" id="input_key" name="input_key">
 
-    <button class="btn btn-warning" id="xorButton">XOR</button>
-    <div class="fc" id="xorResult"></div>
-    <div id="gridContainer2" class="mt-3"></div>
+  <button class="btn btn-success" id="btnA"><- A</button>
+  <button class="btn btn-success" id="btnT"><- T</button>
+  <button class="btn btn-success" id="btnZ"><- Z</button>
+
+  <button class="btn btn-warning" id="xorButton">XOR</button>
+  <div class="fc" id="xorResult"></div>
+  <div id="gridContainer2" class="mt-3"></div>
+  <br /><br />
+  <div id="qrcode" class="qrcode"></div>
+
 
 <br /><br /><br />
 <hr />
@@ -160,6 +273,7 @@ $(document).ready(function() {
 <button class="btn btn-warning" id="b32">Bech32...</button><br /><br />
 
 <div class="fc" id="bech32">
+QPZRY9X8GF2TVDW0S3JN54KHCE6MUA7L<br />
 <label for="binaryInput">Enter binary number (5-bits):</label>
     <input type="text" id="binaryInput">
     <button class="btn btn-warning" id="convertToBech32">Convert to BECH32</button>
@@ -201,6 +315,13 @@ R:    efc8e7affc532fce4a088ad19844418e<br />
 5e46bb49091475b2ac348ff57dfeecd6
 <br />
 <br />
+<b>8080...</b><br />
+letter 1028 |advice 32 |cage 257 |absurd 8 |amount 64 |doctor 514 |<br />
+acoustic 16 |avoid 128 |letter 1028 |advice 32 |cage 257 |above....<br />
+<a href="https://www.agamapoint.com/address/index.html">low_ent</a>
+
+<br />
+<br />
 <hr />
 
 <b>e(trezor)</b><br />
@@ -220,6 +341,7 @@ R:    efc8e7affc532fce4a088ad19844418e<br />
 <hr />
 <br />
 <h2>Links</h2>
+| <a href="https://www.agamapoint.com/chaos/">chaos</a> | <a href="https://www.agamapoint.com/entropie/">entropie</a> | ...<br/>
 test: <a href="https://github.com/trezor/python-mnemonic/blob/master/vectors.json">bip39_vectors</a>
 
 <br />

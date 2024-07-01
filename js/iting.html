@@ -1,18 +1,22 @@
 <!DOCTYPE html>
 <html>
 <head lang="en">
-    <meta charset="utf-8" />
-    <title>iTing</title>
-    <link rel="stylesheet" href="css/bootstrap.css">
-    <link rel="stylesheet" href="css/app.css">
-    <link rel="stylesheet" href="css/iting.css">
-    <script src="js/jquery.min.js"></script> 
-    <script src="js/iting.js"></script> 
+  <meta charset="utf-8" />
+  <title>iTing</title>
+  <link rel="stylesheet" href="css/bootstrap.css">
+  <link rel="stylesheet" href="css/app.css">
+  <link rel="stylesheet" href="css/iting.css">
+  <script src="js/jquery.min.js"></script>
+  <script src="js/qrcode.js"></script> 
+  <script src="js/iting.js"></script> 
 </head>
 
 <body>
 <div class="wrap">
-<h2> iTing 6a fix0</h2> <br>
+<h2>iTing ~ agama</h2> <br>
+<div class="wrap">
+| <a href="https://www.agamapoint.com/">AgamaPoint</a> | <a href="https://www.agamapoint.com/bip39/">bip39</a> | <a href="https://www.agamapoint.com/bip39/words.html">words</a> | <a href="https://www.agamapoint.com/bip39/entropy.html">entropy</a> | iTing | <a href="https://www.agamapoint.com/games">g_m_s</a>
+<hr /><br />
 
 <script>
     function createHexagramElement(binary) {
@@ -72,14 +76,14 @@
 <hr />
 
 <div id="container">
-    <div class="box" id="tr1"><b> 乾 <br />Qian</b> heaven <i>nebe</i></div>
-    <div class="box" id="tr2"><b> 巽 <br />Xun</b> wind <i>vitr</i></div>
-    <div class="box" id="tr3"><b> 坎 <br />Kan</b> water <i>voda</i></div>
-    <div class="box" id="tr4"><b> 艮 <br />Gen</b> mountain <i>hora</i></div>
-    <div class="box" id="tr5"><b> 坤 <br />Kun</b> earth <i>zeme</i></div>
-    <div class="box" id="tr6"><b> 震 <br />Zhen</b> thunder <i>hrom</i></div>
-    <div class="box" id="tr7"><b> 离 <br />Li</b><br /> fire <i>ohen</i></div>
-    <div class="box" id="tr8"><b> 兑 <br />Dui</b> lake <i>jezero</i></div>
+    <div class="box" id="tr1"><b><h3> 乾 </h3>Qian</b><br /> heaven<br /> <i>nebe</i></div>
+    <div class="box" id="tr2"><b><h3> 巽 </h3>Xun</b><br />  wind<br />   <i>vitr</i></div>
+    <div class="box" id="tr3"><b><h3> 坎 </h3>Kan</b><br />  water<br />  <i>voda</i></div>
+    <div class="box" id="tr4"><b><h3> 艮 </h3>Gen</b><br />  mountain<br /><i>hora</i></div>
+    <div class="box" id="tr5"><b><h3> 坤 </h3>Kun</b><br />  earth<br />  <i>zeme</i></div>
+    <div class="box" id="tr6"><b><h3> 震 </h3>Zhen</b><br /> thunder<br /><i>hrom</i></div>
+    <div class="box" id="tr7"><b><h3> 离 </h3>Li</b><br />   fire<br />   <i>ohen</i></div>
+    <div class="box" id="tr8"><b><h3> 兑 </h3>Dui</b><br />  lake<br />   <i>jezero</i></div>
 </div>
 <script>
     $('#tr1').append(createHexagramElement("111"));
@@ -143,9 +147,16 @@ b2:
 b3: Trigram
 b6: Hexahram [2T]
 11: 4T-1 / 3T+2
-
 </pre>
+<div id="qrcode" class="qrcode"></div>
 </div> 
+
+<script>
+var qrcode = new QRCode(document.getElementById("qrcode"), {
+  text: "https://www.agamapoint.com/games/retro.html", width: 128, height: 128,
+  colorDark: "Orange", colorLight: "#000000" 
+  });
+</script>
 
 </div>
 </body> 
