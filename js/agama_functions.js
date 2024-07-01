@@ -163,3 +163,31 @@ function bech32StringToBinaryString(bech32String) {
 
     return binaryString;
 }
+
+// entropy
+
+function calculateEntropy(arr) {
+    const frequency = {};
+    arr.forEach(num => {
+       frequency[num] = (frequency[num] || 0) + 1;
+       });
+
+      let entropy = 0;
+      const len = arr.length;
+
+      for (let num in frequency) {
+          const p_x = frequency[num] / len;
+          entropy -= p_x * Math.log2(p_x);
+      }
+
+      return entropy;
+     }
+
+function convertToHex(arr) {
+      let numberString = arr.join('');
+      const hexValue = BigInt(numberString).toString(16).toUpperCase(); // Převod na hex a velká písmena (A-F)
+      return {
+         hexString: hexValue,
+         hexLength: hexValue.length //numberString.length
+         };
+}
