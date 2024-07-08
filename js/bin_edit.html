@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="css/bootstrap.css">
+<link rel="stylesheet" href="css/app.css">
+<script src="js/jquery.min.js"></script>
+<script src="js/qrcode.js"></script> 
+<script src="js/agama_functions.js"></script>
+
+<title>Náhledový editor dvojkové soustavy</title>
+
+<style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #333;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        canvas {
+            background-color: #111;
+        }
+        #hexValues {
+            display: flex;
+            justify-content: space-around;
+            width: 90px;
+        }
+    </style>
+</head>
+<body>
+<h1>simple binary editor</h1>
+<hr>
+
+<canvas id="bitCanvas" width="90" height="120"></canvas>
+<div id="hexValues">
+    <div id="hexValue1">0</div>
+    <div id="hexValue2">0</div>
+    <div id="hexValue3">0</div>
+</div>
+
+<script>
+$(document).ready(function() {
+  $('#leftButtonThis').on('click', function() { 
+     const inputText3 = $('#input3').val();       
+     const leftHalf = inputText3.substring(0, 32);
+     $('#result2').html(`<br /><b>${leftHalf}</b><br /><br />`);
+     displayHexAsGrid(leftHalf,"gridContainer1");
+     //$("#xbutt").show();        
+    });
+
+  $("#examples").hide();
+  $("#ex").click(function(){ $("#examples").slideToggle("slow"); });
+
+});
+//js/agama_functions.js?cache_bust=${new Date().getTime()}
+
+   const canvas = document.getElementById('bitCanvas');
+   const ctx = canvas.getContext('2d');
+   const hexValueDivs = [
+       document.getElementById('hexValue1'),
+       document.getElementById('hexValue2'),
+       document.getElementById('hexValue3')
+   ];
+   const width = 90;
+   const height = 120;
+   const cellSize = 30;
+   const rows = height / cellSize;
+   const cols = width / cellSize;
+
+   // Draw initial grid
+   ctx.strokeStyle = 'gray';
+   for (let x = 0; x <= width; x += cellSize) {
+       for (let y = 0; y <= height; y += cellSize) {
+           ctx.strokeRect(x, y, cellSize, cellSize);
+       }
+   }
+
+   let bitArray = Array(rows).fill(0).map(() => Array(cols).fill(0));
+
+   function updateHexValues() {
+       for (let col = 0; col < cols; col++) {
+           let binaryString = bitArray.map(row => row[col]).reverse().join('');
+           let hexString = parseInt(binaryString, 2).toString(16).toUpperCase();
+           hexValueDivs[col].textContent = hexString || '0';
+       }
+   }
+
+   canvas.addEventListener('click', (event) => {
+       const rect = canvas.getBoundingClientRect();
+       const x = event.clientX - rect.left;
+       const y = event.clientY - rect.top;
+       const col = Math.floor(x / cellSize);
+       const row = Math.floor(y / cellSize);
+       // Toggle bit value
+       const bitIndex = rows - 1 - row;
+       bitArray[bitIndex][col] = bitArray[bitIndex][col] === 0 ? 1 : 0;
+
+       // Update canvas
+       ctx.fillStyle = bitArray[bitIndex][col] === 0 ? 'black' : 'orange';
+       ctx.fillRect(col * cellSize, row * cellSize, cellSize, cellSize);
+
+       // Redraw grid line
+       ctx.strokeStyle = 'gray';
+       ctx.strokeRect(col * cellSize, row * cellSize, cellSize, cellSize);
+
+       updateHexValues();
+   });
+   updateHexValues();
+</script>
+
+<hr />
+<br />/alt input<br />
+  <input class="custom-input3" type="text" id="input3"><br />
+  <button class="btn btn-warning" id="leftButtonThis">This</button> 
+ 
+  <div class="fc" id="result2"></div> 
+  <div id="gridContainer1" class="mt-3"></div>
+
+<hr>
+
+<script>
+   function substitute() {
+       const inputString = document.getElementById('inputString').value.toUpperCase();
+       let outputArray = [];
+
+       for (let char of inputString) {
+           if (substitutionTable21[char]) {
+               outputArray.push(substitutionTable21[char]);
+           } else {
+               outputArray.push(char); // Keep the original character if no substitution is found
+           }
+       }
+        const outputString = outputArray.join('0');
+       //document.getElementById('input3').innerText = outputString;
+       document.getElementById('input3').value = outputString;
+   }
+</script>
+
+<br />
+<button class="btn btn-warning" id="ex">Examples...</button><br /><br />
+
+<div class="fc" id="examples">
+<hr>
+<b>AbCDEFGH</b> |faf0fd70f990f960fd90fa80f9b0f2f<br />
+<b>IJKLMNOPR</b>|f01f0f2d0f110f8f0f4f0f9f0fae0fad<br />
+<b>STUVXYZ.</b> |dda08f80f1f0e1e0d2d0c3c0b9d01<br />
+...<br />
+<b>123456789</b>|f09b50bf60e270dbb0f5388f0fbf0dbf<br />
+<br>
+<b>AGAMA</b>    |faf0f9b0faf0f8f0faf<br />
+<b>donKey</b>   |f960f9f0f4f0f2d0fd90c3c<br />
+<b>satoshi</b>  |dda0faf08f80f9f0dda0f2f0f<br />
+...
+<hr>
+
+<input type="text" id="inputString" placeholder="Enter a word">
+<button class="btn btn-success" onclick="substitute()">Substitute</button>
+
+<hr>
+visual substitution 21<br>
+--: 22<br />
+A: faf<br />
+B: fd7<br />
+C: f99<br />
+D: f96<br />
+E: fd9<br />
+F: fa8<br />
+G: f9b<br />
+H: f2f<br />
+I: f<br />
+J: 1f<br />
+K: f2d<br />
+L: f11<br />
+M: f8f<br />
+N: f4f<br />
+O: f9f<br />
+P: fae<br />
+R: fad<br />
+S: dda<br />
+T: 8f8<br />
+U: f1f<br />
+V: e1e<br />
+X: d2d<br />
+Y: c3c<br />
+Z: b9d<br />
+<hr>
+</div>
+
+</body>
+</html>

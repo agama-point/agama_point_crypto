@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="css/base.css">
+<script src="js/jquery.min.js"></script>
+<title>svg editor</title>
+
+<style>
+body { background-color: black;
+       display: flex;
+       flex-direction: column;
+       align-items: center;
+       margin: 0;
+      }
+canvas { background-color: black; }
+#points {
+    margin-top: 20px;
+    color: black;
+    font-size: 12px;
+}
+textarea {
+    background-color: silver;
+    width: 500px;
+    height: 100px;
+}
+</style>
+
+<script>
+$(document).ready(function() {
+    $('.ico').mouseenter(function() { $(this).css('opacity', '1');
+    }).mouseleave(function() {
+        $(this).css('opacity', '0.7');        
+    });
+});
+</script>
+
+</head>
+
+<body>
+    <br />
+    <canvas id="myCanvas" width="300" height="300"></canvas>
+    <div>Points: </div>
+    <textarea id="points"></textarea>
+
+    <div class="w300 bg_bla div_centr">
+        <a id="stepLeftButton" href="#">
+            <img class="ico" src="svg_ico2/sq-left.svg" alt="Chat icon" width="50" height="50" title="left"></a>
+        <a id="stepUpButton" href="#">
+            <img class="ico" src="svg_ico2/sq-top.svg" alt="Chat icon" width="50" height="50" title="up"></a>
+        <a id="stepDownButton" href="#">
+            <img class="ico" src="svg_ico2/sq-down.svg" alt="Chat icon" width="50" height="50" title="down"></a>
+        <a id="stepRightButton" href="#">
+            <img class="ico" src="svg_ico2/sq-right.svg" alt="Chat icon" width="50" height="50" title="right"></a>
+        <a id="exportButton" href="#">
+            <img class="ico" src="svg_ico2/share.svg" alt="Export icon" width="50" height="50" title="export"></a>
+    </div>
+
+    <div class="col_sil">
+        resample <input type="checkbox" id="divideByTenCheckbox">
+        <label  for="divideByTenCheckbox">/10</label>
+    </div>
+
+    <div>SVG Output: </div>
+    <textarea id="svgOutput"></textarea>
+
+    <script>
+        const canvas = document.getElementById('myCanvas');
+        const ctx = canvas.getContext('2d');
+        const pointsDiv = document.getElementById('points');
+        const svgOutput = document.getElementById('svgOutput');
+        const divideByTenCheckbox = document.getElementById('divideByTenCheckbox');
+        let points = [];
+        const gridSize = 30;
+
+        // Funkce pro vykreslení rastru
+        function drawGrid() {
+            ctx.strokeStyle = 'grey';
+            ctx.lineWidth = 1;
+            for (let x = 0; x <= canvas.width; x += gridSize) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, canvas.height);
+                ctx.stroke();
+            }
+            for (let y = 0; y <= canvas.height; y += gridSize) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+                ctx.stroke();
+            }
+            drawWhiCircle(0*gridSize, 5*gridSize);
+            drawWhiCircle(5*gridSize, 0*gridSize);
+            drawWhiCircle(5*gridSize, 5*gridSize);
+            drawWhiCircle(5*gridSize, 10*gridSize);
+            drawWhiCircle(10*gridSize, 5*gridSize);
+        }
+
+        // Vykreslení rastru při načtení stránky
+        drawGrid();
+
+        // Funkce pro vymazání plátna a znovu vykreslení rastru a bodů
+        function redrawCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawGrid();
+            points.forEach((point, index) => {
+                drawRedCircle(point.x, point.y);
+                if (index > 0) {
+                    const prevPoint = points[index - 1];
+                    drawRedLine(prevPoint.x, prevPoint.y, point.x, point.y);
+                }
+            });
+        }
+
+        // Funkce pro vykreslení červeného kolečka
+        function drawRedCircle(x, y) {
+            ctx.beginPath();
+            ctx.arc(x, y, 5, 0, Math.PI * 2);
+            ctx.fillStyle = 'red';
+            ctx.fill();
+        }
+
+	function drawWhiCircle(x, y) {
+            ctx.beginPath();
+            ctx.arc(x, y, 3, 0, Math.PI * 2);
+            ctx.fillStyle = 'white';
+            ctx.fill();
+        }
+
+
+
+        // Funkce pro vykreslení červené linky
+        function drawRedLine(x1, y1, x2, y2) {
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.strokeStyle = 'red';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+
+        // Zjištění nejbližšího bodu na rastru
+        function getNearestPoint(x, y) {
+            const nearestX = Math.round(x / gridSize) * gridSize;
+            const nearestY = Math.round(y / gridSize) * gridSize;
+            return { x: nearestX, y: nearestY };
+        }
+
+        // Událost při kliknutí do canvasu
+        canvas.addEventListener('click', (event) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+
+            const nearestPoint = getNearestPoint(x, y);
+            points.push(nearestPoint);
+            redrawCanvas();
+            updatePointsText();
+        });
+
+        // Funkce pro aktualizaci textového pole s body
+        function updatePointsText() {
+            pointsDiv.value = points.map(point => `[${point.x}, ${point.y}]`).join(', ');
+        }
+
+        // Funkce pro posun bodů
+        function movePoints(dx, dy) {
+            points = points.map(point => ({
+                x: point.x + dx * gridSize,
+                y: point.y + dy * gridSize
+            }));
+            redrawCanvas();
+            updatePointsText();
+        }
+
+        // Funkce pro export bodů do SVG
+        function exportToSVG() {
+            const divideByTen = divideByTenCheckbox.checked;
+            const svgHeader = divideByTen
+                ? '<svg height="30" width="30" xmlns="http://www.w3.org/2000/svg">\n'
+                : '<svg height="300" width="300" xmlns="http://www.w3.org/2000/svg">\n';
+            const svgFooter = '</svg>';
+            const pointsString = points.map(point => {
+                const x = divideByTen ? point.x / 10 : point.x;
+                const y = divideByTen ? point.y / 10 : point.y;
+                return `${x},${y}`;
+            }).join(' ');
+            const polyline = `  <polyline points="${pointsString}" style="fill:none;stroke:green;stroke-width:3" />\n`;
+            const svgContent = svgHeader + polyline + svgFooter;
+            svgOutput.value = svgContent;
+        }
+
+        // Event listenery pro tlačítka
+        document.getElementById('stepLeftButton').addEventListener('click', (e) => {
+            e.preventDefault();
+            movePoints(-1, 0);
+        });
+
+        document.getElementById('stepUpButton').addEventListener('click', (e) => {
+            e.preventDefault();
+            movePoints(0, -1);
+        });
+
+        document.getElementById('stepDownButton').addEventListener('click', (e) => {
+            e.preventDefault();
+            movePoints(0, 1);
+        });
+
+        document.getElementById('stepRightButton').addEventListener('click', (e) => {
+            e.preventDefault();
+            movePoints(1, 0);
+        });
+
+        document.getElementById('exportButton').addEventListener('click', (e) => {
+            e.preventDefault();
+            exportToSVG();
+        });
+    </script>
+
+<hr />
+<div class="col_sil">
+<img class="ico" src="svg/test_ring.svg" alt="Chat icon" width="50" height="50">
+<object class="ico" type="image/svg+xml" data="svg/noise50x50.svg" width="50" height="50">
+  <img src="fallback.png" alt="Chat icon fallback">
+</object>
+<img class="ico" src="svg/test_ring2.svg" alt="Chat icon" width="50" height="50">
+<br>
+
+<img class="ico" src="svg/pruhy_h1.svg" alt="Chat icon" width="50" height="50">
+<img class="ico" src="svg/pruhy_hv.svg" alt="Chat icon" width="50" height="50">
+<img class="ico" src="svg/pruhy_v1.svg" alt="Chat icon" width="50" height="50">
+
+<br /> 30x30
+<img class="ico" src="svg/test_right.svg" alt="Chat icon" width="30" height="30">
+
+| <img class="ico" src="svg/test_ring2.svg" alt="Chat icon" width="30" height="30">
+</div>
+
+<br />
+<hr />
+<div>
+<img class="ico" src="svg/pruhy_v1.svg" alt="Chat icon" width="25" height="25">
+<img class="ico" src="svg/g0.svg" alt="Chat icon" width="25" height="25">
+<img class="ico" src="svg/g1.svg" alt="Chat icon" width="25" height="25">
+<img class="ico" src="svg/g2.svg" alt="Chat icon" width="25" height="25">
+<img class="ico" src="svg/g3.svg" alt="Chat icon" width="25" height="25">
+<img class="ico" src="svg/g4.svg" alt="Chat icon" width="25" height="25">
+<img class="ico" src="svg/g5.svg" alt="Chat icon" width="25" height="25">
+<img class="ico" src="svg/g6.svg" alt="Chat icon" width="25" height="25">
+<img class="ico" src="svg/g7.svg" alt="Chat icon" width="25" height="25">
+<img class="ico" src="svg/g8.svg" alt="Chat icon" width="25" height="25">
+<img class="ico" src="svg/g9.svg" alt="Chat icon" width="25" height="25">
+...
+<object class="ico" type="image/svg+xml" data="svg/noise50x50.svg" width="50" height="50">
+  <img src="fallback.png" alt="Chat icon fallback">
+</object>
+
+<img class="ico" src="svg/g123.svg" alt="Chat icon" width="25" height="25">
+
+
+
+
+</div>
+<hr />
+<br />
+</body>
+</html>

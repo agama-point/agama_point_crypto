@@ -15,6 +15,13 @@
 // ..?cache_bust=${new Date().getTime()}
 // Použití jQuery pro manipulaci s DOM a událostmi
 $(document).ready(function() {
+  $('.ico').mouseenter(function() {
+     $(this).css('opacity', '0.5');
+     }).mouseleave(function() {
+     $(this).css('opacity', '0.9');
+    });
+
+
  let fullHash = '';
  $("#bech32").hide();
  $("#examples").hide();
@@ -128,7 +135,6 @@ $(document).ready(function() {
         var num = binaryToNum(binaryResult);
         $('#binaryOutput').html(`${binaryResult} (${num})<br />`);
     });
-
 });
 </script>
 
@@ -136,10 +142,14 @@ $(document).ready(function() {
 
 <body>
 <div class="wrap">
-| <a href="https://www.agamapoint.com/">AgamaPoint</a> | <a href="https://www.agamapoint.com/bip39/">bip39</a> | <a href="https://www.agamapoint.com/bip39/words.html">words</a> | entropy | <a href="https://www.agamapoint.com/bip39/iting.html">iTing</a> | <a href="https://www.agamapoint.com/games">g_m_s</a>
+| <a href="https://www.agamapoint.com/">AgamaPoint</a> | <a href="https://www.agamapoint.com/bip39/">bip39</a> | <a href="https://www.agamapoint.com/bip39/words.html">words</a> | entropy "generator" | <a href="https://www.agamapoint.com/bip39/iting.html">iTing</a> | <a href="https://www.agamapoint.com/games">g_m_s</a> | <a href="test_game.html">G</a> | <a href="testy.html">T</a> | <a href="mm_bips.html">mm_bips</a> | 
 <hr /><br />
 
-<h1>Entropy | SHA | XOR</h1>
+<h1>
+<object class="ico" type="image/svg+xml" data="svg/noise50x50.svg" width="50" height="50">
+  <img src="fallback.png" alt="Chat icon fallback">
+</object>
+Entropy | SHA | XOR</h1>
 <div id="matrix"></div>
 
 <script src="js/matrix.js"></script>
@@ -150,6 +160,7 @@ $(document).ready(function() {
   <button id="stopButton" class="btn btn-warning">STOP/SET</button>
   <p>entropy_hex: <span id="hexNumber"></span> (<b><span id="hexLength">..</span></b>)</p>
 <br />
+-> <a href="https://www.agamapoint.com/bip39/entropy_matrix10x10.html">visual</a> test2.
 
  <script>
    const numbers = [];
@@ -158,12 +169,12 @@ $(document).ready(function() {
    const hexNumberElement = $('#hexNumber');
    const hexLengthElement = $('#hexLength');
    let intervalId;
-   let generateInterval = 300; // 0.3 sekundy
-   let slowGenerateInterval = 3000; // 5 sekund
+   let generateInterval = 200; // 0.2 sekundy
+   let slowGenerateInterval = 1000; // 1-5 sekund
    let currentInterval = generateInterval;
    let entropyThreshold = 3.2; // Entropie pro změnu intervalu na slowGenerateInterval
-   let autoUpdateHexInterval = 6000; // aktualizace hex každých 5 sekund
-   let maxHexLength = 129; // Max délka hex čísla, po které je stop
+   let autoUpdateHexInterval = 5000; // aktualizace hex každých 5 sekund
+   let maxHexLength = 512; // Max délka hex čísla, po které je stop
 
    function generateRandomNumber() {
        const randomNumber = Math.floor(Math.random() * 10); // RND 0-9
@@ -188,8 +199,7 @@ $(document).ready(function() {
        if (hexNumberElement.text().length > maxHexLength) {
            clearInterval(intervalId);
        }
-   }
-      
+   }      
 
    function updateHexNumber() {
        const { hexString, hexLength } = convertToHex(numbers);
@@ -197,8 +207,7 @@ $(document).ready(function() {
        hexLengthElement.text(hexLength);
        $('#input2').val(hexString).toLowerCase();
        //var hexLength2 = val(hexString).length;
-       //hexLengthElement.text(hexLength);
-       
+       //hexLengthElement.text(hexLength);       
    }
 
    $('#continueButton').on('click', function() {
@@ -343,9 +352,33 @@ acoustic 16 |avoid 128 |letter 1028 |advice 32 |cage 257 |above....<br />
 <h2>Links</h2>
 | <a href="https://www.agamapoint.com/chaos/">chaos</a> | <a href="https://www.agamapoint.com/entropie/">entropie</a> | ...<br/>
 test: <a href="https://github.com/trezor/python-mnemonic/blob/master/vectors.json">bip39_vectors</a>
-
 <br />
 <hr />
+<a href="https://www.agamapoint.com/chaos/"> 
+<img class="ico" src="svg/galaxy_sil.svg" alt="Chat icon" width="50" height="50" title="chaos"></a>
+
+<a href="https://www.agamapoint.com/bip39/entropy.html"> 
+<img class="ico" src="svg/sil_blocks.svg" alt="Chat icon" width="50" height="50" title="entropy"></a>
+
+<a href="https://www.agamapoint.com/sha256/">
+<img class="ico" src="svg/fingerprint_sil.svg" alt="Chat icon" width="50" height="50" title="sha256"</a>
+
+<a href="https://www.agamapoint.com/transakce/">
+<img class="ico" src="svg/maze_sil.svg" alt="Chat icon" width="50" height="50" title="transaction"></a>
+
+<a href="https://www.agamapoint.com/ukazky-kodu/">
+<img class="ico" src="svg/sqspiral_sil.svg" alt="Chat icon" width="50" height="50" title="code"</a>
+
+<a href="https://www.agamapoint.com/blockchain/">
+<img class="ico" src="svg/block9.svg" alt="Chat icon" width="50" height="50" title="blockchain"></a>
+
+<a href="https://www.agamapoint.com/cypherpunk/">
+<img class="ico" src="svg/anonymou_sil.svg" alt="Chat icon" width="50" height="50" title="cyberpunk"></a>
+
+<a href="https://github.com/agama-point">
+<img class="ico" src="svg/github_sil.svg" alt="Chat icon" width="50" height="50" title="github"></a>
+
+
 </div>   
 </body>
 </html>

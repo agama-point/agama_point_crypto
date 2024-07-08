@@ -191,3 +191,14 @@ function convertToHex(arr) {
          hexLength: hexValue.length //numberString.length
          };
 }
+
+//---2024/07
+const substitutionTable21 = {
+  'A': 'faf','B': 'fd7','C': 'f99','D': 'f96','E': 'fd9',
+  'F': 'fa8','G': 'f9b','H': 'f2f','I': 'f','J': '1f',
+  'K': 'f2d','L': 'f11','M': 'f8f','N': 'f4f','O': 'f9f',
+  'P': 'fae','R': 'fad','S': 'dda','T': '8f8','U': 'f1f',
+  'V': 'e1e','X': 'd2d','Y': 'c3c','Z': 'b9d'
+   };
+
+
