@@ -19,6 +19,27 @@ function binaryToNum(bin) {
     return parseInt(bin, 2);
 }
 
+// Získání frakční části čísla
+function fractionalx(num, B) {    
+    let fractionalPart = num - Math.floor(num);
+    // Přeměna frakční části na celé číslo pro práci s bity
+    let fractionalInt = Math.floor(fractionalPart * Math.pow(2, B));
+    // Omezení výsledku na "B" počet bajtů
+    let mask = (1 << (8 * B)) - 1;
+    
+    return fractionalInt & mask;
+}
+
+function fractional(num, B) {
+     const fractionalPart = num - Math.floor(num);
+     const result = Math.floor(fractionalPart * (2 ** (8 * B)));
+     return {
+     decimal: result,
+         //hex: result.toString(16).padStart(8, '0')
+         hex: result.toString(16).padStart(2 * B, '0')
+         };
+     }
+
 // Funkce pro převod čísla na "házení kostkami" na pevnou délku s posunem
 function numToDice(num, length) {
     let base6 = num.toString(6).padStart(length, '0');

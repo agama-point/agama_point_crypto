@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>tab_calc</title>
+<link rel="stylesheet" href="css/bootstrap.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/app.css?v=1.0">
+<script src="js/jquery.min.js"></script>
+<script src="js/agama_functions.js"></script>
+</head>
+
+<body>
+<div class="wrap">
+| <a href="https://www.agamapoint.com/">AgamaPoint</a> | <a href="https://www.agamapoint.com/bip39/">bip39</a> | <a href="https://www.agamapoint.com/bip39/words.html">words</a> | <a href="https://www.agamapoint.com/bip39/entropy.html">entropy "generator"</a> | <a href="https://www.agamapoint.com/bip39/iting.html">iTing</a> | <a href="https://www.agamapoint.com/games">g_m_s</a> | <a href="test_game.html">G</a> | <a href="testy.html">T</a> | <a href="mm_bips.html">mm_bips</a> | 
+<hr /><br />
+
+<h1 class="digip">tab_calc</h1>
+<div class="div_form">
+Dec <input type="text" id="dec">
+    <button class="btn btn-warning" id="goDec">Go</button><br /><br />
+Hex <input type="text" id="hex">
+    <button class="btn btn-warning" id="goHex">Go</button><br /><br />
+Bin <input " type="text" id="bin">
+    <button class="btn btn-warning" id="goBin">Go</button><br /><br />
+</div>   
+
+<script>
+$(document).ready(function() {
+ 
+ $("#bech32").hide();
+ $("#examples").hide();
+ $("#xbutt").hide();
+ $("#b32").click(function(){ $("#bech32").slideToggle("slow"); });
+ $("#ex").click(function(){ $("#examples").slideToggle("slow"); });
+
+ const outputBox = $('#outputBox');
+ outputBox.val(''); 
+ var bech32Result1 = "";
+ var binaryString = "";
+
+
+   $('#goDec').click(function() {
+     let dec = parseInt($('#dec').val());
+     binaryString = dec.toString(2);
+     while (binaryString.length % 5 !== 0) {binaryString = '0' + binaryString;}
+     bech32Result1 = binaryStringToBech32String(binaryString);
+
+     if (!isNaN(dec)) {
+         $('#hex').val(dec.toString(16));
+         $('#bin').val(dec.toString(2));
+  outputBox.val(outputBox.val() + `Dec: ${dec} | Hex: ${dec.toString(16)} | Bin: ${dec.toString(2)}\nBECH32: ${binaryString}: ${bech32Result1}\n`); 
+ 
+ displayHexAsGrid(dec.toString(16),"gridContainer1");    
+      } else { alert("Prosím, zadejte platné desítkové číslo."); }
+      });
+
+   $('#goHex').click(function() {
+     let hex = $('#hex').val();
+     let dec = parseInt(hex, 16);
+     binaryString = dec.toString(2)
+     $('#bin').val(binaryString);
+
+     while (binaryString.length % 5 !== 0) {binaryString = '0' + binaryString;}
+     bech32Result1 = binaryStringToBech32String(binaryString);
+
+     if (!isNaN(dec)) { $('#dec').val(dec);
+  outputBox.val(outputBox.val() + `Dec: ${dec} | Hex: ${dec.toString(16)} | Bin: ${dec.toString(2)}\nBECH32: ${binaryString}: ${bech32Result1}\n`); 
+  displayHexAsGrid(hex,"gridContainer1");  
+      } else { alert("Prosím, zadejte platné šestnáctkové číslo."); }
+      });
+
+
+      $('#goBin').click(function() {
+        let bin = $('#bin').val();
+        let dec = parseInt(bin, 2);
+        if (!isNaN(dec)) {
+           $('#dec').val(dec);
+           $('#hex').val(dec.toString(16));
+ outputBox.val(outputBox.val() + `Dec: ${dec} | Hex: ${dec.toString(16)} | Bin: ${dec.toString(2)}\n`); 
+ displayHexAsGrid(dec.toString(16),"gridContainer1"); 
+        } else { alert("Prosím, zadejte platné binární číslo."); }
+        });
+
+$('#convertToBech32').on('click', function() {
+        var binaryInput = $('#binaryInput').val();
+        var binaryString = binaryInput;
+        while (binaryString.length % 5 !== 0) {binaryString = '0' + binaryString;}
+
+        var bech32Result = binaryStringToBech32String(binaryString);
+        $('#bech32Output').html(`${binaryString}: ${bech32Result}<br /><br />`); 
+    });
+
+    $('#convertToBinary').on('click', function() {
+        var bech32Input = $('#bech32Input').val();
+        var binaryResult = bech32StringToBinaryString(bech32Input);
+        var num = binaryToNum(binaryResult);
+        $('#binaryOutput').html(`${binaryResult} (${num})<br />`);
+    });
+
+
+
+
+
+
+});
+</script>
+
+<hr>
+<div id="gridContainer1" class="mt-3"></div>
+<br />
+<textarea class="bg_bla" id="outputBox" rows="15" cols="70"></textarea>
+<hr>
+
+<button class="btn btn-warning" id="b32">Bech32...</button><br /><br />
+
+<div class="fc" id="bech32">
+  <div class="div_form">
+  QPZRY9X8GF2TVDW0S3JN54KHCE6MUA7L<br />
+  <label for="binaryInput">Enter binary number (5-bits):</label>
+    <input type="text" id="binaryInput">
+    <button class="btn btn-warning" id="convertToBech32">Convert to BECH32</button>
+    <div id="bech32Output">...<br /></div>
+
+    <label for="bech32Input">Enter BECH32 string:</label>
+    <input type="text" id="bech32Input">
+    <button class="btn btn-warning" id="convertToBinary">Convert BECH32 to Binary</button>
+    <div id="binaryOutput">...</div>
+  </div>
+</div>
+<hr />
+
+<button class="btn btn-warning" id="ex">Examples...</button><br /><br />
+<div class="fc" id="examples">
+Dec: <b>1234567890</b> | Hex: 499602d2 |<br /> 
+Bin: 1001001100101100000001011010010<br />
+BECH32: PYEVQKJ<br />
+<br />
+<br />
+Dec: <b>123456789012345</b> | Hex: 7048860ddf79 |<br />
+Bin: 11100000100100010000110000011011101111101111001<br />
+BECH32: RSFZRQMHME<br />
+
+<hr />
+Q(8RYU**CL) : 8RYUCL: 001110001100100111001100011111 (238187295)<br />
+Dec: <b>238187295</b> | Hex: e32731f |<br /> 
+Bin: 1110001100100111001100011111<br /> 
+BECH32: 8RYUCL<br /><br /> 
+subs.66a<br /> :.:.:
+</div>
+<br />
+<hr />
+<a href="https://www.agamapoint.com/chaos/"> 
+<img class="ico" src="svg/galaxy_sil.svg" alt="Chat icon" width="50" height="50" title="chaos"></a>
+
+<a href="https://www.agamapoint.com/bip39/entropy.html"> 
+<img class="ico" src="svg/sil_blocks.svg" alt="Chat icon" width="50" height="50" title="entropy"></a>
+
+<a href="https://www.agamapoint.com/sha256/">
+<img class="ico" src="svg/fingerprint_sil.svg" alt="Chat icon" width="50" height="50" title="sha256"</a>
+
+<a href="https://www.agamapoint.com/transakce/">
+<img class="ico" src="svg/maze_sil.svg" alt="Chat icon" width="50" height="50" title="transaction"></a>
+
+<a href="https://www.agamapoint.com/ukazky-kodu/">
+<img class="ico" src="svg/sqspiral_sil.svg" alt="Chat icon" width="50" height="50" title="code"</a>
+
+<a href="https://www.agamapoint.com/blockchain/">
+<img class="ico" src="svg/block9.svg" alt="Chat icon" width="50" height="50" title="blockchain"></a>
+
+<a href="https://www.agamapoint.com/cypherpunk/">
+<img class="ico" src="svg/anonymou_sil.svg" alt="Chat icon" width="50" height="50" title="cyberpunk"></a>
+
+<a href="https://github.com/agama-point">
+<img class="ico" src="svg/github_sil.svg" alt="Chat icon" width="50" height="50" title="github"></a>
+
+
+
+
+
+
+</body>
+</html>

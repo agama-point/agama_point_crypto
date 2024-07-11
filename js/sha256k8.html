@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fractional Part to Bytes</title>
+
+<link rel="stylesheet" href="css/bootstrap.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/app.css?v=1.0">
+
+<script src="js/jquery.min.js"></script>
+<script src="js/decimal.min.js"></script>
+<script src="js/agama_functions.js?cache_bust=${new Date().getTime()}"></script>
+</head>
+
+<body>
+<div class="wrap">
+| <a href="https://www.agamapoint.com/">AgamaPoint</a> | <a href="https://www.agamapoint.com/bip39/">bip39</a> | <a href="https://www.agamapoint.com/bip39/words.html">words</a> | <a href="https://www.agamapoint.com/bip39/entropy.html">entropy "generator"</a> | <a href="https://www.agamapoint.com/bip39/iting.html">iTing</a> | <a href="https://www.agamapoint.com/games">g_m_s</a> | <a href="test_game.html">G</a> | <a href="testy.html">T</a> | <a href="mm_bips.html">mm_bips</a> | 
+<hr /><br />
+
+<h1 class="digip">Fractional Part to Bytes</h1>
+<form id="fractionForm">
+   <label for="num">Number:</label>
+   <input type="text" id="num" name="num" required>
+   <label for="bytes">Bytes:</label>
+     <select class="bg_bla col_sil pad8" id="bytes" name="bytes">
+       <option value="4">4</option>
+       <option value="6">6</option>
+       <option value="8">8</option>
+     </select>
+   <button class="btn btn-warning" type="button" id="fHex">f_Hex</button>
+</form>
+
+<div id="result"></div>
+<br /><hr />
+
+<textarea class="bg_bla col_sil" id="outputBox" rows="10" cols="50" readonly></textarea>
+
+<script>
+$(document).ready(function() {
+  $("#examples").hide();
+  $("#ex").click(function(){ $("#examples").slideToggle("slow"); });
+
+  $('#fHex').click(function() {
+      const num = parseFloat($('#num').val());
+      const B = parseInt($('#bytes').val());
+
+      if (isNaN(num) || isNaN(B)) {
+          $('#result').text('Please enter a valid number.');
+          return;
+      }
+
+      const frac = fractional(num, B);
+       $('#result').text(`Hex: ${frac.hex}`);
+      });
+
+  const outputBox = $('#outputBox');
+  outputBox.val(''); // Clear the text area
+ 
+  function displayFractionalValues() {
+    const numbers = [
+    new Decimal(2).sqrt(), new Decimal(3).sqrt(), new Decimal(5).sqrt(), new Decimal(7).sqrt(),
+    new Decimal(11).sqrt(), new Decimal(13).sqrt(), new Decimal(17).sqrt(), new Decimal(19).sqrt()
+               ];
+    var B = 4; // Number of bytes
+    numbers.forEach((num, index) => {
+      const frac = fractional(num, B);
+      outputBox.val(outputBox.val() + `Num: ${num}\nDec: ${frac.decimal} | Hex: ${frac.hex}\n`);
+    });
+
+    var B = 8; // Number of bytes
+    numbers.forEach((num, index) => {
+      const frac = fractional(num, B);
+      outputBox.val(outputBox.val() + `Num: ${num}\nDec: ${frac.decimal} | Hex: ${frac.hex}\n`);
+    });
+
+   }
+   // Display the fractional values when the page loads
+   displayFractionalValues();
+    });
+
+</script>
+<hr/>
+
+<button class="btn btn-warning" id="ex">Examples...</button><br /><br />
+<div class="fc" id="examples">
+
+<pre class="bg_bla col_sil">
+<i>2**32=4294967296</i>
+
+--- sqrt(<b>2</b>) = 1.4142135623730950488.. | Num 
+fr(sqrt(2)) = 0.4142135623730950488
+fr(sqrt(2))*(2**32) = 1779033703,9520993...
+int(fr(sqrt(2))*(2**32)) = 1779033703 | Dec
+=<b>6a09e667</b> | Hex
+
+--- sqrt(<b>3</b>) = 1.732050807568877... | Num 
+fr(sqrt(2)) = 0.732050807568877
+int(fr(sqrt(2))*(2**32)) = 3144134277 | Dec
+=<b>bb67ae85</b> | Hex
+
+6a09e667bb67ae853c6ef372a54ff53a
+510e527f9b05688c1f83d9ab5be0cd19
+</pre>
+</div>
+<hr />
+
+<a href="https://www.agamapoint.com/bip39/tab_calc.html">tab_calc</a> | 
+
+</div>
+</body>
+</html>

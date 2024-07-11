@@ -259,6 +259,7 @@ Entropy | SHA | XOR</h1>
 <br /><br />
 <hr />
 <h2>XOR</h2>
+<div class="div_form">
   <label for="input_data">Data (hex):</label>
   <input type="text" id="input_data" name="input_data">
   <br>
@@ -274,7 +275,7 @@ Entropy | SHA | XOR</h1>
   <div id="gridContainer2" class="mt-3"></div>
   <br /><br />
   <div id="qrcode" class="qrcode"></div>
-
+</div>
 
 <br /><br /><br />
 <hr />
@@ -282,8 +283,9 @@ Entropy | SHA | XOR</h1>
 <button class="btn btn-warning" id="b32">Bech32...</button><br /><br />
 
 <div class="fc" id="bech32">
-QPZRY9X8GF2TVDW0S3JN54KHCE6MUA7L<br />
-<label for="binaryInput">Enter binary number (5-bits):</label>
+  <div class="div_form">
+  QPZRY9X8GF2TVDW0S3JN54KHCE6MUA7L<br />
+  <label for="binaryInput">Enter binary number (5-bits):</label>
     <input type="text" id="binaryInput">
     <button class="btn btn-warning" id="convertToBech32">Convert to BECH32</button>
     <div id="bech32Output">...<br /></div>
@@ -292,7 +294,7 @@ QPZRY9X8GF2TVDW0S3JN54KHCE6MUA7L<br />
     <input type="text" id="bech32Input">
     <button class="btn btn-warning" id="convertToBinary">Convert BECH32 to Binary</button>
     <div id="binaryOutput">...</div>
-
+  </div>
 </div>
 <hr />
 <br />
@@ -350,7 +352,11 @@ acoustic 16 |avoid 128 |letter 1028 |advice 32 |cage 257 |above....<br />
 <hr />
 <br />
 <h2>Links</h2>
-| <a href="https://www.agamapoint.com/chaos/">chaos</a> | <a href="https://www.agamapoint.com/entropie/">entropie</a> | ...<br/>
+| <a href="https://www.agamapoint.com/chaos/">chaos</a> | 
+
+<a href="https://www.agamapoint.com/bip39/bin_edit.html">simple binary editor</a> | 
+<a href="https://www.agamapoint.com/bip39/tab_calc.html">tab_calc</a> dec hex bin |  
+<a href="https://www.agamapoint.com/bip39/cube_key.html">cube_key</a> |
 test: <a href="https://github.com/trezor/python-mnemonic/blob/master/vectors.json">bip39_vectors</a>
 <br />
 <hr />
