@@ -9,15 +9,18 @@ async function sha256(message) {
     return hashHex;
 }
 
+
 // Funkce pro převod čísla na binární řetězec s pevnou délkou 11 číslic (length)
 function toBinaryString(num, length) {
     return num.toString(2).padStart(length, '0');
 }
 
+
 // Function to convert a binary string to a number
 function binaryToNum(bin) {
     return parseInt(bin, 2);
 }
+
 
 // Získání frakční části čísla
 function fractionalx(num, B) {    
@@ -30,6 +33,7 @@ function fractionalx(num, B) {
     return fractionalInt & mask;
 }
 
+
 function fractional(num, B) {
      const fractionalPart = num - Math.floor(num);
      const result = Math.floor(fractionalPart * (2 ** (8 * B)));
@@ -40,6 +44,59 @@ function fractional(num, B) {
          };
      }
 
+
+function splitLongString(longStr, chunkSize = 32, separator = '<br>') {
+    // Rozdělí řetězec na části o délce chunkSize
+    const chunks = [];
+    for (let i = 0; i < longStr.length; i += chunkSize) {
+        chunks.push(longStr.substring(i, i + chunkSize));
+    }
+
+    // Spojí části s použitím separatoru a vrátí výsledek
+    return chunks.join(separator);
+}
+
+
+function getHexHistx(longHexString) {
+    // Převést hexadecimální řetězec na pole znaků
+    const chars = longHexString.split('');
+    const histagram = {};
+
+    // Projít všechny znaky a počítat četnosti
+    chars.forEach(char => {
+        if (/[0-9A-Fa-f]/.test(char)) {
+            const normalizedChar = char.toUpperCase(); // Normalizovat na velká písmena
+            histagram[normalizedChar] = (histagram[normalizedChar] || 0) + 1;
+        }
+    });
+    return histagram;
+}
+
+
+function getHexHist(longHexString) {
+    const histagram = {};
+
+    // Projít všechny znaky hexadecimálního řetězce a počítat četnosti
+    for (let i = 0; i < longHexString.length; i++) {
+        const char = longHexString[i];
+        if (/[0-9A-Fa-f]/.test(char)) {
+            const normalizedChar = char.toUpperCase(); // Normalizovat na velká písmena
+            histagram[normalizedChar] = (histagram[normalizedChar] || 0) + 1;
+        }
+    }
+
+    // Vytvořit pole seřazeného histagramu
+    const sortedHistogram = {};
+    '0123456789ABCDEF'.split('').forEach(char => {
+        if (histagram[char]) {
+            sortedHistogram[char] = histagram[char];
+        }
+    });
+
+    return sortedHistogram;
+}
+
+
 // Funkce pro převod čísla na "házení kostkami" na pevnou délku s posunem
 function numToDice(num, length) {
     let base6 = num.toString(6).padStart(length, '0');
@@ -49,6 +106,16 @@ function numToDice(num, length) {
     }
     return dice;
 }
+
+
+function diceToNum(dice) {
+    let base6 = "";
+    for (let char of dice) {
+        base6 += (parseInt(char) - 1).toString();
+    }
+    return parseInt(base6, 6);
+}
+
 
 // Funkce pro provedení XOR operace mezi dvěma hexadecimálními řetězci
 function xorHexStrings(hex1, hex2) {
@@ -185,24 +252,34 @@ function bech32StringToBinaryString(bech32String) {
     return binaryString;
 }
 
+
 // entropy
+function calculateEntropyFromHex(hexString) {
+    // Převést hexadecimální řetězec na pole desetinných čísel
+    const arr = hexString.split('').map(char => parseInt(char, 16));
+
+    // Výpočet entropie pomocí stávající funkce
+    return calculateEntropy(arr);
+}
+
 
 function calculateEntropy(arr) {
-    const frequency = {};
-    arr.forEach(num => {
-       frequency[num] = (frequency[num] || 0) + 1;
-       });
+   const frequency = {};
+   arr.forEach(num => {
+      frequency[num] = (frequency[num] || 0) + 1;
+      });
 
-      let entropy = 0;
-      const len = arr.length;
+     let entropy = 0;
+     const len = arr.length;
 
-      for (let num in frequency) {
-          const p_x = frequency[num] / len;
-          entropy -= p_x * Math.log2(p_x);
-      }
-
-      return entropy;
+     for (let num in frequency) {
+        const p_x = frequency[num] / len;
+        entropy -= p_x * Math.log2(p_x);
      }
+     entropy = Math.round(entropy * 1000) / 1000; // 3 des.místa
+     return entropy;
+}
+
 
 function convertToHex(arr) {
       let numberString = arr.join('');
@@ -223,3 +300,30 @@ const substitutionTable21 = {
    };
 
 
+// --- histagram ---
+function drawHistagram(histagram, containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return; // Pokud kontejner neexistuje, vrátit
+
+      container.innerHTML = ''; // Vyčistit kontejner
+
+       // Vytvořit 16 obdélníků podle histagramu
+       '0123456789ABCDEF'.split('').forEach(char => {
+           const barHeight = histagram[char] ? histagram[char] * 3 : 0; // Výška obdélníku
+           const bar = document.createElement('div');
+           bar.classList.add('hbar');
+           bar.style.height = `${barHeight}px`;
+
+           const label = document.createElement('div');
+           label.classList.add('label');
+           label.textContent = char;
+           bar.appendChild(label);
+
+           const value = document.createElement('div');
+           value.classList.add('value');
+           value.textContent = histagram[char] || 0;
+           bar.appendChild(value);
+
+           container.appendChild(bar);
+       });
+}
