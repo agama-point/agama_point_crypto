@@ -55,8 +55,8 @@ $(document).ready(function() {
   });
 
  $('#leftButton').on('click', function() {        
-     var inputText = $('#input2').val();
-     var inputTextL = inputText.substring(0, 32).toLowerCase();
+     const inputText = $('#input2').val();
+     const inputTextL = inputText.substring(0, 32).toLowerCase();
 
      $('#result2').html(`<br /><b>${inputTextL}</b><br /><br />`);
      displayHexAsGrid(inputTextL,"gridContainer1");
@@ -73,8 +73,8 @@ $(document).ready(function() {
 
   $('#rightButton').on('click', function() {        
      //const rightHalf = fullHash.substring(fullHash.length / 2);
-     var inputText = $('#input2').val();
-     var inputTextL = inputText.substring(32, 64).toLowerCase();
+     const inputText = $('#input2').val();
+     let inputTextL = inputText.substring(32, 64).toLowerCase();
 
      $('#result2').html(`<br /><b>${inputTextL}</b><br /><br />`);
      displayHexAsGrid(inputTextL,"gridContainer1");
@@ -82,12 +82,12 @@ $(document).ready(function() {
     });
 
   $('#xdButton').on('click', function() {        
-     var textContent = $('#result2').text();
+     const textContent = $('#result2').text();
      $('#input_data').val(textContent);
     });
     
   $('#xkButton').on('click', function() {        
-     var textContent = $('#result2').text();
+     const textContent = $('#result2').text();
      $('#input_key').val(textContent);
    });
 
@@ -134,7 +134,6 @@ $(document).ready(function() {
     $('#xorResult').html(`<br>${data32}<br />${key32}<br /> XOR Result-> <br /><b>${xorResult}</b><br /><br />`);
     displayHexAsGrid(xorResult,"gridContainer2");
 
-    //var valQR = $(xorResult).val();
     $('#qrcode').empty();
     new QRCode(document.getElementById("qrcode"), {
        text: xorResult, width: 128, height: 128,
@@ -146,18 +145,18 @@ $(document).ready(function() {
 });
 
  $('#convertToBech32').on('click', function() {
-      var binaryInput = $('#binaryInput').val();
-      var binaryString = binaryInput;
+      const binaryInput = $('#binaryInput').val();
+      let binaryString = binaryInput;
       while (binaryString.length % 5 !== 0) {binaryString = '0' + binaryString;}
 
-      var bech32Result = binaryStringToBech32String(binaryInput);
+      let bech32Result = binaryStringToBech32String(binaryInput);
       $('#bech32Output').html(`${binaryString}: ${bech32Result}<br /><br />`); 
   });
 
   $('#convertToBinary').on('click', function() {
-      var bech32Input = $('#bech32Input').val();
-      var binaryResult = bech32StringToBinaryString(bech32Input);
-      var num = binaryToNum(binaryResult);
+      const bech32Input = $('#bech32Input').val();
+      let binaryResult = bech32StringToBinaryString(bech32Input);
+      let num = binaryToNum(binaryResult);
       $('#binaryOutput').html(`${binaryResult} (${num})<br />`);
   });
 
@@ -170,7 +169,7 @@ $(document).ready(function() {
       for(let i = 1; i < 60; i++) {
          xx = 4 * xx * (1 - xx);
          //output += i + " > " + xx + "\n";
-         var frac = fractional(xx, 4);
+         let frac = fractional(xx, 4);
          output += `${frac.hex} | ${i} > ${xx}\n`;
          longHex += frac.hex; }
         
@@ -263,9 +262,6 @@ Entropy | SHA | XOR</h1>
     const { hexString, hexLength } = convertToHex(numbers);
     hexNumberElement.html(splitLongString(hexString));
     hexLengthElement.text(hexLength);
-       
-    //var hexLength2 = val(hexString).length;
-    //hexLengthElement.text(hexLength);
        
     let histagram = getHexHist(hexString);
     let histStr="xxx";
