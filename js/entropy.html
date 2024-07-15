@@ -4,7 +4,7 @@
  <meta charset="UTF-8">
  <meta name="viewport" content="width=device-width, initial-scale=1.0">
  <link rel="stylesheet" href="css/bootstrap.css">
- <link rel="stylesheet" href="css/base.css">
+ <link rel="stylesheet" href="css/base.css?cache_bust=${new Date().getTime()}">
  <link rel="stylesheet" href="css/app.css">
  <link rel="stylesheet" href="css/matrix.css">
  <link rel="stylesheet" href="css/histagram.css">
@@ -25,10 +25,6 @@
   height: 50px;
   color: #ccc;
 }
-
-.bi {
-  color: red; /* Změna barvy na červenou */
-}
 </style>
 
 <script>
@@ -38,6 +34,7 @@ $(document).ready(function() {
      $(this).css('opacity', '0.9'); });
 
  let fullHash = '';
+ $("#matrix").hide().fadeIn(5000);
  $("#bech32").hide();
  $("#realpar").hide();
  $("#dice").hide();
@@ -203,14 +200,16 @@ $(document).ready(function() {
   <img src="fallback.png" alt="Chat icon fallback">
 </object>
 Entropy | SHA | XOR</h1>
-<div id="matrix"></div>
 
+<div id="matrix"></div>
 <script src="js/matrix.js"></script>
+
 <div class="div_form">
   random: <i><span id="numbers"></span></i><br />
   Entropy: <b><span id="entropy">0</span></b><br /><br />
   <button id="continueButton" class="btn btn-warning"><img src="icon/skip-end-btn.svg"> CONTINUE </button>
   <button id="stopButton" class="btn btn-warning"><img src="icon/pause-btn.svg"> STOP/SET </button>
+  <button class="btn btn-success" id="trashEntrop"><img src="icon/trash.svg"></button>
   <pre class="bla_gre">entropy_hex:<br /><span id="hexNumber"></span> (<b><span id="hexLength">..</span></b>)
   <span id="rndHist">.:.:.</span></pre>
 <br />
@@ -219,7 +218,7 @@ Entropy | SHA | XOR</h1>
 </div>
 
 <script>
- const numbers = [];
+ let numbers = [];
  const numbersElement = $('#numbers');
  const entropyElement = $('#entropy');
  const hexNumberElement = $('#hexNumber');
@@ -231,6 +230,9 @@ Entropy | SHA | XOR</h1>
  let entropyThreshold = 3.2; // Entropie pro změnu intervalu na slowGenerateInterval
  let autoUpdateHexInterval = 5000; // aktualizace hex každých 5 sekund
  let maxHexLength = 512; // Max délka hex čísla, po které je stop
+ //let { hexString, hexLength } = "",0;
+ //let hexString = "";
+ //let hexLength = 0;
 
  function generateRandomNumber() {
     const randomNumber = Math.floor(Math.random() * 10); // RND 0-9
@@ -269,7 +271,8 @@ Entropy | SHA | XOR</h1>
     let histStr="xxx";
     //for (let char in histagram) { histStr += `${char}:${histagram[char]}|`; } 
 
-    $('#input2').val(hexString).toLowerCase();
+    //$('#input2').val(hexString).toLowerCase(); // err.
+    $('#input2').val(hexString);
     $('#rndHist').text(histStr);
 }
 
@@ -281,6 +284,14 @@ $('#stopButton').on('click', function() {
     clearInterval(intervalId);
     updateHexNumber(); // Aktualizace hexadecimálního čísla při zastavení
 });
+
+ $('#trashEntrop').click(function() {
+    numbers = [];
+    //hexString = "";
+    numbersElement.text("...");
+    updateHexNumber();
+ });
+
 
 // Původní start interval
 intervalId = setInterval(generateRandomNumber, currentInterval);
@@ -323,11 +334,14 @@ intervalId = setInterval(generateRandomNumber, currentInterval);
 <div id="dice">
   <div class="div_form">
 <button class="btn btn-success" id="goButtonDice"> Roll </button>
+<button class="btn btn-success" id="roll12x"> 12x </button>
+
   <input type="text" id="resultBox">
   <button class="btn btn-success" id="recalcDice"><img src="icon/calculator.svg"></button>
   <button class="btn btn-success" id="trashDice"><img src="icon/trash.svg"></button>
 
-  <div class="dice-container w300 bg_sil pad5" id="diceContainer"></div>
+  <div class="dice-container w300 bg_gre pad5 rc10" id="diceContainer"></div>
+  <br /><br />
   <div class="histagram w300 bg_bla" id="histagramContainerDice">:.:</div>
   <br />
   <pre class="bla_gre" id="preDice"></pre>
@@ -339,7 +353,16 @@ $(document).ready(function() {
 
    //function updateDice(roll) {   };
 
-
+   $('#roll12x').click(function() {
+           let counter = 0;
+           const interval = setInterval(function() {
+               if (counter < 12) {
+                   $('#goButtonDice').click();
+                   counter++;
+               } else {
+                   clearInterval(interval);
+               }
+           }, 500); });
 
    $('#goButtonDice').click(function() {
       let diceRolls = [];
@@ -359,7 +382,7 @@ $(document).ready(function() {
 
       $.each(diceRolls, function(index, roll) {
            let img = $('<img>');
-           img.attr('src', `icon/dice-${roll}.svg`);
+           img.attr('src', `icon/dice-${roll}-fill.svg`);
            img.addClass('dice');
            diceContainer.append(img);
       });
@@ -403,7 +426,7 @@ $(document).ready(function() {
 
 <button class="btn btn-warning" id="brp"><img src="icon/calculator.svg"> Real parabola...</button>
 Stochastic behaviour of a deterministic system 
-<span class="bor_sil pad8">f(x<sub>n+1</sub>) = 4*x<sub>n</sub>*(1-x<sub>n</sub>)</span><br /><br />
+<span class="bor_sil pad8">f(x<sub>n+1</sub>) = 4*x<sub>n</sub>*(1-x<sub>n</sub>)</span><br />
 <div id="realpar">
   <div class="div_form">
   <button class="btn btn-success" id="goButtonRP"> Calculate </button> for the initial condition:
