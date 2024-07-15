@@ -35,50 +35,49 @@ $(document).ready(function() {
 
  let fullHash = '';
  $("#matrix").hide().fadeIn(5000);
- $("#bech32").hide();
- $("#realpar").hide();
- $("#dice").hide();
- $("#examples").hide();
+ $("#subRealpar").hide();
+ $("#subDice").hide();
+ $("#subExamples").hide();
  $("#xbutt").hide();
  $("#b32").click(function(){ $("#bech32").slideToggle("slow"); });
- $("#ex").click(function(){ $("#examples").slideToggle("slow"); });
- $("#brp").click(function(){ $("#realpar").slideToggle("slow"); });
- $("#bdice").click(function(){ $("#dice").slideToggle("slow"); });
+ $("#ex").click(function(){ $("#subExamples").slideToggle("slow"); });
+ $("#brp").click(function(){ $("#subRealpar").slideToggle("slow"); });
+ $("#bdice").click(function(){ $("#subDice").slideToggle("slow"); });
 
  $('#hashForm').on('submit', async function(event) {
-      event.preventDefault(); // Zamezení výchozího chování formuláře
+    event.preventDefault(); // Zamezení výchozího chování formuláře
      
-      const inputText = $('#inputText').val();
-      fullHash = await sha256(inputText);        
-      $('#input2').val(fullHash);
-      $('#result1').html(`<br />${fullHash}`); 
+    const inputText = $('#inputText').val();
+    fullHash = await sha256(inputText);        
+    $('#input2').val(fullHash);
+    $('#result1').html(`<br />${fullHash}`); 
   });
 
  $('#leftButton').on('click', function() {        
-     const inputText = $('#input2').val();
-     const inputTextL = inputText.substring(0, 32).toLowerCase();
+   const inputText = $('#input2').val();
+   const inputTextL = inputText.substring(0, 32).toLowerCase();
 
-     $('#result2').html(`<br /><b>${inputTextL}</b><br /><br />`);
-     displayHexAsGrid(inputTextL,"gridContainer1");
-     $("#xbutt").show();        
-    });
+   $('#result2').html(`<br /><b>${inputTextL}</b><br /><br />`);
+   displayHexAsGrid(inputTextL,"gridContainer1");
+   $("#xbutt").show();        
+  });
 
   $('#leftButtonThis').on('click', function() { 
-     const inputText3 = $('#input3').val();       
-     const leftHalf = inputText3.substring(0, 32);
-     $('#result2').html(`<br /><b>${leftHalf}</b><br /><br />`);
-     displayHexAsGrid(leftHalf,"gridContainer1");
-     $("#xbutt").show();        
-    });
+   const inputText3 = $('#input3').val();       
+   const leftHalf = inputText3.substring(0, 32);
+   $('#result2').html(`<br /><b>${leftHalf}</b><br /><br />`);
+   displayHexAsGrid(leftHalf,"gridContainer1");
+   $("#xbutt").show();        
+   });
 
   $('#rightButton').on('click', function() {        
-     //const rightHalf = fullHash.substring(fullHash.length / 2);
-     const inputText = $('#input2').val();
-     let inputTextL = inputText.substring(32, 64).toLowerCase();
+    //const rightHalf = fullHash.substring(fullHash.length / 2);
+    const inputText = $('#input2').val();
+    let inputTextL = inputText.substring(32, 64).toLowerCase();
 
-     $('#result2').html(`<br /><b>${inputTextL}</b><br /><br />`);
-     displayHexAsGrid(inputTextL,"gridContainer1");
-     $("#xbutt").show();         
+  $('#result2').html(`<br /><b>${inputTextL}</b><br /><br />`);
+    displayHexAsGrid(inputTextL,"gridContainer1");
+    $("#xbutt").show();         
     });
 
   $('#xdButton').on('click', function() {        
@@ -91,30 +90,11 @@ $(document).ready(function() {
      $('#input_key').val(textContent);
    });
 
-  $('#btnA').on('click', function() {
-     const setKey = "0c1e24e5917779d297e14d45f14e1a1a";
-     $('#input_key').val(setKey);
-  });
-
-  $('#btnT').on('click', function() {
-     const setKey = "752f85035563adff915ac0c3ae1252ed";
-     $('#input_key').val(setKey);
-  });
-
-  $('#btnF2').on('click', function() {
-     const setKey = "6a09e667bb67ae853c6ef372a54ff53a";
-     $('#input_key').val(setKey);
-  });
-
-  $('#btnZ').on('click', function() {
-     const setKey = "00000000000000000000000000000000";
-     $('#input_key').val(setKey);
-  });
-
-  $('#btnF').on('click', function() {
-     const setKey = "ffffffffffffffffffffffffffffffff";
-     $('#input_key').val(setKey);
-  });
+  $('#btnA').on('click', function() { $('#input_key').val("0c1e24e5917779d297e14d45f14e1a1a"); });
+  $('#btnT').on('click', function() { $('#input_key').val("752f85035563adff915ac0c3ae1252ed"); });
+  $('#btnF2').on('click',function() { $('#input_key').val("6a09e667bb67ae853c6ef372a54ff53a"); });
+  $('#btnZ').on('click', function() { $('#input_key').val("00000000000000000000000000000000"); });
+  $('#btnF').on('click', function() { $('#input_key').val("ffffffffffffffffffffffffffffffff"); });
 
   $('#xorButton').on('click', function() {
   const inputData = $('#input_data').val().trim();
@@ -327,7 +307,7 @@ intervalId = setInterval(generateRandomNumber, currentInterval);
 <hr>
 <br />
 <button class="btn btn-warning" id="bdice"><img src="icon/dice-3.svg"> Dice...</button>
-<div id="dice">
+<div id="subDice">
   <div class="div_form">
 <button class="btn btn-success" id="goButtonDice"> Roll </button>
 <button class="btn btn-success" id="roll12x"> 12x </button>
@@ -350,67 +330,66 @@ $(document).ready(function() {
    //function updateDice(roll) {   };
 
    $('#roll12x').click(function() {
-           let counter = 0;
-           const interval = setInterval(function() {
-               if (counter < 12) {
-                   $('#goButtonDice').click();
-                   counter++;
-               } else {
-                   clearInterval(interval);
-               }
-           }, 500); });
+      const rollDelayMs = 500;
+      let counter = 0;
+      const interval = setInterval(function() {
+         if (counter < 12) {
+             $('#goButtonDice').click();
+             counter++;
+         } else {
+             clearInterval(interval);
+         }
+      }, rollDelayMs); });
 
    $('#goButtonDice').click(function() {
       let diceRolls = [];
       let diceEntropy = 0;
       let resultString = '';
 
-      for (let i = 0; i < 5; i++) {
-           let roll = Math.floor(Math.random() * 6) + 1;
-           diceRolls.push(roll);
-           resultString += roll;
-      }
+     for (let i = 0; i < 5; i++) {
+        let roll = Math.floor(Math.random() * 6) + 1;
+        diceRolls.push(roll);
+        resultString += roll;
+     }
 
-      //$('#resultBox').val(resultString);
-      //updateDice(roll);
-      $('#resultBox').val(resultString);
-      diceContainer.empty(); // Vymazat předchozí ikony
+     $('#resultBox').val(resultString);
+     diceContainer.empty(); // Vymazat předchozí ikony
 
-      $.each(diceRolls, function(index, roll) {
-           let img = $('<img>');
-           img.attr('src', `icon/dice-${roll}-fill.svg`);
-           img.addClass('dice');
-           diceContainer.append(img);
+     $.each(diceRolls, function(index, roll) {
+         let img = $('<img>');
+         img.attr('src', `icon/dice-${roll}-fill.svg`);
+         img.addClass('dice');
+         diceContainer.append(img);
       });
        
        
-       let originalNum = diceToNum(resultString);
-       let hexNum = originalNum.toString(16).toUpperCase();
-       longResultString = longResultString + hexNum;
-       diceEntropy = calculateEntropyFromHex(longResultString);
-       let histagram = getHexHist(longResultString);
-       let histStr="";
-       for (let char in histagram) { histStr += `${char}:${histagram[char]}|`; }
-       $('#preDice').html(`Dec: ${originalNum} | Hex: ${hexNum}<br />::<br />${splitLongString(longResultString)} <b>${diceEntropy}</b><br/>${histStr}`);
-       drawHistagram(histagram, 'histagramContainerDice');
-      });
+     let originalNum = diceToNum(resultString);
+     let hexNum = originalNum.toString(16).toUpperCase();
+     longResultString = longResultString + hexNum;
+     diceEntropy = calculateEntropyFromHex(longResultString);
+     let histagram = getHexHist(longResultString);
+     let histStr="";
+     for (let char in histagram) { histStr += `${char}:${histagram[char]}|`; }
+     $('#preDice').html(`Dec: ${originalNum} | Hex: ${hexNum}<br />::<br />${splitLongString(longResultString)} <b>${diceEntropy}</b><br/>${histStr}`);
+     drawHistagram(histagram, 'histagramContainerDice');
+     });
   
  $('#trashDice').click(function() {
-      longResultString = '';
-      $('#preDice').html(`:::`)
-      diceContainer.empty();
-      $('#histagramContainerDice').empty();
-      $('#resultBox').val("");
-      });
+     longResultString = '';
+     $('#preDice').html(`:::`)
+     diceContainer.empty();
+     $('#histagramContainerDice').empty();
+     $('#resultBox').val("");
+     });
 
  $('#recalcDice').click(function() { 
-       let diceString = $('#resultBox').val();
-       let originalNum = diceToNum(diceString);
-       let hexNum = originalNum.toString(16).toUpperCase();
-       longResultString = longResultString + hexNum;
-       diceEntropy = calculateEntropyFromHex(longResultString);
-       //$('#preDice').html(`Dec: ${originalNum} | Hex: ${hexNum}<br />::<br />${splitLongString(longResultString)} <b>${diceEntropy}</b><br/>${histStr}`);
-       $('#preDice').html(`Dec: ${originalNum} | Hex: ${hexNum}<br />::<br />${splitLongString(longResultString)} <b>${diceEntropy}</b>`);
+     let diceString = $('#resultBox').val();
+     let originalNum = diceToNum(diceString);
+     let hexNum = originalNum.toString(16).toUpperCase();
+     longResultString = longResultString + hexNum;
+     diceEntropy = calculateEntropyFromHex(longResultString);
+     //$('#preDice').html(`Dec: ${originalNum} | Hex: ${hexNum}<br />::<br />${splitLongString(longResultString)} <b>${diceEntropy}</b><br/>${histStr}`);
+     $('#preDice').html(`Dec: ${originalNum} | Hex: ${hexNum}<br />::<br />${splitLongString(longResultString)} <b>${diceEntropy}</b>`);
        });
 });
 </script>
@@ -423,7 +402,7 @@ $(document).ready(function() {
 <button class="btn btn-warning" id="brp"><img src="icon/calculator.svg"> Real parabola...</button>
 Stochastic behaviour of a deterministic system 
 <span class="bor_sil pad8">f(x<sub>n+1</sub>) = 4*x<sub>n</sub>*(1-x<sub>n</sub>)</span><br />
-<div id="realpar">
+<div id="subRealpar">
   <div class="div_form">
   <button class="btn btn-success" id="goButtonRP"> Calculate </button> for the initial condition:
   <input class="bg_bla col_sil pad8" type="number" id="initialValue" value="0.1" step="0.01">
@@ -443,7 +422,7 @@ Stochastic behaviour of a deterministic system
   <label for="input_data">Data (hex):</label>
   <input type="text" id="input_data" name="input_data">
   <br>
-  <label for="input_key">Key (hex):       <u>A</u>ndreas | <u>T</u>REZOR | <u>Z</u>ER0 |</label>
+  <label for="input_key">Key (hex):       <u>A</u>ndreas | <u>T</u>REZOR | ZER<u>0</u> | <u>F</u>FF.. |</label>
   <input type="text" id="input_key" name="input_key">
 
   <img class="ico" src="svg_ico2/sq-left.svg" alt="Chat icon" width="50" height="50" title="left">
@@ -465,8 +444,7 @@ Stochastic behaviour of a deterministic system
 <hr />
 <br />
 <button class="btn btn-warning" id="ex"><img src="icon/file-arrow-down.svg"> Examples...</button><br /><br />
-
-<div class="fc" id="examples">
+<div class="fc" id="subExamples">
 <b>sha(agama)</b> | agama_py: hash_sha256_str("agama")<br />
 52589fac98630c603bd5c2b08cb0f6ccf273cc4a4772f0ff28d49a01bc7d2f4b<br />
 L: <b>52589fac98630c603bd5c2b08cb0f6cc</b><br />
