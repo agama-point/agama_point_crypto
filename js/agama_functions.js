@@ -327,3 +327,56 @@ function drawHistagram(histagram, containerId) {
            container.appendChild(bar);
        });
 }
+
+
+//simple first n primes
+function calculatePrimes(n) {
+        const primes = [];
+        let num = 2; // 
+
+        while (primes.length < n) {
+            if (isPrime(num)) {
+                primes.push(num);
+            }
+            num++;
+        }
+
+        return primes;
+    }
+
+
+function isPrime(num) {
+        if (num <= 1) return false;
+        if (num <= 3) return true;
+        if (num % 2 === 0 || num % 3 === 0) return false;
+
+        for (let i = 5; i * i <= num; i += 6) {
+            if (num % i === 0 || num % (i + 2) === 0) return false;
+        }
+
+        return true;
+    }
+
+
+
+//------- deterministic or discredited entropy --------------
+class dde32 {
+
+    static A = "0c1e24e5917779d297e14d45f14e1a1a";
+    static F = "ffffffffffffffffffffffffffffffff";
+    static F2 = "6a09e667bb67ae853c6ef372a54ff53a";
+    static F3 = "428a2f9871374491b5c0fbcfe9b5dba5";
+    static T = "752f85035563adff915ac0c3ae1252ed";
+    static Z = "00000000000000000000000000000000";
+
+
+    // Metoda xor pro dva parametry
+    static xor(A, B) {
+        let result = "";
+        for (let i = 0; i < A.length && i < B.length; i++) {
+            // Převod každého znaku na jeho ASCII hodnotu a provedení XOR operace
+            result += String.fromCharCode(A.charCodeAt(i) ^ B.charCodeAt(i));
+        }
+        return result;
+    }
+}

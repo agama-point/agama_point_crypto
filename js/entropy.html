@@ -4,14 +4,14 @@
  <meta charset="UTF-8">
  <meta name="viewport" content="width=device-width, initial-scale=1.0">
  <link rel="stylesheet" href="css/bootstrap.css">
- <link rel="stylesheet" href="css/base.css?cache_bust=${new Date().getTime()}">
+ <link rel="stylesheet" href="css/base.css}">
  <link rel="stylesheet" href="css/app.css">
  <link rel="stylesheet" href="css/matrix.css">
  <link rel="stylesheet" href="css/histagram.css">
  <title>entropy | sha | xor</title>
  <script src="js/jquery.min.js"></script>
  <script src="js/qrcode.js"></script> 
- <script src="js/agama_functions.js"></script>
+ <script src="js/agama_functions.js?cache_bust=${new Date().getTime()"></script>
 <style>
 .dice-container {
   display: flex;
@@ -37,12 +37,14 @@ $(document).ready(function() {
  $("#matrix").hide().fadeIn(5000);
  $("#subRealpar").hide();
  $("#subDice").hide();
+ $("#subFPrimes").hide();
  $("#subExamples").hide();
  $("#xbutt").hide();
  $("#b32").click(function(){ $("#bech32").slideToggle("slow"); });
  $("#ex").click(function(){ $("#subExamples").slideToggle("slow"); });
  $("#brp").click(function(){ $("#subRealpar").slideToggle("slow"); });
  $("#bdice").click(function(){ $("#subDice").slideToggle("slow"); });
+ $("#bprim").click(function(){ $("#subFPrimes").slideToggle("slow"); });
 
  $('#hashForm').on('submit', async function(event) {
     event.preventDefault(); // Zamezení výchozího chování formuláře
@@ -90,11 +92,12 @@ $(document).ready(function() {
      $('#input_key').val(textContent);
    });
 
-  $('#btnA').on('click', function() { $('#input_key').val("0c1e24e5917779d297e14d45f14e1a1a"); });
-  $('#btnT').on('click', function() { $('#input_key').val("752f85035563adff915ac0c3ae1252ed"); });
-  $('#btnF2').on('click',function() { $('#input_key').val("6a09e667bb67ae853c6ef372a54ff53a"); });
-  $('#btnZ').on('click', function() { $('#input_key').val("00000000000000000000000000000000"); });
-  $('#btnF').on('click', function() { $('#input_key').val("ffffffffffffffffffffffffffffffff"); });
+  $('#btnA').on('click', function() { $('#input_key').val(dde32.A); });
+  $('#btnT').on('click', function() { $('#input_key').val(dde32.T); });
+  $('#btnF2').on('click',function() { $('#input_key').val(dde32.F2); });
+  $('#btnF3').on('click',function() { $('#input_key').val(dde32.F3); });
+  $('#btnZ').on('click', function() { $('#input_key').val(dde32.Z); });
+  $('#btnF').on('click', function() { $('#input_key').val(dde32.F); });
 
   $('#xorButton').on('click', function() {
   const inputData = $('#input_data').val().trim();
@@ -304,7 +307,34 @@ intervalId = setInterval(generateRandomNumber, currentInterval);
 <input type="text" id="input_note" name="note">
 </div>
 
-<hr>
+
+<h2>XOR</h2>
+<div class="div_form">
+  <label for="input_data">Data (hex):</label>
+  <input type="text" id="input_data" name="input_data" value="0">
+  <br>
+  <label for="input_key">Key (hex):       <u>A</u>ndreas | <u>T</u>REZOR | ZER<u>0</u> | <u>F</u>FF.. |</label>
+  <input type="text" id="input_key" name="input_key">
+
+  <img class="ico" src="svg_ico2/sq-left.svg" alt="Chat icon" width="50" height="50" title="left">
+  <button class="btn btn-success" id="btnA"> A </button>
+  <button class="btn btn-success" id="btnT"> T </button>
+  <button class="btn btn-success" id="btnF2"> f2 </button>
+  <button class="btn btn-success" id="btnF3"> f3 </button>
+  <button class="btn btn-success" id="btnZ"> 0 </button>
+  <button class="btn btn-success" id="btnF"> F </button>
+
+  <button class="btn btn-warning" id="xorButton">
+  <img src="icon/qr-code.svg" alt="QR Code Icon"> XOR <img src="icon/logic-xor.svg" width="16" height="16"></button>
+  <div class="fc" id="xorResult"></div>
+  <div id="gridContainer2" class="mt-3"></div>
+  <br /><br />
+  <div id="qrcode" class="qrcode"></div>
+</div>
+<br />
+<hr />
+
+
 <br />
 <button class="btn btn-warning" id="bdice"><img src="icon/dice-3.svg"> Dice...</button>
 <div id="subDice">
@@ -326,8 +356,6 @@ intervalId = setInterval(generateRandomNumber, currentInterval);
 $(document).ready(function() {
    let longResultString = '';
    let diceContainer = $('#diceContainer');
-
-   //function updateDice(roll) {   };
 
    $('#roll12x').click(function() {
       const rollDelayMs = 500;
@@ -360,8 +388,7 @@ $(document).ready(function() {
          img.attr('src', `icon/dice-${roll}-fill.svg`);
          img.addClass('dice');
          diceContainer.append(img);
-      });
-       
+      });       
        
      let originalNum = diceToNum(resultString);
      let hexNum = originalNum.toString(16).toUpperCase();
@@ -398,6 +425,64 @@ $(document).ready(function() {
 </div>
 <hr />
 <br />
+<button class="btn btn-warning" id="bprim"><img src="icon/dice-5.svg"> Primes | fractional...</button>
+<div id="subFPrimes">
+  <div class="div_form">
+<input type="text" id="numPrim" value="21">
+<select class="bg_bla col_sil pad8" id="root-selector">
+     <option value="2">Square Root</option>
+     <option value="3">Cube Root</option>
+</select>
+<button class="btn btn-success" id="goButtonPrim"> Primes </button>
+<br /><br />
+<pre class="bla_gre"><div id="primes"></div></pre>
+
+<script>
+$(document).ready(function() {
+ $('#goButtonPrim').click(function() {
+    const B = 4;
+    longResultString="";
+    const rootType = parseInt($('#root-selector').val()); 
+    let fractPrimes = `index ... Prime :: root:<b>${rootType}</b><br />`;
+
+    const n = parseInt($('#numPrim').val());
+    if (isNaN(n) || n <= 0) {
+        $('#primes').text('Zadejte platné kladné číslo.');
+        return;
+    }
+        
+    const primes = calculatePrimes(n);
+    //$('#primes').text(primes.join(', '));
+
+    primes.forEach((num, index) => {
+       //const numsq = Math.sqrt(num);
+       let rootValue;
+            if (rootType === 2) {
+                rootValue = Math.sqrt(num); //.toFixed(8);
+            } else if (rootType === 3) {
+                rootValue = Math.cbrt(num);
+        }
+       const frac = fractional(rootValue, B);
+       //const numsq6 = numsq.toFixed(6);
+       //fractPrimes += `${index}. Num: ${num} :: ${numsq6} | Dec: ${frac.decimal} | Hex: ${frac.hex}\n`;
+       const paddedIndex = (index + 1).toString().padStart(3, ' ');
+       const paddedNumsq = rootValue.toFixed(8).toString().padEnd(8, '0');
+       const paddedPrim = num.toString().padStart(5, ' ');
+       const paddedDec = frac.decimal.toString().padEnd(10, '0');
+            fractPrimes += `${paddedIndex}. Num: ${paddedPrim} :: ${paddedNumsq} | Dec: ${paddedDec} | Hex: ${frac.hex}<br />`;
+       longResultString = longResultString + frac.hex;
+
+      
+    });
+    $('#primes').html(fractPrimes+"<br />"+splitLongString(longResultString));
+    });
+});
+</script>
+
+</div>
+</div>
+<hr />
+<br />
 
 <button class="btn btn-warning" id="brp"><img src="icon/calculator.svg"> Real parabola...</button>
 Stochastic behaviour of a deterministic system 
@@ -410,38 +495,16 @@ Stochastic behaviour of a deterministic system
   <br><br><pre class="bg_bla">
   <textarea class="bg_bla col_sil pad8" id="outputBoxRP" rows="6" cols="39"></textarea></pre>
   <div class="histagram w300 bg_bla" id="histagramContainerRP">:.:</div>
-  <br />
+  <br /><br />
+
   <pre class="bla_gre" id="preRP"></pre>
   </div>
 </div>
 <hr />
 <br />
 
-<h2>XOR</h2>
-<div class="div_form">
-  <label for="input_data">Data (hex):</label>
-  <input type="text" id="input_data" name="input_data">
-  <br>
-  <label for="input_key">Key (hex):       <u>A</u>ndreas | <u>T</u>REZOR | ZER<u>0</u> | <u>F</u>FF.. |</label>
-  <input type="text" id="input_key" name="input_key">
 
-  <img class="ico" src="svg_ico2/sq-left.svg" alt="Chat icon" width="50" height="50" title="left">
-  <button class="btn btn-success" id="btnA"> A </button>
-  <button class="btn btn-success" id="btnT"> T </button>
-  <button class="btn btn-success" id="btnF2"> f2 </button>
-  <button class="btn btn-success" id="btnZ"> 0 </button>
-  <button class="btn btn-success" id="btnF"> F </button>
 
-  <button class="btn btn-warning" id="xorButton">
-  <img src="icon/qr-code.svg" alt="QR Code Icon"> XOR </button>
-  <div class="fc" id="xorResult"></div>
-  <div id="gridContainer2" class="mt-3"></div>
-  <br /><br />
-  <div id="qrcode" class="qrcode"></div>
-</div>
-
-<br /><br /><br />
-<hr />
 <br />
 <button class="btn btn-warning" id="ex"><img src="icon/file-arrow-down.svg"> Examples...</button><br /><br />
 <div class="fc" id="subExamples">
@@ -470,10 +533,16 @@ R:    efc8e7affc532fce4a088ad19844418e<br />
 5e46bb49091475b2ac348ff57dfeecd6<br />
 <br />
 <br />
-e(fractional(sqrt([primes])..)...)<br />
+e(fractional(sqrt~<b>2</b>([primes])..)...)<br />
 6a09e667bb67ae853c6ef372a54ff53a<br />
-<a href="https://www.agamapoint.com/bip39/sha256k8.html">bip39/sha256k8</a>
-<br />
+510e527f9b05688c1f83d9ab5be0cd19<br />
+cbbb9d5d629a292a9159015a152fecd8<br />
+...<br />
+e(fractional(cbrt~<b>3</b>([primes])..)<br />
+428a2f9871374491b5c0fbcfe9b5dba5<br />
+3956c25b59f111f1923f82a4ab1c5ed5<br />
+d807aa9812835b01243185be550c7dc3<br />
+...<br />
 <br />
 
 <b>8080...</b><br />
@@ -497,6 +566,13 @@ acoustic 16 |avoid 128 |letter 1028 |advice 32 |cage 257 |above....<br />
 <b>PoW</b><br />
 sha(Agama Point 2664516175) = <b>000000000</b>233ed5eee2d7356789509b04887f318030d0d259c40e4d71e01965c<br />
 for "hashrate" 9 nonce = 2664516175<br />
+<br />
+<hr />
+<b>HMAC</b> hash-based message authentication code<br />
+<i>~HMAC-SHA1 / ...<i><br />
+MAC=sha(msg+s) | s: pub_key / shared sec.<br />
+MACa ?is_eq? MACb<br />
+s=2664516175 / "AP PoW nonce (~9z)" ...<br />
 <br />
 <hr />
 
