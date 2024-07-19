@@ -1,5 +1,79 @@
-// --- agama_functions for simple BIP39 examples
-// 2024/06
+// agama_function.js | 2015-24 | 
+AF_VER = "0.7.18";
+
+function getSystemInfo() {
+    // Detekce verze JavaScriptu
+    const jsVersion = (() => {
+        if (typeof BigInt === "function") return "ES11 (2019)";
+        if (typeof Symbol === "function") return "ES6 (2015)";
+        if (typeof Map === "function") return "ES6 (2015)";
+        if (typeof Set === "function") return "ES6 (2015)";
+        if (typeof Promise === "function") return "ES6 (2015)";
+        if (typeof Proxy === "function") return "ES6 (2015)";
+        return "ES5 or lower";
+    })();
+
+    // Detekce verze prohlížeče
+    const browserVersion = (() => {
+        const userAgent = navigator.userAgent;
+        let match = userAgent.match(/(firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || [];
+        if (/trident/i.test(match[1])) {
+            const rv = /\brv[ :]+(\d+)/g.exec(userAgent) || [];
+            return `IE ${rv[1] || ""}`;
+        }
+        if (match[1] === 'Chrome') {
+            const tem = userAgent.match(/\b(OPR|Edge)\/(\d+)/);
+            if (tem != null) return tem.slice(1).join(' ').replace('OPR', 'Opera');
+        }
+        match = match[2] ? [match[1], match[2]] : [navigator.appName, navigator.appVersion, '-?'];
+        const tem = userAgent.match(/version\/(\d+)/i);
+        if (tem != null) match.splice(1, 1, tem[1]);
+        return match.join(' ');
+    })();
+
+    // Detekce verze OS
+    const osVersion = (() => {
+        const userAgent = navigator.userAgent;
+        let os = "Unknown OS";
+        if (userAgent.indexOf("Win") != -1) os = "Windows";
+        if (userAgent.indexOf("Mac") != -1) os = "MacOS";
+        if (userAgent.indexOf("X11") != -1) os = "UNIX";
+        if (userAgent.indexOf("Linux") != -1) os = "Linux";
+
+        let version = "Unknown Version";
+        if (/Windows NT 10.0/.test(userAgent)) version = "10";
+        if (/Windows NT 6.2/.test(userAgent)) version = "8";
+        if (/Windows NT 6.1/.test(userAgent)) version = "7";
+        if (/Windows NT 6.0/.test(userAgent)) version = "Vista";
+        if (/Windows NT 5.1/.test(userAgent)) version = "XP";
+        if (/Windows NT 5.0/.test(userAgent)) version = "2000";
+        if (/Mac OS X 10_[0-9]+_[0-9]+/.test(userAgent)) version = userAgent.match(/Mac OS X 10_[0-9]+_[0-9]+/)[0].replace(/_/g, '.');
+        if (/Linux/.test(userAgent)) version = "Various Versions";
+
+        return `${os} ${version}`;
+    })();
+
+    return {
+        jsVersion: jsVersion,
+        browserVersion: browserVersion,
+        osVersion: osVersion
+    };
+}
+//console.log(getSystemInfo());
+
+
+// --- agama_functions for simple BIP39 examples 2024/05-08
+
+// Function to convert binary string to hexadecimal string
+          function longBinToHex(bin) {
+              let hex = '';
+              for (let i = 0; i < bin.length; i += 4) {
+                  let binSegment = bin.substr(i, 4);
+                  let hexSegment = parseInt(binSegment, 2).toString(16);
+                  hex += hexSegment;
+              }
+           return hex;
+       }
 
 async function sha256(message) {
     const msgBuffer = new TextEncoder().encode(message);

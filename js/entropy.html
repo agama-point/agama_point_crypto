@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+dice<!DOCTYPE html>
 <html lang="cs">
 <head>
  <meta charset="UTF-8">
  <meta name="viewport" content="width=device-width, initial-scale=1.0">
  <link rel="stylesheet" href="css/bootstrap.css">
- <link rel="stylesheet" href="css/base.css}">
+ <link rel="stylesheet" href="css/base.css">
  <link rel="stylesheet" href="css/app.css">
  <link rel="stylesheet" href="css/matrix.css">
  <link rel="stylesheet" href="css/histagram.css">
@@ -25,6 +25,9 @@
   height: 50px;
   color: #ccc;
 }
+
+.tx_left { text-align: left;}
+
 </style>
 
 <script>
@@ -36,19 +39,32 @@ $(document).ready(function() {
  let fullHash = '';
  $("#matrix").hide().fadeIn(5000);
  $("#subRealpar").hide();
+ $("#subModulo").hide();
+ $("#subCoin").hide();
  $("#subDice").hide();
  $("#subFPrimes").hide();
  $("#subExamples").hide();
+ $("#subSysInfo").hide();
  $("#xbutt").hide();
  $("#b32").click(function(){ $("#bech32").slideToggle("slow"); });
  $("#ex").click(function(){ $("#subExamples").slideToggle("slow"); });
  $("#brp").click(function(){ $("#subRealpar").slideToggle("slow"); });
+ $("#bmod").click(function(){ $("#subModulo").slideToggle("slow"); });
+ $("#bcoin").click(function(){ $("#subCoin").slideToggle("slow"); });
  $("#bdice").click(function(){ $("#subDice").slideToggle("slow"); });
  $("#bprim").click(function(){ $("#subFPrimes").slideToggle("slow"); });
+ $("#binfo").click(function(){ $("#subSysInfo").slideToggle("slow"); });
+
+ const systemInfo = getSystemInfo();
+            const systemInfoText = `
+ <b>${AF_VER}</b>
+ JavaScript Version: ${systemInfo.jsVersion}
+ Browser Version: ${systemInfo.browserVersion}
+ OS Version: ${systemInfo.osVersion}`;
+ $('#sysInfo').html(systemInfoText);
 
  $('#hashForm').on('submit', async function(event) {
-    event.preventDefault(); // Zamezení výchozího chování formuláře
-     
+    event.preventDefault(); // Zamezení výchozího chování formuláře     
     const inputText = $('#inputText').val();
     fullHash = await sha256(inputText);        
     $('#input2').val(fullHash);
@@ -131,7 +147,6 @@ $(document).ready(function() {
       const binaryInput = $('#binaryInput').val();
       let binaryString = binaryInput;
       while (binaryString.length % 5 !== 0) {binaryString = '0' + binaryString;}
-
       let bech32Result = binaryStringToBech32String(binaryInput);
       $('#bech32Output').html(`${binaryString}: ${bech32Result}<br /><br />`); 
   });
@@ -335,8 +350,50 @@ intervalId = setInterval(generateRandomNumber, currentInterval);
 <hr />
 
 
-<br />
-<button class="btn btn-warning" id="bdice"><img src="icon/dice-3.svg"> Dice...</button>
+<button class="btn btn-warning w200 tx_left" id="bcoin"><img src="icon/file-arrow-down.svg"> Coin </button>
+random sequence generation (1/0) 128/256/512...
+<div class="fc" id="subCoin">
+<div class="div_form">
+ <input type="text" id="numCoin" value="128"><button class="btn btn-success" id="goButtonCoin"> Coin toss </button>
+<pre class="bla_gre" id="coinInfo">.:.:.</pre>
+<input type="text" id="resultCoinHex"><br /><br />
+<div id="gridContainer3" class="mt-3"></div>
+
+</div>
+<hr />
+</div>
+<br /><br />
+
+<script>
+$(document).ready(function() {
+   console.log("Doc. ready: Coins");
+   $('#goButtonCoin').click(function() {
+       let numCoins = parseInt($('#numCoin').val());
+       let binaryResult = '';
+
+       for (let i = 0; i < numCoins; i++) {
+           let toss = Math.floor(Math.random() * 2); // Randomly generates 0 or 1
+           binaryResult += toss;
+       }
+      
+       // Convert binary string to hexadecimal
+       //let hexResult = parseInt(binaryResult, 2).toString(16);
+       
+       let hexResult = longBinToHex(binaryResult);
+       let coinResult = splitLongString(binaryResult, 64) + "<br><br>Hex:<br>" + splitLongString(hexResult);
+                
+       //$('#coinInfo').html(splitLongString(binaryResult));
+       $('#coinInfo').html(coinResult);
+       
+       $('#resultCoinHex').val(hexResult);
+       displayHexAsGrid(hexResult,"gridContainer3");
+   });
+});
+</script>
+
+
+<button class="btn btn-warning w200 tx_left" id="bdice"><img src="icon/dice-3.svg"> Dice</button>
+sequential/automatic roll of five dice (HEX|histagram)
 <div id="subDice">
   <div class="div_form">
 <button class="btn btn-success" id="goButtonDice"> Roll </button>
@@ -354,6 +411,7 @@ intervalId = setInterval(generateRandomNumber, currentInterval);
 
 <script>
 $(document).ready(function() {
+   console.log("Doc. ready: Dice");
    let longResultString = '';
    let diceContainer = $('#diceContainer');
 
@@ -420,12 +478,14 @@ $(document).ready(function() {
        });
 });
 </script>
-
-  </div>
 </div>
 <hr />
-<br />
-<button class="btn btn-warning" id="bprim"><img src="icon/dice-5.svg"> Primes | fractional...</button>
+</div>
+<br /><br />
+
+
+<button class="btn btn-warning w200 tx_left" id="bprim"><img src="icon/dice-5.svg"> Primes | fractional</button>
+deterministic "constants" from fractional parts of square (or third) roots
 <div id="subFPrimes">
   <div class="div_form">
 <input type="text" id="numPrim" value="21">
@@ -440,51 +500,52 @@ $(document).ready(function() {
 <script>
 $(document).ready(function() {
  $('#goButtonPrim').click(function() {
-    const B = 4;
-    longResultString="";
-    const rootType = parseInt($('#root-selector').val()); 
-    let fractPrimes = `index ... Prime :: root:<b>${rootType}</b><br />`;
+   console.log("Doc. ready: Fractional");
+   const B = 4;
+   longResultString="";
+   const rootType = parseInt($('#root-selector').val()); 
+   let fractPrimes = `index ... Prime :: root:<b>${rootType}</b><br />`;
 
-    const n = parseInt($('#numPrim').val());
-    if (isNaN(n) || n <= 0) {
-        $('#primes').text('Zadejte platné kladné číslo.');
-        return;
-    }
+   const n = parseInt($('#numPrim').val());
+   if (isNaN(n) || n <= 0) {
+       $('#primes').text('Zadejte platné kladné číslo.');
+       return;
+   }
         
-    const primes = calculatePrimes(n);
-    //$('#primes').text(primes.join(', '));
+   const primes = calculatePrimes(n);
+   //$('#primes').text(primes.join(', '));
 
-    primes.forEach((num, index) => {
-       //const numsq = Math.sqrt(num);
-       let rootValue;
-            if (rootType === 2) {
-                rootValue = Math.sqrt(num); //.toFixed(8);
-            } else if (rootType === 3) {
-                rootValue = Math.cbrt(num);
-        }
-       const frac = fractional(rootValue, B);
-       //const numsq6 = numsq.toFixed(6);
-       //fractPrimes += `${index}. Num: ${num} :: ${numsq6} | Dec: ${frac.decimal} | Hex: ${frac.hex}\n`;
-       const paddedIndex = (index + 1).toString().padStart(3, ' ');
-       const paddedNumsq = rootValue.toFixed(8).toString().padEnd(8, '0');
-       const paddedPrim = num.toString().padStart(5, ' ');
-       const paddedDec = frac.decimal.toString().padEnd(10, '0');
-            fractPrimes += `${paddedIndex}. Num: ${paddedPrim} :: ${paddedNumsq} | Dec: ${paddedDec} | Hex: ${frac.hex}<br />`;
-       longResultString = longResultString + frac.hex;
-
+   primes.forEach((num, index) => {
+     //const numsq = Math.sqrt(num);
+     let rootValue;
+         if (rootType === 2) {
+            rootValue = Math.sqrt(num); //.toFixed(8);
+         } else if (rootType === 3) {
+             rootValue = Math.cbrt(num);
+     }
+     const frac = fractional(rootValue, B);
+     //const numsq6 = numsq.toFixed(6);
+     //fractPrimes += `${index}. Num: ${num} :: ${numsq6} | Dec: ${frac.decimal} | Hex: ${frac.hex}\n`;
+     const paddedIndex = (index + 1).toString().padStart(3, ' ');
+     const paddedNumsq = rootValue.toFixed(8).toString().padEnd(8, '0');
+     const paddedPrim = num.toString().padStart(5, ' ');
+     const paddedDec = frac.decimal.toString().padEnd(10, '0');
+     fractPrimes += `${paddedIndex}. Num: ${paddedPrim} :: ${paddedNumsq} | Dec: ${paddedDec} | Hex: ${frac.hex}<br />`;
+     longResultString = longResultString + frac.hex;
       
-    });
-    $('#primes').html(fractPrimes+"<br />"+splitLongString(longResultString));
-    });
+   });
+   $('#primes').html(fractPrimes+"<br />"+splitLongString(longResultString));
+   });
 });
 </script>
 
 </div>
-</div>
 <hr />
-<br />
+</div>
+<br /><br />
 
-<button class="btn btn-warning" id="brp"><img src="icon/calculator.svg"> Real parabola...</button>
+
+<button class="btn btn-warning w200 tx_left" id="brp"><img src="icon/calculator.svg"> Real parabola</button>
 Stochastic behaviour of a deterministic system 
 <span class="bor_sil pad8">f(x<sub>n+1</sub>) = 4*x<sub>n</sub>*(1-x<sub>n</sub>)</span><br />
 <div id="subRealpar">
@@ -499,13 +560,64 @@ Stochastic behaviour of a deterministic system
 
   <pre class="bla_gre" id="preRP"></pre>
   </div>
+<hr />
+</div>
+<br />
+
+<button class="btn btn-warning w200 tx_left" id="bmod"><img src="icon/calculator.svg"> Congruential gen.</button>
+linear congruential (modulo) generator 
+<span class="bor_sil pad8">X<sub>n+1</sub> = (a*X<sub>n</sub> + c) mod m</span><br />
+<div id="subModulo">
+<div class="div_form">
+<label>X(0)</label>
+<input type="text" id="numX" value="3" class="w50"><br />
+<label>a</label>
+<input type="text" id="numA" value="2048"> parameter a<br />
+<label>c</label>
+<input type="text" id="numC" value="1024"> parameter c<br />
+<label>m</label>
+<input type="text" id="numM" value="111"> modulo m<br /> 
+<label>n</label>
+<input type="text" id="numN" value="32"> number of iterations<br />
+<button class="btn btn-success" id="goButtonMod"> Calculate </button> for the initial condition X(0)
+<pre class="bla_gre" id="preMod"></pre>
+</div>
+<script>
+$(document).ready(function() {
+    $("#goButtonMod").click(function() {
+       longResultString = "";
+     
+       // Načtení vstupních hodnot
+       let a = parseInt($("#numA").val());
+       let c = parseInt($("#numC").val());
+       let m = parseInt($("#numM").val());
+       let x = parseInt($("#numX").val());
+       let n = parseInt($("#numN").val());
+         
+       // Pole pro uložení výsledků
+       let results = ["Index. Hex | Dec<br>"];
+                
+       for (let i = 0; i < n; i++) {
+          x = (a * x + c) % m;
+          const paddedIndex = (i + 1).toString().padStart(5, ' ');
+          let hex = x.toString(16).toUpperCase();
+          if (hex.length < 2) { hex = "0" + hex;}
+             longResultString = longResultString + hex;
+             results.push(`${paddedIndex}. ${hex} | ${x}`);
+          }
+                
+       // Zobrazení výsledků
+       //$("#preMod").html(results.join("<br>")); 
+       $("#preMod").html(results.join("<br>") + "<br><br>" + splitLongString(longResultString));
+       });
+});
+</script>
+
 </div>
 <hr />
-<br />
+<br /><br />
 
 
-
-<br />
 <button class="btn btn-warning" id="ex"><img src="icon/file-arrow-down.svg"> Examples...</button><br /><br />
 <div class="fc" id="subExamples">
 <b>sha(agama)</b> | agama_py: hash_sha256_str("agama")<br />
@@ -525,21 +637,21 @@ R:    efc8e7affc532fce4a088ad19844418e<br />
 <br /><i>LS: hollow use swap ... choice element critic</i><br />
 <br /><br />
 <hr />
-
-<b>e(andreas)</b><br />
+<b>dde.A</b> = e(andreas) =<br />
 0c1e24e5917779d297e14d45f14e1a1a<br />
 <br />
-<i>left(sha(agama)) xor e(andreas):</i><br />
+XOR = (+)<br />
+<i>left(sha(agama)) (+) dde.A =</i><br />
 5e46bb49091475b2ac348ff57dfeecd6<br />
 <br />
 <br />
 e(fractional(sqrt~<b>2</b>([primes])..)...)<br />
-6a09e667bb67ae853c6ef372a54ff53a<br />
+6a09e667bb67ae853c6ef372a54ff53a = dde.F2<br />
 510e527f9b05688c1f83d9ab5be0cd19<br />
 cbbb9d5d629a292a9159015a152fecd8<br />
 ...<br />
 e(fractional(cbrt~<b>3</b>([primes])..)<br />
-428a2f9871374491b5c0fbcfe9b5dba5<br />
+428a2f9871374491b5c0fbcfe9b5dba5 = dde.F3<br />
 3956c25b59f111f1923f82a4ab1c5ed5<br />
 d807aa9812835b01243185be550c7dc3<br />
 ...<br />
@@ -553,12 +665,12 @@ acoustic 16 |avoid 128 |letter 1028 |advice 32 |cage 257 |above....<br />
 <br />
 <hr />
 
-<b>e(trezor)</b><br />
+<b>dde.T</b> | e(trezor) =<br />
 752f85035563adff915ac0c3ae1252ed<br />
 <br /><br />
 <hr />
 
-...r(s(yenda)) x e(trezor):<br />
+...r(s(yenda)) (+) dde.T =<br />
 41abbe611bc73d06baaae964ecaf3fe2<br />
 <br /><i>double fuel obscure ... grace soup shift</i>
 <br /><br />
@@ -576,11 +688,24 @@ s=2664516175 / "AP PoW nonce (~9z)" ...<br />
 <br />
 <hr />
 
+most Linux distributions: the pseudo device file <b>/dev/random</b> will block until sufficient entropy is harvested from the environment!<br>
+<br />
+<hr />
+
+
 (e=entropy | L=left | R=right | S=seed | X=XoR | ...
 </div>
-
 <hr />
 <br />
+
+<br />
+<button class="btn btn-success" id="binfo"><img src="icon/file-arrow-down.svg"> Sys.Info</button><br /><br />
+<div class="fc" id="subSysInfo">
+<pre class="bla_gre" id="sysInfo">:.:</pre>
+</div>
+<hr />
+<br />
+
 <h2>Links</h2>
 | <a href="https://www.agamapoint.com/chaos/">chaos</a> | 
 
@@ -590,30 +715,17 @@ s=2664516175 / "AP PoW nonce (~9z)" ...<br />
 test: <a href="https://github.com/trezor/python-mnemonic/blob/master/vectors.json">bip39_vectors</a>
 <br />
 <hr />
-<a href="https://www.agamapoint.com/chaos/"> 
-<img class="ico" src="svg/galaxy_sil.svg" alt="Chat icon" width="50" height="50" title="chaos"></a>
 
-<a href="https://www.agamapoint.com/bip39/entropy.html"> 
-<img class="ico" src="svg/sil_blocks.svg" alt="Chat icon" width="50" height="50" title="entropy"></a>
-
-<a href="https://www.agamapoint.com/sha256/">
-<img class="ico" src="svg/fingerprint_sil.svg" alt="Chat icon" width="50" height="50" title="sha256"</a>
-
-<a href="https://www.agamapoint.com/transakce/">
-<img class="ico" src="svg/maze_sil.svg" alt="Chat icon" width="50" height="50" title="transaction"></a>
-
-<a href="https://www.agamapoint.com/ukazky-kodu/">
-<img class="ico" src="svg/sqspiral_sil.svg" alt="Chat icon" width="50" height="50" title="code"</a>
-
-<a href="https://www.agamapoint.com/blockchain/">
-<img class="ico" src="svg/block9.svg" alt="Chat icon" width="50" height="50" title="blockchain"></a>
-
-<a href="https://www.agamapoint.com/cypherpunk/">
-<img class="ico" src="svg/anonymou_sil.svg" alt="Chat icon" width="50" height="50" title="cyberpunk"></a>
-
-<a href="https://github.com/agama-point">
-<img class="ico" src="svg/github_sil.svg" alt="Chat icon" width="50" height="50" title="github"></a>
-
+<div id="footer">f o o t e r</div>
+<script>
+$(document).ready(function() {
+   $("#footer").load("footer_menu.html", function() {
+       $('#footer').on('mouseenter', '.ico', function() {
+       $(this).css('opacity', '0.5');
+       }).on('mouseleave', '.ico', function() { $(this).css('opacity', '0.9'); });
+   });
+});
+</script>
 
 </div>   
 </body>
