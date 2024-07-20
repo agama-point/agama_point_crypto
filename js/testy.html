@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="css/bootstrap.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/app.css">
+  <script src="js/jquery.min.js"></script>
+  <title>3D Krychle s Sliderem</title>
+<style>
+.hint {
+    position: absolute;
+    top: -30px; /* Umístění hintu nad ikonou */
+    left: 50%; /* Uprostřed nad ikonou */
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    padding: 5px;
+    border-radius: 5px;
+    font-size: 12px;
+    pointer-events: none; /* Zabraňuje zasahování hintu do interakcí s myší */
+}
+</style>
+
+
+</head>
+
+<body>
+<div class="container">
+<hr />
+<h2>AgamaPoint testy (2021-23)</h2>
+
+<a href="https://www.agamapoint.com/bip39/testjq01.html">testjq/svg</a><br />
+<a href="https://www.agamapoint.com/bip39/entropy_matrix10x10.html">entropy_matrix10x10</a><br />
+<a href="https://www.agamapoint.com/bip39/grid10x10.html">grid10x10</a><br />
+<a href="https://www.agamapoint.com/bip39/grid_svg.html">grid_svg</a> | svg<br />
+<a href="https://www.agamapoint.com/bip39/game_of_live.html">game_of_live</a> | svg<br />
+<a href="https://www.agamapoint.com/bip39/svg3_01.html">svg3</a> | 01<br />
+<a href="https://www.agamapoint.com/bip39/drag_drop.html">drag_drop</a> | R G B O S <br />
+<a href="https://www.agamapoint.com/bip39/ico_qr.html">ico_qr</a> | test<br />
+<br />
+<a href="https://www.agamapoint.com/bip39/worm3d.html">worm3d control</a><br />
+<a href="https://www.agamapoint.com/bip39/organic21.html">organic21</a><br />
+<a href="https://www.agamapoint.com/bip39/anxious21.html">anxious21</a><br />
+<br />
+<a href="https://www.agamapoint.com/bip39/bin_edit.html">simple binary editor</a><br />
+<a href="https://www.agamapoint.com/bip39/sha256k8.html">sha256 k8</a><br />
+<a href="https://www.agamapoint.com/bip39/tab_calc.html">tab_calc</a> dec hex bin<br /> 
+<a href="https://www.agamapoint.com/bip39/cube_key.html">cube_key</a><br />
+<a href="https://www.agamapoint.com/bip39/circle_data.html">circle_data</a><br />
+
+
+ 
+
+
+<hr />
+<div>
+<img class="ico" src="svg/pruhy_v1.svg" alt="Chat icon" width="25" height="25">
+<img class="ico" src="svg/g0.svg" alt="Chat icon" width="25" height="25">
+<img class="ico" src="svg/g1.svg" alt="Chat icon" width="25" height="25">
+<img class="ico" src="svg/g2.svg" alt="Chat icon" width="25" height="25">
+<img class="ico" src="svg/g3.svg" alt="Chat icon" width="25" height="25">
+<img class="ico" src="svg/g4.svg" alt="Chat icon" width="25" height="25">
+<img class="ico" src="svg/g5.svg" alt="Chat icon" width="25" height="25">
+<img class="ico" src="svg/g6.svg" alt="Chat icon" width="25" height="25">
+<img class="ico" src="svg/g7.svg" alt="Chat icon" width="25" height="25">
+<img class="ico" src="svg/g8.svg" alt="Chat icon" width="25" height="25">
+<img class="ico" src="svg/g9.svg" alt="Chat icon" width="25" height="25">
+...
+
+
+<img class="ico" src="svg/g123.svg" alt="Chat icon" width="25" height="25">
+
+
+
+
+</div>
+
+
+
+
+<script>
+$(document).ready(function() {
+    $('.ico').mouseenter(function() {
+        $(this).css('opacity', '0.5');
+        // Zobrazit hint
+        var hint = $(this).attr('title');
+        $(this).after('<div class="hint">' + hint + '</div>');
+    }).mouseleave(function() {
+        $(this).css('opacity', '0.9');
+        // Schovat hint
+        $(this).next('.hint').remove();
+    });
+});
+</script>
+
+<div class="w390 bg_bla">
+<object class="pad8" type="image/svg+xml" data="svg/noise50x50.svg" width="50" height="50">
+  <img src="fallback.png" alt="Chat icon fallback">
+</object>
+
+<a href="https://www.agamapoint.com/">
+   <img class="ico" src="svg_ico2/login.svg" alt="Chat icon" width="45" height="45" title="login"></a>
+<a href="https://www.agamapoint.com/vybrane-terminy/">
+   <img class="ico" src="svg_ico2/chat2.svg" alt="Chat icon" width="50" height="50" title="hint1"></a>
+<a href="https://www.agamapoint.com/">
+   <img class="ico" src="svg_ico2/share.svg" alt="Chat icon" width="45" height="45" title="index"></a>
+<a href="https://www.agamapoint.com/">
+   <img class="ico" src="svg_ico2/settings.svg" alt="Chat icon" width="45" height="45" title="settings"></a>
+<a href="https://www.agamapoint.com/">
+   <img class="ico" src="svg_ico2/play.svg" alt="Chat icon" width="50" height="50" title="play"></a>
+
+ 
+
+</div>
+<hr>
+
+<a href="https://www.agamapoint.com/chaos/"> 
+<img class="ico" src="svg/galaxy_sil.svg" alt="Chat icon" width="50" height="50" title="chaos"></a>
+
+<a href="https://www.agamapoint.com/bip39/entropy.html"> 
+<img class="ico" src="svg/sil_blocks.svg" alt="Chat icon" width="50" height="50" title="entropy"></a>
+
+<a href="https://www.agamapoint.com/sha256/">
+<img class="ico" src="svg/fingerprint_sil.svg" alt="Chat icon" width="50" height="50" title="sha256"</a>
+
+<a href="https://www.agamapoint.com/transakce/">
+<img class="ico" src="svg/maze_sil.svg" alt="Chat icon" width="50" height="50" title="transaction"></a>
+
+<a href="https://www.agamapoint.com/ukazky-kodu/">
+<img class="ico" src="svg/sqspiral_sil.svg" alt="Chat icon" width="50" height="50" title="code"</a>
+
+<a href="https://www.agamapoint.com/blockchain/">
+<img class="ico" src="svg/block9.svg" alt="Chat icon" width="50" height="50" title="blockchain"></a>
+
+<a href="https://www.agamapoint.com/cypherpunk/">
+<img class="ico" src="svg/anonymou_sil.svg" alt="Chat icon" width="50" height="50" title="cyberpunk"></a>
+
+<a href="https://github.com/agama-point">
+<img class="ico" src="svg/github_sil.svg" alt="Chat icon" width="50" height="50" title="github"></a>
+</div>
+</body>
+</html>

@@ -41,7 +41,7 @@ $(document).ready(function() {
  var binaryString = "";
 
 
-   $('#goDec').click(function() {
+$('#goDec').click(function() {
      let dec = parseInt($('#dec').val());
      binaryString = dec.toString(2);
      while (binaryString.length % 5 !== 0) {binaryString = '0' + binaryString;}
@@ -56,29 +56,33 @@ $(document).ready(function() {
       } else { alert("Prosím, zadejte platné desítkové číslo."); }
       });
 
-   $('#goHex').click(function() {
+
+$('#goHex').click(function() {
      let hex = $('#hex').val();
      let dec = parseInt(hex, 16);
-     binaryString = dec.toString(2)
+     //binaryString = dec.toString(2)
+     binaryString = longHexToBin(hex);
      $('#bin').val(binaryString);
 
      while (binaryString.length % 5 !== 0) {binaryString = '0' + binaryString;}
      bech32Result1 = binaryStringToBech32String(binaryString);
 
      if (!isNaN(dec)) { $('#dec').val(dec);
-  outputBox.val(outputBox.val() + `Dec: ${dec} | Hex: ${dec.toString(16)} | Bin: ${dec.toString(2)}\nBECH32: ${binaryString}: ${bech32Result1}\n`); 
+  outputBox.val(outputBox.val() + `Dec: ${dec} | Hex: ${dec.toString(16)} | Bin: ${binaryString}\nBECH32: ${bech32Result1}\n`); 
   displayHexAsGrid(hex,"gridContainer1");  
       } else { alert("Prosím, zadejte platné šestnáctkové číslo."); }
       });
 
 
-      $('#goBin').click(function() {
+$('#goBin').click(function() {
         let bin = $('#bin').val();
         let dec = parseInt(bin, 2);
         if (!isNaN(dec)) {
            $('#dec').val(dec);
-           $('#hex').val(dec.toString(16));
- outputBox.val(outputBox.val() + `Dec: ${dec} | Hex: ${dec.toString(16)} | Bin: ${dec.toString(2)}\n`); 
+           //$('#hex').val(dec.toString(16));
+           $('#hex').val(longBinToHex(bin)); 
+
+ outputBox.val(outputBox.val() + `Dec: ${dec} | Hex: ${longBinToHex(bin)} | Bin: ${bin}\n`); 
  displayHexAsGrid(dec.toString(16),"gridContainer1"); 
         } else { alert("Prosím, zadejte platné binární číslo."); }
         });
@@ -147,38 +151,31 @@ Q(8RYU**CL) : 8RYUCL: 001110001100100111001100011111 (238187295)<br />
 Dec: <b>238187295</b> | Hex: e32731f |<br /> 
 Bin: 1110001100100111001100011111<br /> 
 BECH32: 8RYUCL<br /><br /> 
-subs.66a<br /> :.:.:
+subs.66a<br /> :.:.:<br /><br />
+<hr />
+dde.A  = 0c1e24e5917779d297e14d45f14e1a1a<br />
+1100000111100010010011100101100100010111011101111001110100101001011111100001010011010100010111110001010011100001101000011010<br />
+VRCJWTYTH08FF0C2DGHC5UXS6<br />
+dde.F2 = 6a09e667bb67ae853c6ef372a54ff53a<br />
+dde.F3 = 428a2f9871374491b5c0fbcfe9b5dba5<br />
+dde.K  = 6B6F62796C61206D61206D616C792062<br />
+dde.T  = 752f85035563adff915ac0c3ae1252ed<br />
+...    <br />
+
 </div>
 <br />
 <hr />
-<a href="https://www.agamapoint.com/chaos/"> 
-<img class="ico" src="svg/galaxy_sil.svg" alt="Chat icon" width="50" height="50" title="chaos"></a>
 
-<a href="https://www.agamapoint.com/bip39/entropy.html"> 
-<img class="ico" src="svg/sil_blocks.svg" alt="Chat icon" width="50" height="50" title="entropy"></a>
-
-<a href="https://www.agamapoint.com/sha256/">
-<img class="ico" src="svg/fingerprint_sil.svg" alt="Chat icon" width="50" height="50" title="sha256"</a>
-
-<a href="https://www.agamapoint.com/transakce/">
-<img class="ico" src="svg/maze_sil.svg" alt="Chat icon" width="50" height="50" title="transaction"></a>
-
-<a href="https://www.agamapoint.com/ukazky-kodu/">
-<img class="ico" src="svg/sqspiral_sil.svg" alt="Chat icon" width="50" height="50" title="code"</a>
-
-<a href="https://www.agamapoint.com/blockchain/">
-<img class="ico" src="svg/block9.svg" alt="Chat icon" width="50" height="50" title="blockchain"></a>
-
-<a href="https://www.agamapoint.com/cypherpunk/">
-<img class="ico" src="svg/anonymou_sil.svg" alt="Chat icon" width="50" height="50" title="cyberpunk"></a>
-
-<a href="https://github.com/agama-point">
-<img class="ico" src="svg/github_sil.svg" alt="Chat icon" width="50" height="50" title="github"></a>
-
-
-
-
-
+<div id="footer">f o o t e r</div>
+<script>
+$(document).ready(function() {
+   $("#footer").load("footer_menu.html", function() {
+       $('#footer').on('mouseenter', '.ico', function() {
+       $(this).css('opacity', '0.5');
+       }).on('mouseleave', '.ico', function() { $(this).css('opacity', '0.9'); });
+   });
+});
+</script>
 
 </body>
 </html>

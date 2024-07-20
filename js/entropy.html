@@ -1,4 +1,4 @@
-dice<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="cs">
 <head>
  <meta charset="UTF-8">
@@ -45,6 +45,7 @@ $(document).ready(function() {
  $("#subFPrimes").hide();
  $("#subExamples").hide();
  $("#subSysInfo").hide();
+ $("#subHexDump").hide();
  $("#xbutt").hide();
  $("#b32").click(function(){ $("#bech32").slideToggle("slow"); });
  $("#ex").click(function(){ $("#subExamples").slideToggle("slow"); });
@@ -53,6 +54,7 @@ $(document).ready(function() {
  $("#bcoin").click(function(){ $("#subCoin").slideToggle("slow"); });
  $("#bdice").click(function(){ $("#subDice").slideToggle("slow"); });
  $("#bprim").click(function(){ $("#subFPrimes").slideToggle("slow"); });
+ $("#bdump").click(function(){ $("#subHexDump").slideToggle("slow"); });
  $("#binfo").click(function(){ $("#subSysInfo").slideToggle("slow"); });
 
  const systemInfo = getSystemInfo();
@@ -129,8 +131,9 @@ $(document).ready(function() {
     const xorResult = xorHexStrings(inputData, inputKey);
     const data32 = inputData.padStart(32, '0');
     const key32 = inputKey.padStart(32, '0');
+    const tryASCII = hexToASCII(xorResult);
 
-    $('#xorResult').html(`<br>${data32}<br />${key32}<br /> XOR Result-> <br /><b>${xorResult}</b><br /><br />`);
+    $('#xorResult').html(`<br>${data32}<br />${key32}<br /> XOR (+) Result | HEX -> <br /><b>${xorResult}</b><br />ASCII :.: ${tryASCII}<br /><br />`);
     displayHexAsGrid(xorResult,"gridContainer2");
 
     $('#qrcode').empty();
@@ -350,8 +353,8 @@ intervalId = setInterval(generateRandomNumber, currentInterval);
 <hr />
 
 
-<button class="btn btn-warning w200 tx_left" id="bcoin"><img src="icon/file-arrow-down.svg"> Coin </button>
-random sequence generation (1/0) 128/256/512...
+<button class="btn btn-warning w200 tx_left" id="bcoin"><img src="icon/person-circle.svg"> Coin </button>
+Random sequence generation (1/0) 128/256/512...
 <div class="fc" id="subCoin">
 <div class="div_form">
  <input type="text" id="numCoin" value="128"><button class="btn btn-success" id="goButtonCoin"> Coin toss </button>
@@ -393,7 +396,7 @@ $(document).ready(function() {
 
 
 <button class="btn btn-warning w200 tx_left" id="bdice"><img src="icon/dice-3.svg"> Dice</button>
-sequential/automatic roll of five dice (HEX|histagram)
+Sequential/automatic roll of five dice (HEX|histagram)
 <div id="subDice">
   <div class="div_form">
 <button class="btn btn-success" id="goButtonDice"> Roll </button>
@@ -485,9 +488,10 @@ $(document).ready(function() {
 
 
 <button class="btn btn-warning w200 tx_left" id="bprim"><img src="icon/dice-5.svg"> Primes | fractional</button>
-deterministic "constants" from fractional parts of square (or third) roots
+Deterministic "constants" from fractional parts of square (or third) roots
 <div id="subFPrimes">
-  <div class="div_form">
+<br /><span class="bor_sil pad8">decimal_part(prime ** (1/root)) | int(decimal_part * (2 ** 32)) : 32bits max.</span>
+<div class="div_form">
 <input type="text" id="numPrim" value="21">
 <select class="bg_bla col_sil pad8" id="root-selector">
      <option value="2">Square Root</option>
@@ -565,7 +569,7 @@ Stochastic behaviour of a deterministic system
 <br />
 
 <button class="btn btn-warning w200 tx_left" id="bmod"><img src="icon/calculator.svg"> Congruential gen.</button>
-linear congruential (modulo) generator 
+Linear congruential (modulo) generator 
 <span class="bor_sil pad8">X<sub>n+1</sub> = (a*X<sub>n</sub> + c) mod m</span><br />
 <div id="subModulo">
 <div class="div_form">
@@ -613,10 +617,47 @@ $(document).ready(function() {
 });
 </script>
 
-</div>
 <hr />
+</div>
+<br />
+
+<button class="btn btn-warning w200 tx_left" id="bdump"><img src="icon/layout-text-sidebar.svg"> Hex dump </button>
+Simple ASCII to Hexadecimal Dump | Remove diacritics
+<div id="subHexDump">
+<div class="div_form">
+
+<input type="text" id="inputTextDump" placeholder="input text">
+<button class="btn btn-success" id="hexDumpBtn"> hex_dump </button>
+<br />
+<div id="hexascii">.:.</div>
+<pre class="bla_gre" id="hexdump"></pre>
+<div class="histagram w300 bg_bla" id="histagramContainerDump">:.:</div>
+<br />
+
+<script>
+$(document).ready(function() {
+  $('#hexDumpBtn').click(function() {
+     $('#hexdump').empty(); // Clear previous output
+     const inputText = $('#inputTextDump').val();
+     asciiToHexDump(inputText);
+     $('#hexascii').text("~"+hexToASCII(inputText));
+
+    let histagram = getHexHist(asciiStrToHex(inputText));
+    let histStr="";
+    for (let char in histagram) { histStr += `${char}:${histagram[char]}|`; }
+    //$('#preRP').html(`${splitLongString(longHex)} <b>${parabEntropy}</b><br/>${histStr}`);
+    drawHistagram(histagram, 'histagramContainerDump');
+  });
+});
+</script>
+</div>
+
+<hr />
+</div>
 <br /><br />
 
+.:.:.
+<hr />
 
 <button class="btn btn-warning" id="ex"><img src="icon/file-arrow-down.svg"> Examples...</button><br /><br />
 <div class="fc" id="subExamples">
@@ -637,6 +678,7 @@ R:    efc8e7affc532fce4a088ad19844418e<br />
 <br /><i>LS: hollow use swap ... choice element critic</i><br />
 <br /><br />
 <hr />
+<b>dde class:</b> deterministic or discredited entropy | "low" entropy<br />
 <b>dde.A</b> = e(andreas) =<br />
 0c1e24e5917779d297e14d45f14e1a1a<br />
 <br />
@@ -687,6 +729,13 @@ MACa ?is_eq? MACb<br />
 s=2664516175 / "AP PoW nonce (~9z)" ...<br />
 <br />
 <hr />
+hex2ascii("kobyla ma maly bok") &MASK32 =<br />
+6B6F62796C61206D61206D616C792062<br />
+
+(hex2ascii("kobyla...") &MASK32) (+) dde.A = <br />
+6771469cfd1659bff6c120249d373a78<br />
+
+<hr />
 
 most Linux distributions: the pseudo device file <b>/dev/random</b> will block until sufficient entropy is harvested from the environment!<br>
 <br />
@@ -707,7 +756,7 @@ most Linux distributions: the pseudo device file <b>/dev/random</b> will block u
 <br />
 
 <h2>Links</h2>
-| <a href="https://www.agamapoint.com/chaos/">chaos</a> | 
+| <a href="https://gchq.github.io/CyberChef/">CyberChef</a> | <a href="https://www.agamapoint.com/chaos/">chaos</a> | 
 
 <a href="https://www.agamapoint.com/bip39/bin_edit.html">simple binary editor</a> | 
 <a href="https://www.agamapoint.com/bip39/tab_calc.html">tab_calc</a> dec hex bin |  

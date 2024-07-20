@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <link rel="stylesheet" href="css/base.css">
+ <link rel="stylesheet" href="css/app.css">
+ <script src="js/jquery.min.js"></script>
+ <title>Drag & Drop testing</title>
+
+    <style>
+        .container {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            height: 100vh;
+            padding: 10px;
+        }
+
+        .column {
+            width: 25%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            min-height: 100px;
+            overflow-y: auto;
+        }
+
+        .rectangle {
+            width: 150px;
+            height: 50px;
+            margin: 5px;
+            cursor: grab;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            position: relative;
+        }
+
+        .rectangle .index {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background-color: black;
+            color: white;
+            padding: 2px 5px;
+            font-size: 0.8em;
+        }
+
+        .red {
+            background-color: red;
+        }
+
+        .green {
+            background-color: green;
+        }
+
+        .blue {
+            background-color: blue;
+        }
+
+        .silver {
+            background-color: silver;
+            color: black; /* Text color for better contrast */
+        }
+
+        .orange {
+            background-color: orange;
+            color: black; /* Text color for better contrast */
+        }
+
+        #output {
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+
+<body>
+<div class="wrap">
+    <div class="container">
+        <div class="column bor_sil" id="left-column">
+            <div class="rectangle red" draggable="true" data-color="R">red</div>
+            <div class="rectangle green" draggable="true" data-color="G">green</div>
+            <div class="rectangle blue" draggable="true" data-color="B">blue</div>
+            <div class="rectangle silver" draggable="true" data-color="S">silver</div>
+            <div class="rectangle orange" draggable="true" data-color="O">orange</div>
+        </div>
+        <div class="column bor_sil" id="middle-column">
+        </div>
+        <div class="column" id="right-column">
+            <div id="output"></div>
+        </div>
+    </div>
+
+
+    <script>
+        $(document).ready(function() {
+            // Nastavení dragstart události
+            $('.rectangle').on('dragstart', function(event) {
+                event.originalEvent.dataTransfer.setData('text', $(this).data('color'));
+                event.originalEvent.dataTransfer.setData('source', $(this).parent().attr('id'));
+                event.originalEvent.dataTransfer.setData('index', $(this).index());
+            });
+
+            // Povolení drop události
+            $('.column').on('dragover', function(event) {
+                event.preventDefault();
+            });
+
+            // Drop událost
+            $('.column').on('drop', function(event) {
+                event.preventDefault();
+                const color = event.originalEvent.dataTransfer.getData('text');
+                const source = event.originalEvent.dataTransfer.getData('source');
+                const targetId = $(this).attr('id');
+                const index = parseInt(event.originalEvent.dataTransfer.getData('index'), 10);
+
+                if (targetId === 'middle-column' && source === 'left-column') {
+                    const newRectangle = $('<div>', {
+                        class: 'rectangle ' + getColorClass(color),
+                        draggable: true,
+                        'data-color': color,
+                        text: getColorText(color)
+                    }).append('<div class="index"></div>').on('dragstart', function(event) {
+                        event.originalEvent.dataTransfer.setData('text', $(this).data('color'));
+                        event.originalEvent.dataTransfer.setData('source', $(this).parent().attr('id'));
+                        event.originalEvent.dataTransfer.setData('index', $(this).index());
+                    });
+
+                    // Přidání nového obdélníku na konec
+                    $('#middle-column').append(newRectangle);
+
+                    reindexRectangles(); // Aktualizace indexů
+                } else if (targetId === 'left-column' && source === 'middle-column') {
+                    // Odstranění obdélníku z prostředního sloupce podle indexu
+                    const $middleColumn = $('#middle-column');
+                    const rectangleToRemove = $middleColumn.children('.rectangle').eq(index);
+                    if (rectangleToRemove.length > 0) {
+                        rectangleToRemove.remove();
+                        reindexRectangles(); // Aktualizace indexů
+                    }
+                }
+
+                updateOutput();
+            });
+
+            // Funkce pro získání třídy barvy
+            function getColorClass(color) {
+                switch (color) {
+                    case 'R':
+                        return 'red';
+                    case 'G':
+                        return 'green';
+                    case 'B':
+                        return 'blue';
+                    case 'S':
+                        return 'silver';
+                    case 'O':
+                        return 'orange';
+                    default:
+                        return '';
+                }
+            }
+
+            // Funkce pro získání textu barvy
+            function getColorText(color) {
+                switch (color) {
+                    case 'R':
+                        return 'red';
+                    case 'G':
+                        return 'green';
+                    case 'B':
+                        return 'blue';
+                    case 'S':
+                        return 'silver';
+                    case 'O':
+                        return 'orange';
+                    default:
+                        return '';
+                }
+            }
+
+            // Funkce pro aktualizaci výstupu
+            function updateOutput() {
+                let result = '';
+                $('#middle-column .rectangle').each(function() {
+                    result += $(this).data('color');
+                });
+                $('#output').text(result);
+            }
+
+            // Funkce pro aktualizaci indexů obdélníků
+            function reindexRectangles() {
+                $('#middle-column .rectangle').each(function(index) {
+                    $(this).find('.index').text(index + 1); // Nastavení indexu (1-based)
+                    // Nastavení nové indexu pro dragstart
+                    $(this).on('dragstart', function(event) {
+                        event.originalEvent.dataTransfer.setData('text', $(this).data('color'));
+                        event.originalEvent.dataTransfer.setData('source', $(this).parent().attr('id'));
+                        event.originalEvent.dataTransfer.setData('index', $(this).index());
+                    });
+                });
+            }
+        });
+    </script>
+
+<hr />
+
+
+</div>
+</body>
+</html>

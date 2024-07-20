@@ -65,15 +65,27 @@ function getSystemInfo() {
 // --- agama_functions for simple BIP39 examples 2024/05-08
 
 // Function to convert binary string to hexadecimal string
-          function longBinToHex(bin) {
-              let hex = '';
-              for (let i = 0; i < bin.length; i += 4) {
-                  let binSegment = bin.substr(i, 4);
-                  let hexSegment = parseInt(binSegment, 2).toString(16);
-                  hex += hexSegment;
+function longBinToHex(bin) {
+     let hex = '';
+     for (let i = 0; i < bin.length; i += 4) {
+         let binSegment = bin.substr(i, 4);
+         let hexSegment = parseInt(binSegment, 2).toString(16);
+         hex += hexSegment;
               }
-           return hex;
-       }
+     return hex;
+}
+
+
+function longHexToBin(hex) {
+    let bin = '';
+    for (let i = 0; i < hex.length; i++) {
+        let hexSegment = hex[i];
+        let binSegment = parseInt(hexSegment, 16).toString(2);
+        bin += binSegment.padStart(4, '0');
+    }
+    return bin;
+}
+
 
 async function sha256(message) {
     const msgBuffer = new TextEncoder().encode(message);
@@ -295,25 +307,23 @@ function bech32ToBinary(char) {
     while (binary.length < 5) {
         binary = '0' + binary;
     }
-    
     return binary;
 }
+
 
 // Function to convert a binary string to BECH32 string
 function binaryStringToBech32String(binaryString) {
     // Pad the binary string with leading zeros to make its length a multiple of 5
-    while (binaryString.length % 5 !== 0) {
-        binaryString = '0' + binaryString;
-    }
+    while (binaryString.length % 5 !== 0) {  binaryString = '0' + binaryString;  }
 
     var bech32String = '';
     for (var i = 0; i < binaryString.length; i += 5) {
         var chunk = binaryString.substr(i, 5);
         bech32String += binaryToBech32(chunk);
     }
-
     return bech32String;
 }
+
 
 // Function to convert a BECH32 string to binary string
 function bech32StringToBinaryString(bech32String) {
@@ -322,7 +332,6 @@ function bech32StringToBinaryString(bech32String) {
         var char = bech32String[i];
         binaryString += bech32ToBinary(char);
     }
-
     return binaryString;
 }
 
@@ -407,14 +416,10 @@ function drawHistagram(histagram, containerId) {
 function calculatePrimes(n) {
         const primes = [];
         let num = 2; // 
-
         while (primes.length < n) {
-            if (isPrime(num)) {
-                primes.push(num);
-            }
+            if (isPrime(num)) { primes.push(num); }
             num++;
         }
-
         return primes;
     }
 
@@ -427,10 +432,8 @@ function isPrime(num) {
         for (let i = 5; i * i <= num; i += 6) {
             if (num % i === 0 || num % (i + 2) === 0) return false;
         }
-
         return true;
     }
-
 
 
 //------- deterministic or discredited entropy --------------
@@ -440,6 +443,7 @@ class dde32 {
     static F = "ffffffffffffffffffffffffffffffff";
     static F2 = "6a09e667bb67ae853c6ef372a54ff53a";
     static F3 = "428a2f9871374491b5c0fbcfe9b5dba5";
+    static K = "6B6F62796C61206D61206D616C792062";
     static T = "752f85035563adff915ac0c3ae1252ed";
     static Z = "00000000000000000000000000000000";
 
@@ -454,3 +458,95 @@ class dde32 {
         return result;
     }
 }
+
+
+function asciiStrToHex(str) {
+    let hex = '';
+    for (let i = 0; i < str.length; i++) {
+        let char = str.charCodeAt(i).toString(16);
+        hex += (char.length === 1 ? '0' : '') + char;
+    }
+    return hex;
+}
+
+
+function hexToASCII(shex) {
+    // Remove any spaces from the input hex string
+    shex = shex.replace(/\s+/g, '');
+
+    // If the length of the hex string is odd, pad with an additional zero
+    if (shex.length % 2 !== 0) {
+        shex += '0';
+    }
+
+    let ascii = '';
+
+    // Loop through each pair of characters in the hex string
+    for (let i = 0; i < shex.length; i += 2) {
+        // Convert the pair of hex characters to an integer
+        let hexPair = shex.substring(i, i + 2);
+        let charCode = parseInt(hexPair, 16);
+
+        // If the character code is printable, add the corresponding character to the ASCII string
+        // Otherwise, add a dot (.)
+        if (charCode >= 32 && charCode <= 126) {
+            ascii += String.fromCharCode(charCode);
+        } else {
+            ascii += '.';
+        }
+    }
+
+    return ascii;
+}
+
+
+// Function to remove diacritics
+function removeDiacritics(str) {
+     return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+}
+
+
+// hexdump - output "="
+function asciiToHexDump(str) {
+   let hex = '';
+   let longHex ="";
+   let ascii = '';
+   let offset = 0;
+   const width = 16; // 16 bytes per line
+
+   str = removeDiacritics(str); // Remove diacritics from input string
+
+   for (let i = 0; i < str.length; i++) {
+                let char = str.charCodeAt(i).toString(16).toUpperCase();
+                if (char.length === 1) char = '0' + char; // ensure two digits
+                hex += char + ' ';
+                longHex += char;
+                ascii += (str[i].charCodeAt(0) >= 32 && str[i].charCodeAt(0) <= 126) ? str[i] : '.';
+
+                if ((i + 1) % width === 0 || i === str.length - 1) {
+                    // Print offset
+                    let offsetStr = offset.toString(16).toUpperCase();
+                    while (offsetStr.length < 8) {
+                        offsetStr = '0' + offsetStr;
+                    }
+
+                    if ((i + 1) % width !== 0) {
+                        // Pad with "00 " and "."
+                        const remaining = width - (i % width) - 1;
+                        for (let j = 0; j < remaining; j++) {
+                            hex += '00 ';
+                            ascii += '.';
+                        }
+                    }
+
+                    hex = hex.trim();
+                    $('#hexdump').append(`${offsetStr}  ${hex}  |${ascii}|\n`);
+                    hex = '';
+                    ascii = '';
+                    offset += width;
+       }
+    }
+  $('#hexdump').append(`\n\n\n${splitLongString(longHex)}\n`);
+}
+
+
