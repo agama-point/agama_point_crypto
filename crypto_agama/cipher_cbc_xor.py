@@ -1,4 +1,7 @@
+#!/usr/bin/env python3
 # agama_point - cipher_cbc_xor-py.py
+
+__version__ = "0.1.0" 
 
 """
 CBC (Cipher Block Chaining)
