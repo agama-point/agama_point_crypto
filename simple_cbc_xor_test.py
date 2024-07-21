@@ -5,7 +5,8 @@ C1 = (IV ⊕ B1) ⊕ K
 C2 = (B2 ⊕ C1) ⊕ K
 ...
 """
-from crypto_agama.cipher_cbc_xor import CBC_XOR 
+from crypto_agama.cipher_cbc_xor import CBC_XOR
+
 
 key_hex = "0c1e24e5917779d297e14d45f14e1a1a" # andreas
 key = bytes.fromhex(key_hex) 
@@ -18,12 +19,10 @@ print("_iv: ", iv.hex()) # hex_str.zfill(16)[:16]
 print("block_size:", cbc.block_size)
 
 print("-"*30)
-# Šifrování
-ciphertext = cbc.encrypt(plaintext)
+ciphertext = cbc.encrypt(plaintext)  # Encryption
 print(f'Ciphertext: {ciphertext.hex()}')
 
-# Dešifrování
-decrypted_text = cbc.decrypt(ciphertext)
+decrypted_text = cbc.decrypt(ciphertext)  # Decryption
 print(f'Decrypted text: {decrypted_text.decode()}')
 
 """
