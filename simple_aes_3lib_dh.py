@@ -6,21 +6,23 @@ from crypto_agama.diffie_hellman import DiffieHellmanKeys
 ### pip install pycryptodome -> Crypto
 
 # Parameters for Diffie-Hellman
-g = 123  # Generátor
+"""
+g = 3  # Generátor
 p = 170141183460469231731687303715884105727  # Modulo prvočíslo
 print("M127:", 2**127-1, " :.",len(str(2**127-1))) #  Mersenne prime M127 :. 39 digits
+"""
 
 a = 555555555555  # Soukromý klíč Alice 12x5
 b = 333333333333  # Soukromý klíč Bob
 
 # Create an instance of the DiffieHellmanKeys class
-dh_a = DiffieHellmanKeys(p, g)
-dh_b = DiffieHellmanKeys(p, g)
-
+dh_a = DiffieHellmanKeys()
+dh_b = DiffieHellmanKeys()
+print(dh_b)
 
 print("[ Parameters ]")
 print("prime/modulo: ", dh_a.p)
-print("--- genrator: ", dh_a.g)
+print("---generator: ", dh_a.g)
 
 print("[ Private keys ] a, b :")
 print(a,b)
@@ -89,25 +91,27 @@ decrypted_message = decrypt_message(encrypted_message, symmetric_key)
 print("decrypted_message:", decrypted_message)
 
 """
-M127: 170141183460469231731687303715884105727  :. 39
+DiffieHellmanKeys
+(g = 3, p = 170141183460469231731687303715884105727)
+
 [ Parameters ]
-prime/modulo:  170141183460469231731687303715884105727
---- genrator:  123
+prime/modulo:  170141183460469231731687303715884105727 # M127
+---generator:  3
 [ Private keys ] a, b :
 555555555555 333333333333
 [ --- Alice --- ]
 Private key: 555555555555 | 0x8159b108e3
-Public key: 0x67043bb183b169e8d9dd533e68a21d00
+Public key: 0x236d61d241c8deec988b449371ef59fb
 [ --- Bob --- ]
 Private key: 333333333333 | 0x4d9c370555
-Public key: 0x45de70dbe50d0d9546c78999bd7b14a7
+Public key: 0x20119b431bf77946dab17b2056cacf56
 [ Shared secrets ]
-A:  115032458178017498334018774030333846069
-B:  115032458178017498334018774030333846069
+A:  145101968037071639412442679777990239948
+B:  145101968037071639412442679777990239948
 Shared secrets match.
-568a721168e50d5665cf5cd889c52235  (32)
-symmetric_key: b'1150324581780174' 31313530333234353831373830313734
+6d299f5dae62c2e9c9f2806ae9ab66cc  (32)
+symmetric_key: b'1451019680370716' 31343531303139363830333730373136
 ===========================================
-encrypted_message: 3ab9ac40f6653f0651e222da80938628
+encrypted_message: 8350f43c48e9373101e6607d26c4faa7
 decrypted_message: agama test
 """

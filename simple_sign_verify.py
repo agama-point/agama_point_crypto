@@ -3,17 +3,20 @@ from crypto_agama.diffie_hellman import DiffieHellmanKeys
 from crypto_agama.cipher_cbc_xor import CBC_XOR
 
 print("\n[ --- KEY GENERATION --- ]")
+"""
 # Parameters for Diffie-Hellman
 g = 123  # Generátor 2, 123
-p = 170141183460469231731687303715884105727  # Modulo prvočíslo 17, 9973, 1000009999, 123456789011, M61=2305843009213693951, M127
+p = 170141183460469231731687303715884105727  # M61=2305843009213693951, M127
+"""
 
 # Alice and Bob choose their private keys 
 a = 555555555555
 b = 333333333333 
 
 # Create an instance of the DiffieHellmanKeys class
-dh_a = DiffieHellmanKeys(p, g)
-dh_b = DiffieHellmanKeys(p, g)
+dh_a = DiffieHellmanKeys()
+dh_b = DiffieHellmanKeys()
+print(dh_b)
 
 print("--- Alice:")
 alice_private_key = a
@@ -64,21 +67,24 @@ else:
 
 """
 [ --- KEY GENERATION --- ]
+DiffieHellmanKeys/parameters
+(g = 3, p = 170141183460469231731687303715884105727)
+
 --- Alice:
 Private key: 555555555555 | 0x8159b108e3
-Public key: 0x67043bb183b169e8d9dd533e68a21d00 :. 39
+Public key: 0x236d61d241c8deec988b449371ef59fb :. 38
 --- Bob:
 Private key: 333333333333 | 0x4d9c370555
-Public key: 0x45de70dbe50d0d9546c78999bd7b14a7 :. 38
-568a721168e50d5665cf5cd889c52235  (32)
+Public key: 0x20119b431bf77946dab17b2056cacf56 :. 38
+6d299f5dae62c2e9c9f2806ae9ab66cc  (32)
 
 [  --- SIGN ---  ]
 message_plaintext_bytes: b'a short text for signing and subsequent verification | Agama 123'
-cbc_key:  568a721168e50d5665cf5cd889c52235  :..  32
+cbc_key:  6d299f5dae62c2e9c9f2806ae9ab66cc  :..  32
 cbc_iv_:  0c1e24e5917779d297e14d45f14e1a1a
 cbc_block_size: 16
 Encryption ->
-Ciphertext: be572caac7fb955a96f16b28f759ded7094668dff975431b7a777be4d1a1c2004fdc0ade81805e5d0fa8372c4874f025
+Ciphertext: 85f4c1e6017c5ae53accb79a97379a2e094668dff975431b7a777be4d1a1c200747fe792470791e2a395eb9e281ab4dc
 
 [ --- VERIFY --- ]
 Decrypted hash: e4c37a5e3e69e1de64df7ab58fd2e6f8e19b3664566bdb1789494c14af3d3ee2
