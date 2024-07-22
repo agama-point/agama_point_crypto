@@ -14,16 +14,21 @@ B = (g ** b) % p  # -> 8
 
 [a] private/secret | [A] public KEY
 """
-
+# Parameters for Diffie-Hellman
+G = 3  # Generator 3, 123
+M127 = 170141183460469231731687303715884105727  # Modulo prvočíslo 17, 9973, 1000009999, 123456789011, M61=2305843009213693951, M127
+# print("M127:", 2**127-1, " :.",len(str(2**127-1))) #  Mersenne prime M127 :. 39 digits
 
 class DiffieHellmanKeys:
-    def __init__(self, p, g):
-        self.p = p  # Modulus
-        self.g = g  # Base
+    def __init__(self, g=3, p=M127):
+        self.g = g  # Base / Generator
+        self.p = p  # Modulus / Prime
         self.shared_secret = ""
         self.public_key = ""
         self.print_info = False
- 
+
+    def __repr__(self):
+        return f"DiffieHellmanKeys\n(g = {self.g}, p = {self.p}) \n"
 
     def modular_exponentiation(self, base, exp, mod):
         result = 1
@@ -51,6 +56,17 @@ class DiffieHellmanKeys:
         # shared_secret = other_public_key ** private_key % self.p
         self.shared_secret = self.modular_exponentiation(other_public_key, private_key, self.p)
         return self.shared_secret
+
+
+    def is_primitive_root(self, g, p):
+        """ Check if g is a primitive root modulo p"""
+        if g <= 1 or g >= p:
+            return False
+
+        required_set = set(num for num in range(1, p))  # only for "small" p!
+        actual_set = set(pow(g, powers, p) for powers in range(1, p)) # Compute the powers of g mod p
+    
+        return required_set == actual_set
 
 
     def get_hex_shared32(self):
