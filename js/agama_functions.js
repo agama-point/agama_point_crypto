@@ -1,10 +1,21 @@
 // agama_function.js | 2015-24 | 
-AF_VER = "0.7.18";
+AF_VER = "0.7.20";
+
+
+const charset64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
+const charset58 = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'; // x: 0IOl
+const charset32 = '2346789bdfghjmnpqrtBDFGHJLMNPQRT';
+const charset16 = '0123456789abcdef';
+const charset8 = '01234567';
+const charset6 = '123456'; // dice
+const charset4 = 'ATCG';
+const charset2 = '01'; // bin / coin
+
 
 function getSystemInfo() {
     // Detekce verze JavaScriptu
     const jsVersion = (() => {
-        if (typeof BigInt === "function") return "ES11 (2019)";
+        if (typeof BigInt === "function") return "ES11 (2019) +";
         if (typeof Symbol === "function") return "ES6 (2015)";
         if (typeof Map === "function") return "ES6 (2015)";
         if (typeof Set === "function") return "ES6 (2015)";
@@ -66,24 +77,45 @@ function getSystemInfo() {
 
 // Function to convert binary string to hexadecimal string
 function longBinToHex(bin) {
-     let hex = '';
-     for (let i = 0; i < bin.length; i += 4) {
-         let binSegment = bin.substr(i, 4);
-         let hexSegment = parseInt(binSegment, 2).toString(16);
-         hex += hexSegment;
+   let hex = '';
+   for (let i = 0; i < bin.length; i += 4) {
+      let binSegment = bin.substr(i, 4);
+      let hexSegment = parseInt(binSegment, 2).toString(16);
+      hex += hexSegment;
               }
-     return hex;
+   return hex;
 }
 
 
 function longHexToBin(hex) {
-    let bin = '';
-    for (let i = 0; i < hex.length; i++) {
-        let hexSegment = hex[i];
-        let binSegment = parseInt(hexSegment, 16).toString(2);
-        bin += binSegment.padStart(4, '0');
+   let bin = '';
+   for (let i = 0; i < hex.length; i++) {
+      let hexSegment = hex[i];
+      let binSegment = parseInt(hexSegment, 16).toString(2);
+      bin += binSegment.padStart(4, '0');
+   }
+   return bin;
+}
+
+
+function hexToString(hex) {
+    let str = '';
+    for (let i = 0; i < hex.length; i += 2) {
+        str += String.fromCharCode(parseInt(hex.substr(i, 2), 16));
     }
-    return bin;
+    return str;
+}
+
+
+function hexToBase64(hexString) {
+    // hex 2 byte array
+    let bytes = [];
+    for (let i = 0; i < hexString.length; i += 2) {
+        bytes.push(parseInt(hexString.substr(i, 2), 16));
+    }
+    let binaryString = String.fromCharCode.apply(null, bytes); // B arr 2 bin
+    let base64String = btoa(binaryString); // bin 2 base64
+    return base64String;
 }
 
 
@@ -137,7 +169,6 @@ function splitLongString(longStr, chunkSize = 32, separator = '<br>') {
     for (let i = 0; i < longStr.length; i += chunkSize) {
         chunks.push(longStr.substring(i, i + chunkSize));
     }
-
     // Spojí části s použitím separatoru a vrátí výsledek
     return chunks.join(separator);
 }
@@ -150,10 +181,10 @@ function getHexHistx(longHexString) {
 
     // Projít všechny znaky a počítat četnosti
     chars.forEach(char => {
-        if (/[0-9A-Fa-f]/.test(char)) {
-            const normalizedChar = char.toUpperCase(); // Normalizovat na velká písmena
-            histagram[normalizedChar] = (histagram[normalizedChar] || 0) + 1;
-        }
+       if (/[0-9A-Fa-f]/.test(char)) {
+          const normalizedChar = char.toUpperCase(); // Normalizovat na velká písmena
+          histagram[normalizedChar] = (histagram[normalizedChar] || 0) + 1;
+       }
     });
     return histagram;
 }
@@ -164,21 +195,20 @@ function getHexHist(longHexString) {
 
     // Projít všechny znaky hexadecimálního řetězce a počítat četnosti
     for (let i = 0; i < longHexString.length; i++) {
-        const char = longHexString[i];
-        if (/[0-9A-Fa-f]/.test(char)) {
-            const normalizedChar = char.toUpperCase(); // Normalizovat na velká písmena
-            histagram[normalizedChar] = (histagram[normalizedChar] || 0) + 1;
-        }
+       const char = longHexString[i];
+       if (/[0-9A-Fa-f]/.test(char)) {
+          const normalizedChar = char.toUpperCase(); // Normalizovat na velká písmena
+          histagram[normalizedChar] = (histagram[normalizedChar] || 0) + 1;
+       }
     }
 
     // Vytvořit pole seřazeného histagramu
     const sortedHistogram = {};
     '0123456789ABCDEF'.split('').forEach(char => {
-        if (histagram[char]) {
-            sortedHistogram[char] = histagram[char];
-        }
+       if (histagram[char]) {
+          sortedHistogram[char] = histagram[char];
+       }
     });
-
     return sortedHistogram;
 }
 
@@ -225,7 +255,6 @@ function displayHexAsGridHorizontal(hex) {
         return;
     }
 
-
     const grid = $('<div class="grid"></div>');
     
     for (let i = 0; i < hex.length; i++) {
@@ -241,7 +270,6 @@ function displayHexAsGridHorizontal(hex) {
             grid.append(cell);
         }
     }
-    
     gridContainer.append(grid);
 }
 
@@ -375,12 +403,14 @@ function convertToHex(arr) {
 
 //---2024/07
 const substitutionTable21 = {
-  'A': 'faf','B': 'fd7','C': 'f99','D': 'f96','E': 'fd9',
-  'F': 'fa8','G': 'f9b','H': 'f2f','I': 'f','J': '1f',
-  'K': 'f2d','L': 'f11','M': 'f8f','N': 'f4f','O': 'f9f',
-  'P': 'fae','R': 'fad','S': 'dda','T': '8f8','U': 'f1f',
-  'V': 'e1e','X': 'd2d','Y': 'c3c','Z': 'b9d'
-   };
+ 'A':'faf','B':'fd7','C':'f99','D':'f96','E':'fd9',
+ 'F':'fa8','G':'f9b','H':'f2f','I':'f',  'J':'1f',
+ 'K':'f2d','L':'f11','M':'f8f','N':'f4f','O':'f9f',
+ 'P':'fae','R':'fad','S':'dda','T':'8f8','U':'f1f',
+ 'V':'e1e','X':'d2d','Y':'c3c','Z':'b9d',
+ '1':'4f', '2':'9b5','3':'bf6','4':'e27','5':'dbb',
+ '6':'f53','7':'88f','8':'fbf','9':'dbf','0':'f9f',
+ };
 
 
 // --- histagram ---
@@ -414,49 +444,50 @@ function drawHistagram(histagram, containerId) {
 
 //simple first n primes
 function calculatePrimes(n) {
-        const primes = [];
-        let num = 2; // 
-        while (primes.length < n) {
-            if (isPrime(num)) { primes.push(num); }
-            num++;
-        }
-        return primes;
-    }
+   const primes = [];
+   let num = 2; // 
+   while (primes.length < n) {
+      if (isPrime(num)) { primes.push(num); }
+        num++;
+   }
+   return primes;
+}
 
 
 function isPrime(num) {
-        if (num <= 1) return false;
-        if (num <= 3) return true;
-        if (num % 2 === 0 || num % 3 === 0) return false;
+   if (num <= 1) return false;
+   if (num <= 3) return true;
+   if (num % 2 === 0 || num % 3 === 0) return false;
 
-        for (let i = 5; i * i <= num; i += 6) {
-            if (num % i === 0 || num % (i + 2) === 0) return false;
-        }
-        return true;
+   for (let i = 5; i * i <= num; i += 6) {
+      if (num % i === 0 || num % (i + 2) === 0) return false;
     }
+    return true;
+}
 
 
 //------- deterministic or discredited entropy --------------
 class dde32 {
 
-    static A = "0c1e24e5917779d297e14d45f14e1a1a";
-    static F = "ffffffffffffffffffffffffffffffff";
-    static F2 = "6a09e667bb67ae853c6ef372a54ff53a";
-    static F3 = "428a2f9871374491b5c0fbcfe9b5dba5";
-    static K = "6B6F62796C61206D61206D616C792062";
-    static T = "752f85035563adff915ac0c3ae1252ed";
-    static Z = "00000000000000000000000000000000";
+   static A = "0c1e24e5917779d297e14d45f14e1a1a";
+   static F = "ffffffffffffffffffffffffffffffff";
+   static F2 = "6a09e667bb67ae853c6ef372a54ff53a";
+   static F3 = "428a2f9871374491b5c0fbcfe9b5dba5";
+   static K = "6B6F62796C61206D61206D616C792062";
+   static T = "752f85035563adff915ac0c3ae1252ed";
+   static Z = "00000000000000000000000000000000";
 
-
-    // Metoda xor pro dva parametry
-    static xor(A, B) {
-        let result = "";
-        for (let i = 0; i < A.length && i < B.length; i++) {
-            // Převod každého znaku na jeho ASCII hodnotu a provedení XOR operace
-            result += String.fromCharCode(A.charCodeAt(i) ^ B.charCodeAt(i));
-        }
-        return result;
+   // Metoda xor pro dva parametry
+   static xor(A, B) {
+      let result = "";
+      for (let i = 0; i < A.length && i < B.length; i++) {
+          // Převod každého znaku na jeho ASCII hodnotu a provedení XOR operace
+          result += String.fromCharCode(A.charCodeAt(i) ^ B.charCodeAt(i));
+      }
+      return result;
     }
+
+    //static pad032(A) { return = A.padStart(32, '0'); }
 }
 
 
@@ -495,7 +526,6 @@ function hexToASCII(shex) {
             ascii += '.';
         }
     }
-
     return ascii;
 }
 
@@ -517,36 +547,33 @@ function asciiToHexDump(str) {
    str = removeDiacritics(str); // Remove diacritics from input string
 
    for (let i = 0; i < str.length; i++) {
-                let char = str.charCodeAt(i).toString(16).toUpperCase();
-                if (char.length === 1) char = '0' + char; // ensure two digits
-                hex += char + ' ';
-                longHex += char;
-                ascii += (str[i].charCodeAt(0) >= 32 && str[i].charCodeAt(0) <= 126) ? str[i] : '.';
+       let char = str.charCodeAt(i).toString(16).toUpperCase();
+       if (char.length === 1) char = '0' + char; // ensure two digits
+       hex += char + ' ';
+       longHex += char;
+       ascii += (str[i].charCodeAt(0) >= 32 && str[i].charCodeAt(0) <= 126) ? str[i] : '.';
 
-                if ((i + 1) % width === 0 || i === str.length - 1) {
-                    // Print offset
-                    let offsetStr = offset.toString(16).toUpperCase();
-                    while (offsetStr.length < 8) {
-                        offsetStr = '0' + offsetStr;
-                    }
+       if ((i + 1) % width === 0 || i === str.length - 1) {
+           // Print offset
+           let offsetStr = offset.toString(16).toUpperCase();
+           while (offsetStr.length < 8) { offsetStr = '0' + offsetStr; }
 
-                    if ((i + 1) % width !== 0) {
-                        // Pad with "00 " and "."
-                        const remaining = width - (i % width) - 1;
-                        for (let j = 0; j < remaining; j++) {
-                            hex += '00 ';
-                            ascii += '.';
-                        }
-                    }
+           if ((i + 1) % width !== 0) {
+               // Pad with "00 " and "."
+               const remaining = width - (i % width) - 1;
+               for (let j = 0; j < remaining; j++) {
+                   hex += '00 ';
+                   ascii += '.';
+               }
+           }
 
-                    hex = hex.trim();
-                    $('#hexdump').append(`${offsetStr}  ${hex}  |${ascii}|\n`);
-                    hex = '';
-                    ascii = '';
-                    offset += width;
+           hex = hex.trim();
+           $('#hexdump').append(`${offsetStr}  ${hex}  |${ascii}|\n`);
+           hex = '';
+           ascii = '';
+           offset += width;
        }
     }
-  $('#hexdump').append(`\n\n\n${splitLongString(longHex)}\n`);
+    const base64str = hexToBase64(longHex);
+    $('#hexdump').append(`\n\n\nHEX: ${splitLongString(longHex)}\nBASE64: ${base64str}\n`);
 }
-
-
