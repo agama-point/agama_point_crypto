@@ -4,7 +4,7 @@
  <meta charset="UTF-8">
  <meta name="viewport" content="width=device-width, initial-scale=1.0">
  <link rel="stylesheet" href="css/bootstrap.css">
- <link rel="stylesheet" href="css/base.css">
+ <link rel="stylesheet" href="css/base.css?cache_bust=${new Date().getTime()"">
  <link rel="stylesheet" href="css/app.css">
  <link rel="stylesheet" href="css/matrix.css">
  <link rel="stylesheet" href="css/histagram.css">
@@ -19,20 +19,18 @@
   margin-top: 20px;
   color: #ccc;
 }
-
 .dice {
   width: 50px;
   height: 50px;
   color: #ccc;
 }
-
 .tx_left { text-align: left;}
-
 </style>
 
 <script>
 // ..?cache_bust=${new Date().getTime()}
 $(document).ready(function() {
+  setTimeout(function() { $('.corner_info').fadeOut("slow"); }, 5000);
   $('.ico').mouseenter(function() { $(this).css('opacity', '0.5'); }).mouseleave(function() {
      $(this).css('opacity', '0.9'); });
 
@@ -43,11 +41,10 @@ $(document).ready(function() {
  $("#subCoin").hide();
  $("#subDice").hide();
  $("#subFPrimes").hide();
- $("#subExamples").hide();
  $("#subSysInfo").hide();
  $("#subHexDump").hide();
  $("#xbutt").hide();
- $("#b32").click(function(){ $("#bech32").slideToggle("slow"); });
+ $("#subExamples").hide();
  $("#ex").click(function(){ $("#subExamples").slideToggle("slow"); });
  $("#brp").click(function(){ $("#subRealpar").slideToggle("slow"); });
  $("#bmod").click(function(){ $("#subModulo").slideToggle("slow"); });
@@ -71,7 +68,7 @@ $(document).ready(function() {
     fullHash = await sha256(inputText);        
     $('#input2').val(fullHash);
     $('#result1').html(`<br />${fullHash}`); 
-  });
+ });
 
  $('#leftButton').on('click', function() {        
    const inputText = $('#input2').val();
@@ -80,44 +77,62 @@ $(document).ready(function() {
    $('#result2').html(`<br /><b>${inputTextL}</b><br /><br />`);
    displayHexAsGrid(inputTextL,"gridContainer1");
    $("#xbutt").show();        
-  });
+ });
 
-  $('#leftButtonThis').on('click', function() { 
+ $('#leftButtonThis').on('click', function() { 
    const inputText3 = $('#input3').val();       
    const leftHalf = inputText3.substring(0, 32);
-   $('#result2').html(`<br /><b>${leftHalf}</b><br /><br />`);
+ $('#result2').html(`<br /><b>${leftHalf}</b><br /><br />`);
    displayHexAsGrid(leftHalf,"gridContainer1");
    $("#xbutt").show();        
-   });
+ });
 
-  $('#rightButton').on('click', function() {        
+ $('#rightButton').on('click', function() {        
     //const rightHalf = fullHash.substring(fullHash.length / 2);
     const inputText = $('#input2').val();
     let inputTextL = inputText.substring(32, 64).toLowerCase();
 
-  $('#result2').html(`<br /><b>${inputTextL}</b><br /><br />`);
+ $('#result2').html(`<br /><b>${inputTextL}</b><br /><br />`);
     displayHexAsGrid(inputTextL,"gridContainer1");
     $("#xbutt").show();         
     });
 
-  $('#xdButton').on('click', function() {        
+ $('#xdButton').on('click', function() {        
      const textContent = $('#result2').text();
      $('#input_data').val(textContent);
     });
     
-  $('#xkButton').on('click', function() {        
+ $('#xkButton').on('click', function() {        
      const textContent = $('#result2').text();
      $('#input_key').val(textContent);
    });
 
-  $('#btnA').on('click', function() { $('#input_key').val(dde32.A); });
-  $('#btnT').on('click', function() { $('#input_key').val(dde32.T); });
-  $('#btnF2').on('click',function() { $('#input_key').val(dde32.F2); });
-  $('#btnF3').on('click',function() { $('#input_key').val(dde32.F3); });
-  $('#btnZ').on('click', function() { $('#input_key').val(dde32.Z); });
-  $('#btnF').on('click', function() { $('#input_key').val(dde32.F); });
+ $('#btnA').on('click', function() { $('#input_key').val(dde32.A); });
+ $('#btnT').on('click', function() { $('#input_key').val(dde32.T); });
+ $('#btnK').on('click', function() { $('#input_key').val(dde32.K); });
+ $('#btnF2').on('click',function() { $('#input_key').val(dde32.F2); });
+ $('#btnF3').on('click',function() { $('#input_key').val(dde32.F3); });
+ $('#btnZ').on('click', function() { $('#input_key').val(dde32.Z); });
+ //$('#btnZ').on('click', function() { $('#input_key').val(dde32.pad032(1)); });
+ $('#btnF').on('click', function() { $('#input_key').val(dde32.F); });
+ $('#btnA1').on('click', function() { $('#input_iv').val(dde32.A); });
+ $('#btnT1').on('click', function() { $('#input_iv').val(dde32.T); });
+ $('#btnZ1').on('click', function() { $('#input_iv').val(dde32.Z); });
+
+ $('#btnL').click(function() {
+        let inputValue = $('#input_data').val();
+        let paddedValue = inputValue.padStart(32, '0');
+        $('#input_data').val(paddedValue);
+  });
+
+  $('#btnR').click(function() {
+        let inputValue = $('#input_data').val();
+        let paddedValue = inputValue.padEnd(32, '0');
+        $('#input_data').val(paddedValue);
+  });
 
   $('#xorButton').on('click', function() {
+  const inputIV = $('#input_iv').val().trim();
   const inputData = $('#input_data').val().trim();
   const inputKey = $('#input_key').val().trim();
         
@@ -128,31 +143,28 @@ $(document).ready(function() {
   //$('#xorResult').html('Input data and key must be of the same length.'); return;}
         
   try {
-    const xorResult = xorHexStrings(inputData, inputKey);
+    const xorResultTemp = xorHexStrings(inputData, inputIV);
+    //const xorResult = xorHexStrings(inputData, inputKey);
+    const xorResult = xorHexStrings(xorResultTemp, inputKey);
     const data32 = inputData.padStart(32, '0');
     const key32 = inputKey.padStart(32, '0');
+    const iv32 = inputIV.padStart(32, '0');
     const tryASCII = hexToASCII(xorResult);
+    const data32neg = xorHexStrings(xorResult, dde32.F);
+    const data32rev = xorResult.split('').reverse().join('');
 
-    $('#xorResult').html(`<br>${data32}<br />${key32}<br /> XOR (+) Result | HEX -> <br /><b>${xorResult}</b><br />ASCII :.: ${tryASCII}<br /><br />`);
+    $('#xorResult').html(`<br>${iv32} | IV<br>${data32} | DATA<br />${key32} | KEY<br /> XOR (+) Result | HEX -> <br /><b>${xorResult}</b><br />${data32neg} | NEG<br />${data32rev} | REV<br /> ASCII :.: ${tryASCII}<br /><br />`);
     displayHexAsGrid(xorResult,"gridContainer2");
 
     $('#qrcode').empty();
     new QRCode(document.getElementById("qrcode"), {
        text: xorResult, width: 128, height: 128,
-       colorDark: "Orange", colorLight: "#000000" 
+       colorDark: "Moccasin", colorLight: "#000000" 
        });  
    } catch (error) {
         $('#xorResult').html(`<br>${inputData}<br>${inputKey}<br>Invalid hex input.`);
    }
 });
-
- $('#convertToBech32').on('click', function() {
-      const binaryInput = $('#binaryInput').val();
-      let binaryString = binaryInput;
-      while (binaryString.length % 5 !== 0) {binaryString = '0' + binaryString;}
-      let bech32Result = binaryStringToBech32String(binaryInput);
-      $('#bech32Output').html(`${binaryString}: ${bech32Result}<br /><br />`); 
-  });
 
   $('#convertToBinary').on('click', function() {
       const bech32Input = $('#bech32Input').val();
@@ -192,7 +204,8 @@ $(document).ready(function() {
 
 <body>
 <div class="wrap">
-| <a href="https://www.agamapoint.com/">AgamaPoint</a> | <a href="https://www.agamapoint.com/bip39/">bip39</a> | <a href="https://www.agamapoint.com/bip39/words.html">words</a> | entropy "generator" | <a href="https://www.agamapoint.com/bip39/iting.html">iTing</a> | <a href="https://www.agamapoint.com/games">g_m_s</a> | <a href="test_game.html">G</a> | <a href="testy.html">T</a> | <a href="mm_bips.html">mm_bips</a> | 
+<div class="corner_info">e_gen | 2307</div>
+| <a href="https://www.agamapoint.com/">AgamaPoint</a> | <a href="https://www.agamapoint.com/bip39/">bip39</a> | <a href="https://www.agamapoint.com/bip39/words.html">words</a> | entropy "generator" | <a href="https://www.agamapoint.com/bip39/iting.html">iTing</a> | <a href="cipher_cbc_xor.html">cbc_xor</a> | <a href="https://www.agamapoint.com/games">g_m_s</a> | <a href="test_game.html">G</a> | <a href="testy.html">T</a> | <a href="mm_bips.html">mm_bips</a> | 
 <hr /><br />
 
 <h1>
@@ -289,7 +302,6 @@ $('#stopButton').on('click', function() {
     updateHexNumber();
  });
 
-
 // Původní start interval
 intervalId = setInterval(generateRandomNumber, currentInterval);
 </script>
@@ -326,28 +338,51 @@ intervalId = setInterval(generateRandomNumber, currentInterval);
 </div>
 
 
-<h2>XOR</h2>
+<h2>XOR</h2>  
+
 <div class="div_form">
+  <label for="input_iv">IV (hex):</label>
+  <input type="text" id="input_iv" name="input_iv" value="0">
+  <button class="btn btn-success" id="btnA1">A</button>
+  <button class="btn btn-success" id="btnT1">T</button>
+  <button class="btn btn-success" id="btnZ1">0</button>
+
+  <br>
   <label for="input_data">Data (hex):</label>
   <input type="text" id="input_data" name="input_data" value="0">
+  <button class="btn btn-success" id="btnL">00_L</button>
+  <button class="btn btn-success" id="btnR">R_00</button>
   <br>
-  <label for="input_key">Key (hex):       <u>A</u>ndreas | <u>T</u>REZOR | ZER<u>0</u> | <u>F</u>FF.. |</label>
+  <label for="input_key">Key (hex)&MASK32: <u>A</u>ndreas | <u>T</u>REZOR | ... | ZER<u>0</u> | <u>F</u>FF | </label>
   <input type="text" id="input_key" name="input_key">
 
-  <img class="ico" src="svg_ico2/sq-left.svg" alt="Chat icon" width="50" height="50" title="left">
-  <button class="btn btn-success" id="btnA"> A </button>
-  <button class="btn btn-success" id="btnT"> T </button>
-  <button class="btn btn-success" id="btnF2"> f2 </button>
-  <button class="btn btn-success" id="btnF3"> f3 </button>
-  <button class="btn btn-success" id="btnZ"> 0 </button>
-  <button class="btn btn-success" id="btnF"> F </button>
+  <button class="btn btn-success" id="btnA">A</button>
+  <button class="btn btn-success" id="btnT">T</button>
+  <button class="btn btn-success" id="btnF2">f2</button>
+  <button class="btn btn-success" id="btnF3">f3</button>
+  <button class="btn btn-success" id="btnK">K</button>
+  <button class="btn btn-success" id="btnZ">0</button>
+  <button class="btn btn-success" id="btnF">F</button>
 
   <button class="btn btn-warning" id="xorButton">
   <img src="icon/qr-code.svg" alt="QR Code Icon"> XOR <img src="icon/logic-xor.svg" width="16" height="16"></button>
-  <div class="fc" id="xorResult"></div>
+  <div class="fc" id="xorResult"></div>  
+  <b>~ (a ⊕ b) ⊕ c = a ⊕ (b ⊕ c)</b>
+  <br /><br />
   <div id="gridContainer2" class="mt-3"></div>
   <br /><br />
+
+  <div class="qr-code-container">
   <div id="qrcode" class="qrcode"></div>
+  <div class="pad16">
+<p>XOR of two independent and uniformly distributed random numbers remains random.</p>
+
+<p>XOR of two poor quality pseudo-random numbers may or may not improve the resulting entropy. When the two numbers have some correlated bits or structured patterns, the result may have similar patterns.</p>
+
+<p>The resulting entropy should be at least as good as the entropy of the better of the two original numbers. (An XOR operation can mask the shortcomings of one of the numbers if the other number has a high entropy.)</p>
+ </div>
+</div>
+
 </div>
 <br />
 <hr />
@@ -490,7 +525,7 @@ $(document).ready(function() {
 <button class="btn btn-warning w200 tx_left" id="bprim"><img src="icon/dice-5.svg"> Primes | fractional</button>
 Deterministic "constants" from fractional parts of square (or third) roots
 <div id="subFPrimes">
-<br /><span class="bor_sil pad8">decimal_part(prime ** (1/root)) | int(decimal_part * (2 ** 32)) : 32bits max.</span>
+<br /><span class="bor_gra pad8">decimal_part(prime ** (1/root)) | int(decimal_part * (2 ** 32)) : 32bits max.</span>
 <div class="div_form">
 <input type="text" id="numPrim" value="21">
 <select class="bg_bla col_sil pad8" id="root-selector">
@@ -551,7 +586,7 @@ $(document).ready(function() {
 
 <button class="btn btn-warning w200 tx_left" id="brp"><img src="icon/calculator.svg"> Real parabola</button>
 Stochastic behaviour of a deterministic system 
-<span class="bor_sil pad8">f(x<sub>n+1</sub>) = 4*x<sub>n</sub>*(1-x<sub>n</sub>)</span><br />
+<span class="bor_gra pad8">f(x<sub>n+1</sub>) = 4*x<sub>n</sub>*(1-x<sub>n</sub>)</span><br />
 <div id="subRealpar">
   <div class="div_form">
   <button class="btn btn-success" id="goButtonRP"> Calculate </button> for the initial condition:
@@ -570,7 +605,7 @@ Stochastic behaviour of a deterministic system
 
 <button class="btn btn-warning w200 tx_left" id="bmod"><img src="icon/calculator.svg"> Congruential gen.</button>
 Linear congruential (modulo) generator 
-<span class="bor_sil pad8">X<sub>n+1</sub> = (a*X<sub>n</sub> + c) mod m</span><br />
+<span class="bor_gra pad8">X<sub>n+1</sub> = (a*X<sub>n</sub> + c) mod m</span><br />
 <div id="subModulo">
 <div class="div_form">
 <label>X(0)</label>
@@ -682,7 +717,7 @@ R:    efc8e7affc532fce4a088ad19844418e<br />
 <b>dde.A</b> = e(andreas) =<br />
 0c1e24e5917779d297e14d45f14e1a1a<br />
 <br />
-XOR = (+)<br />
+XOR = (+) | ⊕<br />
 <i>left(sha(agama)) (+) dde.A =</i><br />
 5e46bb49091475b2ac348ff57dfeecd6<br />
 <br />
@@ -723,7 +758,7 @@ for "hashrate" 9 nonce = 2664516175<br />
 <br />
 <hr />
 <b>HMAC</b> hash-based message authentication code<br />
-<i>~HMAC-SHA1 / ...<i><br />
+<i>~HMAC-SHA1 / ...</i><br />
 MAC=sha(msg+s) | s: pub_key / shared sec.<br />
 MACa ?is_eq? MACb<br />
 s=2664516175 / "AP PoW nonce (~9z)" ...<br />
@@ -734,10 +769,19 @@ hex2ascii("kobyla ma maly bok") &MASK32 =<br />
 
 (hex2ascii("kobyla...") &MASK32) (+) dde.A = <br />
 6771469cfd1659bff6c120249d373a78<br />
-
+<br />
+bitcoin | visual <a href="https://www.agamapoint.com/bip39/bin_edit.html">bin_edit</a><br />
+02200f530b0e51035507570b07430022<br />
+AXT: 7b11aeb5cf1a852e53bcda8d581f48d5<br />
 <hr />
 
-most Linux distributions: the pseudo device file <b>/dev/random</b> will block until sufficient entropy is harvested from the environment!<br>
+HEX_DUMP | BASE64:<br>
+WE9SIG9mIHR3byBpbmRlcGVuZGVudCBhbmQgdW5pZm9ybWx5IGRpc3RyaWJ1dGVkIHJhbmRvbSBudW1iZXJzIHJlbWFpbnMgcmFuZG9tLg==<br>
+XOR of two independent and uniformly distributed random numbers remains random.<br>
+<br>
+
+
+most Linux distributions: the pseudo device file <code>/dev/random</code> will block until sufficient entropy is harvested from the environment!<br>
 <br />
 <hr />
 
@@ -748,17 +792,21 @@ most Linux distributions: the pseudo device file <b>/dev/random</b> will block u
 <br />
 
 <br />
-<button class="btn btn-success" id="binfo"><img src="icon/file-arrow-down.svg"> Sys.Info</button><br /><br />
+<button class="btn btn-success" id="binfo"><img src="icon/file-arrow-down.svg"> Sys.Info</button>
 <div class="fc" id="subSysInfo">
 <pre class="bla_gre" id="sysInfo">:.:</pre>
 </div>
 <hr />
 <br />
 
-<h2>Links</h2>
-| <a href="https://gchq.github.io/CyberChef/">CyberChef</a> | <a href="https://www.agamapoint.com/chaos/">chaos</a> | 
 
-<a href="https://www.agamapoint.com/bip39/bin_edit.html">simple binary editor</a> | 
+<h2>Links</h2>
+| <a href="https://gchq.github.io/CyberChef/">CyberChef</a> 
+| <a href="https://crackstation.net/">crackstation.net</a>
+| <a href="https://onetimesecret.com/">onetimesecret.com</a> |
+<br />
+
+| <a href="https://www.agamapoint.com/bip39/bin_edit.html">simple binary editor</a> | 
 <a href="https://www.agamapoint.com/bip39/tab_calc.html">tab_calc</a> dec hex bin |  
 <a href="https://www.agamapoint.com/bip39/cube_key.html">cube_key</a> |
 test: <a href="https://github.com/trezor/python-mnemonic/blob/master/vectors.json">bip39_vectors</a>
@@ -768,11 +816,11 @@ test: <a href="https://github.com/trezor/python-mnemonic/blob/master/vectors.jso
 <div id="footer">f o o t e r</div>
 <script>
 $(document).ready(function() {
-   $("#footer").load("footer_menu.html", function() {
-       $('#footer').on('mouseenter', '.ico', function() {
-       $(this).css('opacity', '0.5');
-       }).on('mouseleave', '.ico', function() { $(this).css('opacity', '0.9'); });
-   });
+  $("#footer").load("footer_menu.html", function() {
+     $('#footer').on('mouseenter', '.ico', function() {
+     $(this).css('opacity', '0.5');
+     }).on('mouseleave', '.ico', function() { $(this).css('opacity', '0.9'); });
+  });
 });
 </script>
 
