@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="css/mm.css">
+<link rel="stylesheet" href="css/base.css?cache_bust=${new Date().getTime()">
+<link rel="stylesheet" href="css/app23dark.css?cache_bust=${new Date().getTime()">
+<link rel="stylesheet" href="css/digital_fonts.css">
+<script src="js/jquery.min.js"></script>
+<script src="js/agama_functions.js"></script>
+<script src="js/mermaid.min.js"></script>
+<script src="js/mermaid_init.js?cache_bust=${new Date().getTime()"></script>
+
+<title>test23</title>
+</head>
+
+<body>
+
+<div class="header bbor_dgre2" id="header"><!--header-->
+<script>
+$(document).ready(function() {
+  setTimeout(function() { $('.corner_info').fadeOut("slow"); }, 5000);
+  $("#subMore1").hide();
+  $("#btnMore1").click(function(){ $("#subMore1").slideToggle("slow"); });
+
+  $("#header").load("menu_header.html");
+  $("#menu_left").load("menu_left.html");
+  $("#footer").load("menu_footer.html", function() {
+    $('#footer').on('mouseenter', '.ico', function() {
+    $(this).css('opacity', '0.5');
+    }).on('mouseleave', '.ico', function() { $(this).css('opacity', '0.9'); });
+  });
+ 
+  plot_7segment_hex("#hex1", "123-567", "char-box-big");
+  plot_7segment_hex("#hex2", '00000000000000001', "char-box");
+  plot_7segment_hex("#hexA", '0c1e24e5917779d297e14d45f14e1a1a', "char-box");
+  
+  getBitcoinPrice().then(price => {
+   $('#btc').text(price === 'E' ? "E" : price);
+   });
+   //plot_7segment_hex("#hex1", price, "char-box-big");
+});
+</script>
+</div><!--/header-->
+
+<div class="container-main" id="wr"><!--container-main-->
+<div class="content-flex-t42"><!--content-flex-->
+
+<!--=====================================-->
+
+<div class="flex1 bg_grad_0_2h bor_gre rc15 pad22">
+<h1 class="digip"><img class="ico" src="ico/pruhy_v1.svg" alt="Chat icon" width="35" height="23"> temp1 </h1></div>
+
+<div class="corner_info">template 0.2 | 240728</div>
+
+<!--=====================================-->
+
+<div class="flex2-container">
+<div class ="bg_bla">
+...F2
+</div>
+
+
+<div class="bg_bla"><!--1R-->
+...1r
+</div><!--/1R-->
+</div>
+
+<!--=====================================-->
+
+<div class="responsive3-container">
+
+<div class="left3 bg_grad_0_2h"><!--L2-->
+<p id="menu_left">menu_left?</p>
+</div>
+
+
+<div class="center3 bg_bla"><!--C2-->
+...c2
+</div>
+
+<div class="right3 bg_grad_0_2h"><!--R2-->
+
+<div class="bor_gre pad22"><span id="btc" class="segment-big col-ora">BTC</span>
+</div>
+</div>
+</div>
+
+<!--=====================================-->
+
+<div class="flex2-container">
+<div class="bg_bla"><!--1L3-->
+...1L3
+</div><!--/1L3-->
+
+
+<div class="bg_222"><!--1R3-->
+...1R3
+</div><!--/1R3-->
+</div><!--/content3-->
+
+<!--=====================================-->
+
+<div class="flex1 bg_bla bor_gre rc15 pad22">
+<button class="col_sil bg_222 rc10 pad8 w100" id="btnMore1"> <img src="ico/file-arrow-down_sil.svg" class="col_sil">   More...</button>
+<div id="subMore1">
+...
+..
+.
+</div>
+</div>
+
+<!--=====================================-->
+
+<div id="footer">f o o t e r</div>
+
+</div><!--/content-flex-->
+</div><!--/container-main-->
+
+</body>
+</html>

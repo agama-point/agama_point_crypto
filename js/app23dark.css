@@ -1,0 +1,107 @@
+body {
+  margin: 0;
+  font-family: Verdana, sans-serif;
+  color: LightGray;
+  background-color: black;
+  background-image: url("noise21.png");
+}
+
+.header {
+  background-color: #222;
+  color: white;
+  text-align: center;
+  justify-content: center;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  height: 39px;
+  line-height: 39px; /* Vertikální centr */
+  display: flex;
+  align-items: center; /* Vertikální zarovnání */
+  padding: 0 10px; /* Vyrovnání obsahu na okrajích */
+  box-sizing: border-box; /* Aby padding a border byly zahrnuty do celkových rozměrů */
+}
+
+.header a {
+  color: white;
+  text-decoration: none;
+  margin-left: 3px; /* ico..txt */
+  line-height: 39px; /* Vertikální zarovnání textu */
+}
+
+.header a:hover { color: orange; }
+
+.header .ico {
+  vertical-align: middle; 
+  margin-left: 10px;
+}
+
+pre { color: lime; }
+pre b { color: orange; }
+pre i { color: white; }
+
+b { color: white; }
+i { color: lime; }
+a:link, a:visited, a:active { text-decoration: none; color: Orange; }
+a:hover {  color: White; }
+
+.container-main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 10px;
+}
+
+.content-flex-t42 {
+    display: flex;
+    flex-direction: column;
+    margin-top: 42px; /* Přesun pod pevný horní pruh */
+}
+
+.flex2-container, .responsive3-container {
+    display: flex;
+    flex: 1;
+    margin: 10px 0;
+    min-height: 250px; /* Minimální výška */
+    flex-wrap: wrap; /* Umožní sloupcům přecházet na další řádek, pokud je to potřeba */
+    gap: 10px; 
+}
+
+.flex2-container > div, .responsive3-container > div {
+    flex: 1;
+    padding: 10px;
+    border: 2px solid darkgreen; /*more darkgreen #023020;*/
+    border-radius: 15px;
+    display: flex;
+    white-space: normal; /* Povolit zalamování textu */
+}
+
+.flex2-container > div > div, .responsive3-container > div > div {
+    flex: initial;
+    padding: 0;
+    border: none;
+    display: block;
+    white-space: normal;
+}
+
+
+@media (max-width: 768px) { /* divy se přepnou pod sebe */
+ .flex2-container, .responsive3-container { flex-direction: column; }
+ .left3, .right3, .center3 { width: 100%; } /* Šířka 100% při přepnutí do sloupců */
+}
+
+.left3, .right3 {
+            border: 1px solid #ddd;
+            padding: 20px;
+            min-height: 150px;
+            flex: 1; /* divy se roztáhnou rovnoměrně */
+            box-sizing: border-box;
+        }
+
+
+.center3 {
+            border: 1px solid #ddd;
+            padding: 20px;
+            min-height: 150px;
+            width: 600px;
+            box-sizing: border-box;
+        }
