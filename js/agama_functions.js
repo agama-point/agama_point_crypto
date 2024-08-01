@@ -1,5 +1,5 @@
 // agama_function.js | 2015-24 | 
-AF_VER = "0.7.20";
+AF_VER = "0.7.21";
 
 
 const charset64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
@@ -245,6 +245,21 @@ function xorHexStrings(hex1, hex2) {
 }
 
 
+function plot_7segment_hex(box, hex, style="char-box") {
+   var hexElement = $(box);
+   hexElement.empty(); // Vyprázdní obsah prvku
+   var charMap = {'A':'k','B':'l','C':'m','D':'n','E':'o','F':'p'};
+   hex = hex.toUpperCase();
+
+   for(var i = 0; i < hex.length; i++) {
+      var char = hex[i];
+      if(charMap[char]) { char = charMap[char]; }
+      var charBox = $('<div></div>').addClass(style).text(char);
+      hexElement.append(charBox);
+   }
+}
+
+
 // Funkce pro zobrazení 128bit čísla jako matici 32x4 čtverečků
 function displayHexAsGridHorizontal(hex) {
     const gridContainer = $('#gridContainer');
@@ -463,6 +478,26 @@ function isPrime(num) {
       if (num % i === 0 || num % (i + 2) === 0) return false;
     }
     return true;
+}
+
+
+function getBitcoinPrice() {
+  return fetch('https://api.coinpaprika.com/v1/tickers/btc-bitcoin')
+    .then(response => {
+       if (!response.ok) {
+          throw new Error('Network response was not ok');
+       }
+       return response.json();
+    })
+    .then(data => {
+       // Získání ceny bitcoinu a převod na celé číslo
+       const btcusd = Math.round(data.quotes.USD.price);
+       return btcusd;  // Vrátí cenu jako celé číslo
+     })
+    .catch(error => {
+       console.error('Error fetching Bitcoin price:', error);
+       return 'E';  // Vrátí "E" v případě chyby
+    });
 }
 
 

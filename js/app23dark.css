@@ -45,63 +45,114 @@ i { color: lime; }
 a:link, a:visited, a:active { text-decoration: none; color: Orange; }
 a:hover {  color: White; }
 
-.container-main {
+pre.donut{
+    background-color: #000;
+    font-family: monospace;
+    font-size: 11px;
+    color: lime; 
+    letter-spacing: -1px; 
+    line-height: 0.95;
+}
+
+.donut-container{
+    background-color: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+.morph-section {
+  /*width: 300px;
+  height: 300px;*/
+  font-family: monospace;
+  font-size: 12px;
+    color: lime; 
+    letter-spacing: -1px; 
+    line-height: 0.95;
+}
+
+
+.container-main { /* wrapper */
   max-width: 1200px;
   margin: 0 auto;
   padding: 10px;
 }
 
 .content-flex-t42 {
-    display: flex;
-    flex-direction: column;
-    margin-top: 42px; /* Přesun pod pevný horní pruh */
+  display: flex;
+  flex-direction: column;
+  margin-top: 42px; /* Přesun pod pevný horní pruh */
 }
 
-.flex2-container, .responsive3-container {
-    display: flex;
-    flex: 1;
-    margin: 10px 0;
-    min-height: 250px; /* Minimální výška */
-    flex-wrap: wrap; /* Umožní sloupcům přecházet na další řádek, pokud je to potřeba */
-    gap: 10px; 
+.flex1-container, .flex2-container, .flex3-container {
+  display: flex;
+  flex: 1;
+  margin: 10px 0;
+  min-height: 200px; /* Minimální výška */
+  flex-wrap: wrap; /* Umožní sloupcům přecházet na další řádek, pokud je to potřeba */
+  gap: 12px; 
 }
 
-.flex2-container > div, .responsive3-container > div {
-    flex: 1;
-    padding: 10px;
-    border: 2px solid darkgreen; /*more darkgreen #023020;*/
-    border-radius: 15px;
-    display: flex;
-    white-space: normal; /* Povolit zalamování textu */
+.xflex1-container > div, .flex2-container > div, .flex3-container > div {
+  flex: 1;
+  padding: 10px;
+  border: 2px solid darkgreen; /*2px darkgreen, #333 or more dark 3px #023020;*/
+  border-radius: 15px;
+  display: flex;
+  white-space: normal; /* Povolit zalamování textu */
 }
 
-.flex2-container > div > div, .responsive3-container > div > div {
-    flex: initial;
-    padding: 0;
-    border: none;
-    display: block;
-    white-space: normal;
+.flex2-container > div > div, .flex3-container > div > div {
+  flex: initial;
+  padding: 0;
+  border: none;
+  display: block;
+  white-space: normal;
 }
 
 
-@media (max-width: 768px) { /* divy se přepnou pod sebe */
- .flex2-container, .responsive3-container { flex-direction: column; }
+@media (max-width: 768px) { 
+ .flex2-container, .flex3-container { flex-direction: column; } /* divy se přepnou pod sebe */
  .left3, .right3, .center3 { width: 100%; } /* Šířka 100% při přepnutí do sloupců */
 }
 
-.left3, .right3 {
-            border: 1px solid #ddd;
-            padding: 20px;
-            min-height: 150px;
-            flex: 1; /* divy se roztáhnou rovnoměrně */
-            box-sizing: border-box;
-        }
+.flex1-content {
+  max-width: 1100px;
+  width: 100%;
+  /* Optional: Add padding or other styles here */
+}
 
+.left3, .right3 {
+  border: 1px solid #ddd;
+  padding: 20px;
+  min-height: 150px;
+  flex: 1; /* divy se roztáhnou rovnoměrně */
+  box-sizing: border-box;
+}
 
 .center3 {
-            border: 1px solid #ddd;
-            padding: 20px;
-            min-height: 150px;
-            width: 600px;
-            box-sizing: border-box;
-        }
+  border: 1px solid #ddd;
+  padding: 20px;
+  min-height: 150px;
+  width: 600px;
+  box-sizing: border-box;
+}
+
+.h3-bg-img {
+    display: flex;
+    align-items: center; /* Vertikální centrování textu */
+    justify-content: center; /* Horizontální centrování textu */
+    background-color: black;
+    background-image: url('../img/btc_bla_menu.png'); /* Obrázek na pozadí */
+    background-repeat: no-repeat; /* Zabrání opakování obrázku */
+    background-position: top center; /* Horizontální centrování a přiražení k horní hraně */
+    background-size: contain;
+    width: 100%; /* Šířka elementu */
+    height: 50px; /* Výška elementu, můžete přizpůsobit podle potřeby */
+    margin: 0; /* Zrušení marginů */
+    text-align: center; /* Centrum textu uvnitř h3 */
+    color: white; /* Barva textu, můžete přizpůsobit podle potřeby */
+    font-size: 1.35em; /* Velikost textu, můžete přizpůsobit podle potřeby */
+    line-height: 30px; /* Vertikální centrování textu uvnitř h3 */
+}
