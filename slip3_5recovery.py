@@ -24,11 +24,11 @@ def output(description, mnemonics, secret):
     # output.i += 1
     xprv = BIP32Key.fromEntropy(secret).ExtendedKey() if secret else ""
     # output.data.append((f"{output.i}. {description}", mnemonics, secret.hex(), xprv))
-    print("--- desc:",description)
+    print("----- ",description)
     mnemonics_string = ', '.join(mnemonics)
     mnemonics = mnemonics_string.replace(', ', '\n')
     print("- mnem:\n",mnemonics)
-    print("- secr:",secret.hex())
+    # print("- secr:",secret.hex())
     print("- xprv:",xprv)
     print("-"*30)
 
@@ -127,18 +127,52 @@ m = [None] * 5
 m[1]=mnemonics[5-1]
 m[2]=mnemonics[3-1]
 m[3]=mnemonics[1-1]
-
+"""
 for j in range(1,4):
     print(j,m[j])
-
+"""
 groups = shamir.decode_mnemonics(m[1:4])
 print(groups)
 encrypted_master_secret = shamir.recover_ems(groups)
 recovered = encrypted_master_secret.decrypt(b"agama")
-print("Recovered: ",recovered.hex())
+print("Recovered:",recovered.hex())
 
 recovered = encrypted_master_secret.decrypt(b"agamax")
-print("Recoveredx:",recovered.hex())
+print("Recover_x:",recovered.hex())
+print()
+
+mt = [None] * 5  # mnemonics test
+mt[1] = "become graduate academic axle black photo pulse numerous impact forbid bracelet obtain oral general cultural snake eyebrow spend bulge album"
+mt[2] = "become graduate academic amazing database spew disaster senior hormone inform amazing hairy airline slavery epidemic transfer losing promise python laser"
+mt[3] = "become graduate academic acne blanket wine lizard starting pleasure glad rebuild thunder coding saver short weapon blessing watch install raspy"
+for j in range(1,4):
+    print(j,mt[j])
+
+groups = shamir.decode_mnemonics(mt[1:4])
+encrypted_master_secret = shamir.recover_ems(groups)
+recovered = encrypted_master_secret.decrypt(b"agama")
+print("Recovered - final test: ",recovered.hex())
+
+
+mt = [None] * 5  # mnemonics test
+mt[1] = "become graduate academic axle black photo pulse numerous impact forbid bracelet obtain oral general cultural snake eyebrow spend bulge album"
+mt[2] = "become graduate academic amazing database spew disaster senior hormone inform amazing hairy airline slavery epidemic transfer losing promise python laser"
+mt[3] = "become graduate academic acne blanket wine lizard starting pleasure glad rebuild thunder coding saver short weapon blessing watch install raspy"
+for j in range(1,4):
+    print(j,mt[j])
+
+"""
+shamir_mnemonic.utils.MnemonicError: 
+mt[1] = "becomex graduate academic ...   Invalid mnemonic word 'becomex'.
+mt[1] = "becomex          academic ...   Invalid mnemonic length. The length of each mnemonic must be at least 20 words.
+...
+"""
+
+groups = shamir.decode_mnemonics(mt[1:4])
+encrypted_master_secret = shamir.recover_ems(groups)
+recovered = encrypted_master_secret.decrypt(b"agamax")
+print("Recover_x- final test: ",recovered.hex())
+
 
 """
 BIP32 Root Key:
@@ -146,59 +180,66 @@ xprv9s21ZrQH143K3t4UZrNgeA3w861fwjYLaGwmPtQyPMmzshV2owVpfBSd2Q7YsHZ9j6i6ddYjb5PL
 BIP32 Extended Private Key:
 xprv9vD6P73Kk5gLexAk8oz7D2Ph1WGebCU6bBLdkNBUfoTbeWFGzewEg7wwTBuqsfu6QHyKs55mVsVaMQHGhh6uwiMFL9juVH3DH9GThQE7UWH
 
---- desc: Valid mnemonic without sharing (128 bits) groups 1, [(1, 1)] TREZOR
+-----  Valid mnemonic without sharing (128 bits) groups 1, [(1, 1)] TREZOR
 - mnem:
- tackle pink academic academic client strike speak sunlight pipeline thumb unusual body drink making shadow item junction laser submit aluminum
-- secr: 0c1e24e5917779d297e14d45f14e1a1a
+ easel guest academic academic bundle warmth species says veteran vocal prune large indicate curly brother valuable mild debris loud black
 - xprv: xprv9s21ZrQH143K3Z2jgAJ6XzQYPdsiJqPHJkdTrxm5NwYyJW8o3e9uJCtVwpLuXVBHgyFTDUWRqh9GjntWvUgeN144vdPYpgXgLxzYSSiJ71S
 ------------------------------
---- desc: Valid mnemonic without sharing (128 bits) groups 1, [(1, 1)] agama
+-----  Valid mnemonic without sharing (128 bits) groups 1, [(1, 1)] agama
 - mnem:
- sugar painting academic academic briefing smell infant intend retreat superior juice tricycle software bulge funding strategy laser type forget transfer
-- secr: 0c1e24e5917779d297e14d45f14e1a1a
+ skin taught academic academic bucket float dominant acid gravity spill vampire thorn example soul volume wealthy level deploy cultural theater
 - xprv: xprv9s21ZrQH143K3Z2jgAJ6XzQYPdsiJqPHJkdTrxm5NwYyJW8o3e9uJCtVwpLuXVBHgyFTDUWRqh9GjntWvUgeN144vdPYpgXgLxzYSSiJ71S
 ------------------------------
-[28501, False, 0, 0, 1, 1, 0, 1, b'\x92\xd9\xf4\xdd\xb6\xa1\xe4\xfb\xe1d\xf4\x8a\xf2\x17\x85\xea']
-['tackle pink academic academic client strike speak sunlight pipeline thumb unusual body drink making shadow item junction laser submit aluminum', 'tackle pink academic academic client strike speak sunlight pipeline thumb unusual body drink making shadow item junction laser submit aluminum']
+[8173, False, 0, 0, 1, 1, 0, 1, b"m\xf8t\xec?\xd0\xf6\xec'\xf1\xd0-\x86_\x1aE"]
+['easel guest academic academic bundle warmth species says veteran vocal prune large indicate curly brother valuable mild debris loud black', 'easel guest academic academic bundle warmth species says veteran vocal prune large indicate curly brother valuable mild debris loud black']
 
 1 indicies for groups[0][0]:
-[890, 672, 0, 0, 146, 871, 845, 877, 673, 915, 958, 89, 244, 555, 801, 481, 490, 509, 874, 32]
+[255, 416, 0, 0, 109, 993, 846, 783, 976, 987, 706, 508, 464, 182, 101, 966, 581, 193, 540, 83]
 
 ==================================================
 Mnemoniky pro první skupinu (2 ze 3):
-graduate walnut acrobat echo daisy often scared revenue civil fragment browser loan bulge calcium trash acid teaspoon rich home large
-graduate walnut acrobat email ancient tofu infant bracelet perfect item decorate gums simple exhaust item include violence teaspoon fragment deal
-graduate walnut acrobat entrance ceiling general petition weapon union bishop equip erode jacket recover sheriff together senior ocean that knife
+fangs lunch acrobat echo deadline grumpy axle center necklace patrol best helpful employer hybrid island starting width stay penalty short
+fangs lunch acrobat email aquatic capacity engage glasses speak gravity aircraft phantom playoff either wisdom main formal rhythm axle midst
+fangs lunch acrobat entrance cylinder mobile replace both august dining flavor funding buyer believe golden slice dramatic package repair install
 
 Mnemoniky pro druhou skupinu (3 z 5):
-graduate walnut beard eclipse clinic paper home terminal lamp lend rebound render browser lyrics timber crucial veteran cowboy acquire salt
-graduate walnut beard emerald decrease orange born depart smart average join taste royal payment tackle eyebrow admit axle elder drift
-graduate walnut beard envelope carbon pitch scene lily saver alcohol golden extend pumps society guest remove replace rebound subject union
-graduate walnut beard exact ancient mouse reward filter index mandate plot device guest western fantasy salon evoke medal network axle
-graduate walnut beard eyebrow budget golden floral olympic plastic quantity typical trash teaspoon activity ancient sunlight prospect finger pacific graduate
+fangs lunch beard eclipse dough science crush image ounce center space burden destroy epidemic bucket purple tricycle heat helpful clock
+fangs lunch beard emerald critical steady blue bike orbit terminal fragment exchange prospect triumph cinema ecology educate sympathy dive example
+fangs lunch beard envelope density index inmate railroad blind include merchant exercise phrase crowd shaft havoc dynamic knife decorate smell
+fangs lunch beard exact chest hour express stadium boring punish cards breathe civil lunch vanish network mortgage skunk golden physics
+fangs lunch beard eyebrow adjust racism manager medical rich obtain diploma species python idle duration being spark fluff recover alive
 
 Testované mnemoniky (indexy 1 a 3):
-graduate walnut acrobat echo daisy often scared revenue civil fragment browser loan bulge calcium trash acid teaspoon rich home large
-graduate walnut acrobat entrance ceiling general petition weapon union bishop equip erode jacket recover sheriff together senior ocean that knife
-shares:  {0: <shamir_mnemonic.shamir.ShareGroup object at 0x00000223654DB8B0>}
+fangs lunch acrobat echo deadline grumpy axle center necklace patrol best helpful employer hybrid island starting width stay penalty short
+fangs lunch acrobat entrance cylinder mobile replace both august dining flavor funding buyer believe golden slice dramatic package repair install
+shares:  {0: <shamir_mnemonic.shamir.ShareGroup object at 0x0000020D13C37550>}
+
 ==================================================
 Master Seed: 0c1e24e5917779d297e14d45f14e1a1a
-1 become graduate academic acne blanket wine lizard starting pleasure glad rebuild thunder coding saver short weapon blessing watch install raspy
-2 become graduate academic agree dress elder have else axis science calcium greatest minister mountain blanket prisoner merchant ecology improve overall
-3 become graduate academic amazing database spew disaster senior hormone inform amazing hairy airline slavery epidemic transfer losing promise python laser
-4 become graduate academic arcade alien holiday starting founder spew spark payroll trend prospect often mule river advocate bracelet rapids flash
-5 become graduate academic axle black photo pulse numerous impact forbid bracelet obtain oral general cultural snake eyebrow spend bulge album
+1 chemical desert academic acne brother health reaction talent lawsuit filter peaceful keyboard admit metric involve scramble stadium slavery quick imply
+2 chemical desert academic agree budget grant physics devote episode failure ecology arcade race junior custody boring wrote float friendly aide
+3 chemical desert academic amazing check research tackle birthday oven burning canyon scared profile sweater idle morning herd birthday predator document
+4 chemical desert academic arcade champion radar smart woman pitch carpet wrist railroad bucket dictate crisis enforce emerald legs emperor example
+5 chemical desert academic axle blessing scramble empty fraction mobile shrimp email obesity enjoy deny ruler analysis breathe terminal theory sister
 -------------------------------------------------- :3
-{0: <shamir_mnemonic.shamir.ShareGroup object at 0x00000223658FBCD0>}
+{0: <shamir_mnemonic.shamir.ShareGroup object at 0x0000020D13674250>}
 Recovered:  0c1e24e5917779d297e14d45f14e1a1a
 -------------------------------------------------- 1:4
-{0: <shamir_mnemonic.shamir.ShareGroup object at 0x0000022365931640>}
+{0: <shamir_mnemonic.shamir.ShareGroup object at 0x0000020D13C73220>}
 Recovered:  0c1e24e5917779d297e14d45f14e1a1a
+
 ======================================= recovery 5 3 1
+{0: <shamir_mnemonic.shamir.ShareGroup object at 0x0000020D137CFDC0>}
+Recovered: 0c1e24e5917779d297e14d45f14e1a1a
+Recover_x: 5fc3e797b65aeccb1ccad98914a8e81c
+
 1 become graduate academic axle black photo pulse numerous impact forbid bracelet obtain oral general cultural snake eyebrow spend bulge album
 2 become graduate academic amazing database spew disaster senior hormone inform amazing hairy airline slavery epidemic transfer losing promise python laser
 3 become graduate academic acne blanket wine lizard starting pleasure glad rebuild thunder coding saver short weapon blessing watch install raspy
-{0: <shamir_mnemonic.shamir.ShareGroup object at 0x0000022365354220>}
-Recovered:  0c1e24e5917779d297e14d45f14e1a1a
-Recoveredx: 5fc3e797b65aeccb1ccad98914a8e81c
+Recovered - final test:  0c1e24e5917779d297e14d45f14e1a1a
+
+1 become graduate academic axle black photo pulse numerous impact forbid bracelet obtain oral general cultural snake eyebrow spend bulge album
+2 become graduate academic amazing database spew disaster senior hormone inform amazing hairy airline slavery epidemic transfer losing promise python laser
+3 become graduate academic acne blanket wine lizard starting pleasure glad rebuild thunder coding saver short weapon blessing watch install raspy
+Recover_x- final test:  5fc3e797b65aeccb1ccad98914a8e81c
 """
