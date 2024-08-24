@@ -1,14 +1,6 @@
+#!/usr/bin/env python
 import argparse
-from crypto_agama.agama_image_tools import Image21
-
-"""
-python agamage.py crea ag100x100.png 100x100
-python agamage.py noise ag100x100.png -c R -f 50
-
-python agamage.py ibin ag100x100.png data/hex.txt -x 0 -y 0 -c R
-python agamage.py pbin ag100x100.png -x 0 -y 0 -l 128 -c R
-"""
-DEBUG = True
+from crypto_agama.agama_image_tools import Image21, __version__
 
 def create_image(filename, size):
     width, height = map(int, size.split('x'))
@@ -40,12 +32,9 @@ def infilt_bin(filename, hex_file, x=0, y=0, channel="R"):
     img.normalize(channel)
     
     with open(hex_file, "r") as file:
-        hex_data = file.read().strip()    
+        hex_data = file.read().strip()
     
     bin_data = bin(int(hex_data, 16))[2:].zfill(len(hex_data) * 4)
-    if DEBUG:
-        print("hex:", hex_data)
-        print("bin:", bin_data)
     img.infilt_bin(bin_data, x, y, channel)
     img.save(filename)
 
@@ -56,6 +45,11 @@ def parse_bin_to_hex(filename, x=0, y=0, length=32, channel="R"):
     bin_data = img.parse_bin(x, y, channel, length)
     hex_data = f"{int(bin_data, 2):X}".zfill(length // 4)
     print(hex_data)
+
+def show_info(filename):
+    img = Image21()
+    img.load(filename)
+    img.info()
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Agamage CLI tool for image manipulation using Image21 library")
@@ -101,6 +95,16 @@ def parse_args():
     pbin_parser.add_argument("-l", "--length", type=int, default=32, help="Length of binary data to parse (default is 32 bits)")
     pbin_parser.add_argument("-c", "--channel", default="R", help="Color channel to parse data from (R, G, B)")
 
+    # Command: info (show image information)
+    info_parser = subparsers.add_parser("info", help="Show information about an image")
+    info_parser.add_argument("filename", help="Image file to show information about")
+
+    # Command: lib (show library version)
+    lib_parser = subparsers.add_parser("lib", help="Show library version")
+
+    # Add examples as an optional flag
+    parser.add_argument("-e", "--examples", action="store_true", help="Show usage examples")
+
     # Help and version
     parser.add_argument("-v", "--version", action="version", version="Agamage 1.0")
 
@@ -109,7 +113,14 @@ def parse_args():
 def main():
     args = parse_args()
 
-    if args.command == "crea":
+    if args.examples:
+        print("Examples:")
+        print("python agamage.py crea ag100x100.png 100x100")
+        print("python agamage.py info ag100x100.png")
+        print("python agamage.py noise ag100x100.png -c R -f 50")
+        print("python agamage.py ibin ag100x100.png data/hex.txt -x 0 -y 0 -c R")
+        print("python agamage.py pbin ag100x100.png -x 0 -y 0 -l 128 -c R")
+    elif args.command == "crea":
         create_image(args.filename, args.size)
     elif args.command == "copy":
         copy_image(args.source, args.destination, args.zoom)
@@ -121,6 +132,10 @@ def main():
         infilt_bin(args.filename, args.hex_file, args.x, args.y, args.channel)
     elif args.command == "pbin":
         parse_bin_to_hex(args.filename, args.x, args.y, args.length, args.channel)
+    elif args.command == "info":
+        show_info(args.filename)
+    elif args.command == "lib":
+        print(f"Library version: {__version__}")
     else:
         print("Unknown command. Use -h for help.")
 
