@@ -363,6 +363,40 @@ class Image21:
         return ''.join(binary_data)  # In case the loop finishes without reaching 'length'
 
 
+    def infilt_bmp(self, bmp_file, ch="R", vol=1):
+        if self.image:
+            bmp_image = PILimage.open(bmp_file).convert("1")  # Načíst monochromatický obrázek
+            bmp_pixels = np.array(bmp_image)
+            
+            channel_idx = {"R": 0, "G": 1, "B": 2}.get(ch.upper(), 0)
+            h, w = bmp_pixels.shape
+
+            for i in range(min(self.height, h)):
+                for j in range(min(self.width, w)):
+                    current_color = list(self.pixels[i, j])
+                    if bmp_pixels[i, j] == 0:  # Černá (hodnota 0) => infiltrovat 1
+                        if current_color[channel_idx] < 255:
+                            current_color[channel_idx] += vol # test volume 128+100
+                    self.set_pixel(j, i, tuple(current_color))
+                    
+        return self
+
+
+    def parse_bmp(self, output_file, ch="R"):
+        if self.image:
+            channel_idx = {"R": 0, "G": 1, "B": 2}.get(ch.upper(), 0)
+            new_image = PILimage.new("1", (self.width, self.height))  # Vytvořit nový monochromatický obrázek
+            new_pixels = new_image.load()
+
+            for i in range(self.height):
+                for j in range(self.width):
+                    current_color = self.get_pixel(j, i)
+                    # Lichá hodnota => černá, sudá => bílá
+                    new_pixels[j, i] = 0 if current_color[channel_idx] % 2 != 0 else 255
+
+            new_image.save(output_file)
+
+
 # -------------------------old 2020----------------------------
 def hexa_noise_to_png(hex_data,image_path):
     byte_data = bytes.fromhex(hex_data)    
