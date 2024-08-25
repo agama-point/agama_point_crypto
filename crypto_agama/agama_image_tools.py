@@ -1,10 +1,9 @@
-from PIL import Image as PILimage, ImageDraw, ImageFont
-
+from PIL import Image as PILimage
 import numpy as np
 import os, random, copy
 import hashlib # info()
 
-__version__ = "0.5.2" # 2024/08
+__version__ = "0.5.1" # 2024/08
  
 """
 # Example usage:
@@ -38,14 +37,6 @@ print(bin_str, "\n", bin2hex(bin_str))
 img2 = Image21()
 img2.copy(img1, 2) 
 img2.add_noise("G",100)
-
-img = Image21()
-img.load("data/src1.png")
-img.add_noise("R", 100)
-img.normalize()
-img.text(x=0, y=30, text="123-567", size=30, ch="R", fill=51) # test 51, final 1
-img.save("data/img_text2.png")
-img.parse_bmp("data/img_text_parse2.png")
 ...
 """
 
@@ -374,7 +365,7 @@ class Image21:
 
     def infilt_bmp(self, bmp_file, ch="R", vol=1):
         if self.image:
-            bmp_image = PILimage.open(bmp_file).convert("1")  # Load monochrom bmp
+            bmp_image = PILimage.open(bmp_file).convert("1")  # Načíst monochromatický obrázek
             bmp_pixels = np.array(bmp_image)
             
             channel_idx = {"R": 0, "G": 1, "B": 2}.get(ch.upper(), 0)
@@ -383,7 +374,7 @@ class Image21:
             for i in range(min(self.height, h)):
                 for j in range(min(self.width, w)):
                     current_color = list(self.pixels[i, j])
-                    if bmp_pixels[i, j] == 0:  # bla (0) => infilt 1
+                    if bmp_pixels[i, j] == 0:  # Černá (hodnota 0) => infiltrovat 1
                         if current_color[channel_idx] < 255:
                             current_color[channel_idx] += vol # test volume 128+100
                     self.set_pixel(j, i, tuple(current_color))
@@ -394,47 +385,16 @@ class Image21:
     def parse_bmp(self, output_file, ch="R"):
         if self.image:
             channel_idx = {"R": 0, "G": 1, "B": 2}.get(ch.upper(), 0)
-            new_image = PILimage.new("1", (self.width, self.height))  # create monochrom
+            new_image = PILimage.new("1", (self.width, self.height))  # Vytvořit nový monochromatický obrázek
             new_pixels = new_image.load()
 
             for i in range(self.height):
                 for j in range(self.width):
                     current_color = self.get_pixel(j, i)
+                    # Lichá hodnota => černá, sudá => bílá
                     new_pixels[j, i] = 0 if current_color[channel_idx] % 2 != 0 else 255
 
             new_image.save(output_file)
-
-
-    def text(self, x=0, y=30, text="123", size=20, ch="R", fill=1):
-        if self.image:
-            draw = ImageDraw.Draw(self.image)
-            
-            try:
-                # Nastavení písma a velikosti
-                font = ImageFont.truetype("arial.ttf", size)
-            except IOError:
-                # Pokud není font dostupný, použije se výchozí
-                font = ImageFont.load_default()
-            
-            channel_idx = {"R": 0, "G": 1, "B": 2}.get(ch.upper(), 0)
-            
-            # Vytvoření masky pro vykreslení textu
-            mask = PILimage.new("L", (self.width, self.height), 0)
-            mask_draw = ImageDraw.Draw(mask)
-            mask_draw.text((x, y), text, font=font, fill=255)
-
-            # Normalizace před přidáním textu
-            self.normalize(ch)
-
-            # Vykreslení textu do zvoleného kanálu s přírůstkem 'fill'
-            for i in range(self.height):
-                for j in range(self.width):
-                    if mask.getpixel((j, i)) > 0:
-                        current_color = list(self.pixels[i, j])
-                        # Přičteme fill a zajistíme, že hodnota nepřesáhne 255
-                        current_color[channel_idx] = min(current_color[channel_idx] + fill, 255)
-                        self.set_pixel(j, i, tuple(current_color))
-
 
 
 # -------------------------old 2020----------------------------
