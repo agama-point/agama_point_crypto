@@ -1,18 +1,20 @@
 #!/usr/bin/env python
 """
-crypto_agama/
-agama_transform_tools 2016-24
+crypto_agama/agama_transform_tools 2016-24
 -----------------------------
 """
+
 from math import ceil
 from hashlib import sha256
-import binascii, zlib, base64
+import binascii, zlib
+import base58, base64
 import re
 # import hashlib, ecdsa
 
-__version__ = "0.5.0" # 2025/06
+__version__ = "0.5.1" # 2024/08
 
 DEBUG = False
+
 
 """
 num_to_hex(255)           # '0xff'
@@ -60,10 +62,16 @@ seed_words | num_to_address
 ---- adv arr
 bin_arr_from_str(string, 32, False)     # bin_data32 arr from ascii str latin1
 bin_data = bin_arr_from_str(string, 64) # bin_data64 str\n
+
+--- wif
+key1 = "0000000000000000000000000000000000000000000000000000000000000001" #64
+wif_key = hex_to_wif(key1) # 5HpHagT65TZzG1PH3CSu63k8DbpvD8s5ip4nEB3kEsreAnchuDf
+wif_to_private_key(wif_key) # > ... 1 (hex)
 """
 
 BASE_58_CHARS = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
 BASE_58_CHARS_LEN = len(BASE_58_CHARS)
+
 
 
 def hash_sha256_str(string):
@@ -244,12 +252,12 @@ def hexdump(data):
   for i, (h, c) in enumerate(zip(hs, cs)):
     print ('{:010X}: {:48}  {:16}'.format(i * 16, h, c))
 
-# -------------------------- extract numbers from string
+# ---------------- extract numbers from string
 def extract_numbers(s):
     nums = re.findall(r'\d+', s)
     return ''.join(nums)
 
-# -------------------------- hard split human readable "11bits" from long number
+# --------------- hard split human readable "11bits" from long number
 def split_numbers(result_string):
     numbers = []
     current_number = ''
@@ -265,7 +273,7 @@ def split_numbers(result_string):
     
     return numbers
 
-# ----- numeral systems /  conversions -------------------------
+# ----- numeral systems /  conversions --------------
 def decimal_to_base(number, base, zfill=5):
     if number == 0:
         return '0'
@@ -301,7 +309,7 @@ def base_to_decimal(base_number, base):
     return decimal
 
 
-# ---------------------------zip -------------------------------
+# ------------------zip ---------------------
 def zip_compress(data): # b'ABC'
     compressed_data = zlib.compress(data)
     if DEBUG: print(data, "compressed to",compressed_data)
@@ -369,3 +377,34 @@ def bin_normalize8(bin_str):
     if DEBUG: print("remainder",remainder)
     pattern += "0" * (7 - remainder) if remainder != 0 else ""
     return pattern
+
+
+# --- wif 23 # prefix ver, 0x80 for Bitcoin Mainnet
+def hex_to_wif(hex_str, ver_prefix="80", compressed=False):
+    extended_key_hex = ver_prefix + hex_str 
+    if compressed: # if compressed, add '01'
+        extended_key_hex += "01"
+    
+    extended_key_bytes = bytes.fromhex(extended_key_hex)
+    
+    # double SHA-256 for checksum
+    hash1 = sha256(extended_key_bytes).digest()
+    hash2 = sha256(hash1).digest()
+    
+    checksum = hash2[:4] # first 4 Byte
+    final_key_bytes = extended_key_bytes + checksum
+    wif_key = base58.b58encode(final_key_bytes).decode()
+    
+    return wif_key
+
+
+def wif_to_private_key(wif):
+    wif_bytes = base58.b58decode(wif)
+    # Odstranění první a posledních 4 bajtů (ver + checksum)
+    private_key_with_prefix = wif_bytes[:-4]
+
+    if len(private_key_with_prefix) == 34: # Pokud klíč obsahuje příznak komprese, je odstraněn poslední B
+        private_key = private_key_with_prefix[1:-1]
+    else:
+        private_key = private_key_with_prefix[1:]
+    return private_key
