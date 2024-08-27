@@ -5,13 +5,13 @@ crypto_agama/agama_transform_tools 2016-24
 """
 
 from math import ceil
-from hashlib import sha256
+from hashlib import sha256, new
 import binascii, zlib
 import base58, base64
 import re
-# import hashlib, ecdsa
+import ecdsa
 
-__version__ = "0.5.1" # 2024/08
+__version__ = "0.5.2" # 2024/08
 
 DEBUG = False
 
@@ -151,6 +151,11 @@ def bin8_to_hex(binary_number):
 
     hex_number = "0x" + hex_number
     return hex_number
+
+
+# Normalize the input to a 64-character hexadecimal string
+def norm_hex(hex_str,lng=64):
+    return hex_str.zfill(lng)
 
 
 def bin8_to_hex_old(strh):	
@@ -408,3 +413,33 @@ def wif_to_private_key(wif):
     else:
         private_key = private_key_with_prefix[1:]
     return private_key
+
+
+def generate_bitcoin_address1(private_key_bytes, compressed=False):
+    # Generate the public key using ecdsa (secp256k1)
+    sk = ecdsa.SigningKey.from_string(private_key_bytes, curve=ecdsa.SECP256k1)
+    vk = sk.verifying_key
+    
+    # Depending on whether the key is compressed or not, prepare the public key bytes
+    if compressed:
+        public_key_bytes = (b'\x02' + vk.to_string()[:32] if vk.to_string()[-1] % 2 == 0 else b'\x03' + vk.to_string()[:32])
+    else:
+        public_key_bytes = b'\x04' + vk.to_string()
+
+    # Perform SHA-256 followed by RIPEMD-160
+    sha256_bpk = sha256(public_key_bytes).digest()
+    ripemd160_bpk = new('ripemd160', sha256_bpk).digest()
+
+    # Add version byte (0x00 for Bitcoin Mainnet)
+    versioned_payload = b'\x00' + ripemd160_bpk
+
+    # Calculate the checksum (double SHA-256 and take the first 4 bytes)
+    checksum = sha256(sha256(versioned_payload).digest()).digest()[:4]
+
+    # Combine the versioned payload and checksum
+    address_bytes = versioned_payload + checksum
+
+    # Encode the result in Base58Check format
+    bitcoin_address = base58.b58encode(address_bytes).decode()
+
+    return bitcoin_address
