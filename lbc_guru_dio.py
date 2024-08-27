@@ -2,14 +2,13 @@
 Bitcoin private key database :-D
 Page 1 out of 904625697166532776746648320380374280100293470930272690489102837043110636675
 """
-import hashlib
-import base58
-import ecdsa
 
-from crypto_agama.agama_transform_tools import hex_to_wif, wif_to_private_key
+from crypto_agama.agama_transform_tools import norm_hex, hex_to_wif, wif_to_private_key, generate_bitcoin_address1
 
 
-key1 = "0000000000000000000000000000000000000000000000000000000000000001"
+#key1 = "0000000000000000000000000000000000000000000000000000000000000001"
+key1 = norm_hex("1")
+
 wif_key1 = hex_to_wif(key1)
 print("--- hex_to_wif | Nekomprimovaný WIF klíč:", wif_key1)
 wif_key = wif_key1 # "5HpHagT65TZzG1PH3CSu63k8DbpvD8s5ip4nEB3kEsreAnchuDf" # .....000001 hex
@@ -17,39 +16,20 @@ wif_key = wif_key1 # "5HpHagT65TZzG1PH3CSu63k8DbpvD8s5ip4nEB3kEsreAnchuDf" # ...
 private_key_bytes = wif_to_private_key(wif_key) # 2. decoce WIF to 256bit priv.key
 print("--- private_key: ",private_key_bytes.hex(), len((str(private_key_bytes.hex()))))
 
-# pubkey generate (secp256k1) | SHA-256 + RIPEMD-160
-sk = ecdsa.SigningKey.from_string(private_key_bytes, curve=ecdsa.SECP256k1)
-vk = sk.verifying_key
+# =====================================
 
-public_key_bytes = b'\x04' + vk.to_string()
-sha256_bpk = hashlib.sha256(public_key_bytes).digest()  
-ripemd160_bpk = hashlib.new('ripemd160', sha256_bpk).digest()
-versioned_payload = b'\x00' + ripemd160_bpk # add ver. ( for Bitcoin Mainnet 0x00)
-checksum = hashlib.sha256(hashlib.sha256(versioned_payload).digest()).digest()[:4] # double sha [:4B]
-address_bytes = versioned_payload + checksum
-bitcoin_address = base58.b58encode(address_bytes).decode()
+# Generate uncompressed Bitcoin address
+uncompressed_address = generate_bitcoin_address1(private_key_bytes, compressed=False)
+print("Uncompressed Bitcoin address:", uncompressed_address)
 
-# --- Compressed
-# comp. pub.key (33 Bytes)
-public_key_bytes_compressed = b'\x02' + vk.to_string()[:32] if vk.to_string()[-1] % 2 == 0 else b'\x03' + vk.to_string()[:32]
-sha256_bpk = hashlib.sha256(public_key_bytes_compressed).digest()
-ripemd160_bpk = hashlib.new('ripemd160', sha256_bpk).digest()
-versioned_payload = b'\x00' + ripemd160_bpk
-checksum = hashlib.sha256(hashlib.sha256(versioned_payload).digest()).digest()[:4]
-address_bytes = versioned_payload + checksum
-compressed_bitcoin_address = base58.b58encode(address_bytes).decode()
+# Generate compressed Bitcoin address
+compressed_address = generate_bitcoin_address1(private_key_bytes, compressed=True)
+print("Compressed Bitcoin address:", compressed_address)
 
-# ============================================================
 
 print("[ basic principle testing ]")
-print(wif_key, bitcoin_address, compressed_bitcoin_address)
+print(wif_key, uncompressed_address, compressed_address)
 
-"""
-pip install hashlib
-pip base58
-pip ecdsa
-
-"""
 # https://lbc.cryptoguru.org/dio/
 
 """
