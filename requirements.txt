@@ -1,12 +1,14 @@
 python-dotenv
 pybitcoin
+hashlib
+ecdsa
+secp256k1==0.14.0
 pbkdf2
-base58
 cryptos
 mnemonic
 bip_utils
 cryptography==39.0.1
-secp256k1==0.14.0
+base58
 bech32==1.2.0
 python-gnupg
 pygame
