@@ -1,14 +1,12 @@
 import hashlib
 import ecdsa
-from crypto_agama.agama_transform_tools import hex_to_wif, wif_to_private_key
+from crypto_agama.agama_transform_tools import norm_hex, hex_to_wif, wif_to_private_key, measure_time
 
-def norm64(hex_str):
-    # Normalize the input to a 64-character hexadecimal string
-    return hex_str.zfill(64)
 
-#key1 = "0000000000000000000000000000000000000000000000000000000000000111"
-key1 = norm64("123")
-print("key:", key1)
+key1 = "F00000000000000000000000000000000000000000000000000000000000000F"
+key2 = norm_hex("123")
+
+print("key:", key1, len(key1))
 wif_key1 = hex_to_wif(key1)
 print("--- hex_to_wif | Nekomprimovaný WIF klíč:", wif_key1)
 wif_key = wif_key1
@@ -17,16 +15,22 @@ wif_key = wif_key1
 private_key_bytes = wif_to_private_key(wif_key)
 print("--- private_key: ", private_key_bytes.hex(), len((str(private_key_bytes.hex()))))
 
-# Generování veřejného klíče pomocí ecdsa (secp256k1)
-sk = ecdsa.SigningKey.from_string(private_key_bytes, curve=ecdsa.SECP256k1)
-vk = sk.verifying_key
-public_key_bytes = vk.to_string()
 
-# Rozdělení veřejného klíče na souřadnice x a y
+@measure_time
+def gen_pub_ecdsa(private_key_bytes):
+    # Generování veřejného klíče pomocí ecdsa (secp256k1)
+    sk = ecdsa.SigningKey.from_string(private_key_bytes, curve=ecdsa.SECP256k1)
+    vk = sk.verifying_key
+    public_key_bytes = vk.to_string()
 
-Kx_lib = int.from_bytes(public_key_bytes[:32], 'big')
-Ky_lib = int.from_bytes(public_key_bytes[32:], 'big')
-print(f"--- Veřejný klíč (x, y) pomocí knihovny ecdsa: \n({Kx_lib}, {Ky_lib})")
+    # Rozdělení veřejného klíče na souřadnice x a y
+
+    Kx_lib = int.from_bytes(public_key_bytes[:32], 'big')
+    Ky_lib = int.from_bytes(public_key_bytes[32:], 'big')
+    return Kx_lib, Ky_lib
+
+Kx, Ky = gen_pub_ecdsa(private_key_bytes)
+print(f"--- Veřejný klíč (x, y) pomocí knihovny ecdsa: \n({Kx}, {Ky})")
 
 # ----- secp256k1 parametry -----
 P = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F  # Modul
@@ -49,7 +53,9 @@ def point_addition(x1, y1, x2, y2, p):
     
     return x3, y3
 
+
 # Scalar multiplication (násobení bodu na křivce)
+@measure_time
 def scalar_multiplication(k, x, y, p):
     x_res, y_res = x, y
     for bit in bin(k)[3:]:
