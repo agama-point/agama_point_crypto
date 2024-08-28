@@ -3,8 +3,8 @@ import ecdsa
 from crypto_agama.agama_transform_tools import norm_hex, hex_to_wif, wif_to_private_key, measure_time
 
 
-key1 = "F00000000000000000000000000000000000000000000000000000000000000F"
-key2 = norm_hex("123")
+# key1 = "0000000000000000000000000000000000000000000000000000000000000001"
+key1 = norm_hex("1")
 
 print("key:", key1, len(key1))
 wif_key1 = hex_to_wif(key1)
@@ -56,7 +56,7 @@ def point_addition(x1, y1, x2, y2, p):
 
 # Scalar multiplication (násobení bodu na křivce)
 @measure_time
-def scalar_multiplication(k, x, y, p):
+def scalar_multiplication(k, x=Gx, y=Gy, p=P):
     x_res, y_res = x, y
     for bit in bin(k)[3:]:
         x_res, y_res = point_addition(x_res, y_res, x_res, y_res, p)  # Point doubling
@@ -64,9 +64,11 @@ def scalar_multiplication(k, x, y, p):
             x_res, y_res = point_addition(x_res, y_res, x, y, p)  # Point addition
     return x_res, y_res
 
+
 # Privátní klíč (k)
 k = int(key1, 16)  # Převod z hex na int
 
 # Generování veřejného klíče (K) ručně
-Kx_manual, Ky_manual = scalar_multiplication(k, Gx, Gy, P)
+# Kx_manual, Ky_manual = scalar_multiplication(k, Gx, Gy, P)
+Kx_manual, Ky_manual = scalar_multiplication(k)
 print(f"--- Veřejný klíč (x, y) přímým výpočtem: \n({Kx_manual}, {Ky_manual})")
