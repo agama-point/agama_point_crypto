@@ -403,6 +403,11 @@ def hex_to_wif(hex_str, ver_prefix="80", compressed=False):
     return wif_key
 
 
+t = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
+def wif_to_num(wif):
+    return sum([t.index(wif[::-1][l]) * (58 ** l) for l in range(len(wif))]) // (2 ** 32) % (2 ** 256)
+
+
 def wif_to_private_key(wif):
     wif_bytes = base58.b58decode(wif)
     # Odstranění první a posledních 4 bajtů (ver + checksum)
