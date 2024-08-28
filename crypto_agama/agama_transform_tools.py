@@ -443,3 +443,18 @@ def generate_bitcoin_address1(private_key_bytes, compressed=False):
     bitcoin_address = base58.b58encode(address_bytes).decode()
 
     return bitcoin_address
+
+
+# -------------- decorator
+import time
+
+# @measure_time
+def measure_time(func):
+    def wrapper(*args, **kwargs):
+        start_time = time.time()
+        result = func(*args, **kwargs)
+        end_time = time.time()
+        duration = end_time - start_time
+        print(f"[ measure_time ] Function '{func.__name__}' took {duration:.4f} seconds to complete.")
+        return result
+    return wrapper
