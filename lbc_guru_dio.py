@@ -1,6 +1,7 @@
 """
+WIF: Wallet Import Format
 Bitcoin private key database :-D
-Page 1 out of 904625697166532776746648320380374280100293470930272690489102837043110636675
+Page 1 out of 904625697166532776746648320380374280100293470930272690489102837043110636675 (75)
 """
 
 from crypto_agama.agama_transform_tools import norm_hex, hex_to_wif, wif_to_private_key, generate_bitcoin_address1
