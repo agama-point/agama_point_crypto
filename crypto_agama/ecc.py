@@ -1,6 +1,45 @@
-# Agama_point 2020-21
+# Agama_point 2020-23
 # crypto_agama.ecc
 
+
+# ----- secp256k1  -----
+# P = (2**256 - 2**32 - 2**9 - 2**8 - 2**7 - 2**6 - 2**4 -1)
+# P = (2**256 - 2**32 - 977)
+P = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F  # Modul
+# = 115792089237316195423570985008687907853269984665640564039457584007908834671663 (78)
+A = 0
+B = 7
+# y² = x³ + 7 (mod p)
+
+# ----- point G -----
+Gx = 0x79BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798
+Gy = 0x483ADA7726A3C4655DA4FBFC0E1108A8FD17B448A68554199C47D08FFB10D4B8
+
+# ----- Point addition (sčítání bodů) -----
+def point_addition(x1, y1, x2, y2, p):
+    if x1 == x2 and y1 == y2:
+        m = (3 * x1**2 + A) * pow(2 * y1, -1, p) % p  # Doubling the point
+    else:
+        m = (y2 - y1) * pow(x2 - x1, -1, p) % p  # Regular point addition
+    
+    x3 = (m**2 - x1 - x2) % p
+    y3 = (m * (x1 - x3) - y1) % p
+    
+    return x3, y3
+
+
+# Scalar multiplication (násobení bodu na křivce)
+#@measure_time
+def scalar_multiplication(k, x=Gx, y=Gy, p=P):
+    x_res, y_res = x, y
+    for bit in bin(k)[3:]:
+        x_res, y_res = point_addition(x_res, y_res, x_res, y_res, p)  # Point doubling
+        if bit == '1':
+            x_res, y_res = point_addition(x_res, y_res, x, y, p)  # Point addition
+    return x_res, y_res
+
+
+# ------------------------- older 2020 "edition" -----------------
 # cyclic supbgroup
 # group operation: point addition: add P (+) Q = R / doubling P (+) P = 2P
 # scalar multiplication
