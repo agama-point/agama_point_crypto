@@ -41,6 +41,12 @@ def gen_pub_ecdsa_lib(private_key):
 # Privátní klíč (k)
 k = int(key1, 16)  # Převod z hex na int
 
+# Privátní klíč (k)
+key1 = "F000000000000000000000000000000000000000000000000000000000000001"  # Příklad privátního klíče
+# key1 = norm_hex("1")
+k = int(key1, 16)  # Převod z hex na int
+
+# Generování veřejného klíče
 Kx_manual, Ky_manual = gen_pub_ecdsa_lib(k)
 print(f"--- Veřejný klíč (x, y) přímým výpočtem: \n({Kx_manual}, {Ky_manual})")
 
@@ -49,10 +55,12 @@ print(f"--- Veřejný klíč (x, y) přímým výpočtem: \n({Kx_manual}, {Ky_ma
 key: F000000000000000000000000000000000000000000000000000000000000001 64
 --- hex_to_wif | Nekomprimovaný WIF klíč: 5Kdz4Q4NKAq1hTsFWjy2J34E5PuQP7H9qMCFqBwecJcWFqFccMc
 --- private_key:  f000000000000000000000000000000000000000000000000000000000000001 64
-[ measure_time ] Function 'gen_pub_ecdsa' took 0.0090 seconds to complete.
+[ measure_time ] Function 'gen_pub_ecdsa' took 0.0091 seconds to complete.
 --- Veřejný klíč (x, y) pomocí knihovny ecdsa:
 (113367971205901600938991701977814468019800821204299814295244998056039807689344, 111307963124501043733543508282389961746358683775100625875144825001771122734935)
-[ measure_time ] Function 'gen_pub_ecdsa_lib' took 0.0077 seconds to complete.
+[ measure_time ] Function 'gen_pub_ecdsa_lib' took 0.0416 seconds to complete.
 --- Veřejný klíč (x, y) přímým výpočtem:
 (113367971205901600938991701977814468019800821204299814295244998056039807689344, 111307963124501043733543508282389961746358683775100625875144825001771122734935)
+
+původní verze(1) byla rychlejší 0.0077 x 0.0416, v knihovně stále zachována, jako *1()
 """
