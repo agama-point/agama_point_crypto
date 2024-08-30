@@ -314,6 +314,84 @@ def base_to_decimal(base_number, base):
     return decimal
 
 
+import random
+
+
+def to_leet_speak(text, pwr):
+    leet_dict_1 = {
+        'a': '@',
+        'b': '8',
+        'e': '3',
+        'i': '1',
+        'o': '0',
+        's': '$',
+        'z': '2'
+    }
+
+    leet_dict_2 = {
+        'a': ['4', '@'],
+        'b': ['8'],
+        'e': ['3'],
+        'i': ['1', '!'],
+        'o': ['0'],
+        's': ['5', '$'],
+        'z': ['2']
+    }
+
+    leet_dict_3 = {
+        'a': ['4', '@'],
+        'b': ['8'],
+        'c': ['(', '['],
+        'd': ['|)', '|>'],
+        'e': ['3'],
+        'f': ['|='],
+        'g': ['6', '9'],
+        'h': ['#', '|-|'],
+        'i': ['1', '!'],
+        'j': ['_|', '_/'],
+        'k': ['|<', '|{'],
+        'l': ['1', '|_'],
+        'm': ['|\/|', '/\/\\'],
+        'n': ['|\|', '/\/'],
+        'o': ['0'],
+        'p': ['|*', '|o', '|>'],
+        'q': ['9', '0_'],
+        'r': ['|2', '12'],
+        's': ['5', '$'],
+        't': ['7', '+'],
+        'u': ['|_|', '(_)'],
+        'v': ['\/'],
+        'w': ['\/\/'],
+        'x': ['><'],
+        'y': ['`/', '¥'],
+        'z': ['2']
+    }
+
+    if pwr == 1:
+        leet_dict = leet_dict_1
+        probability = 0.3
+    elif pwr == 2:
+        leet_dict = leet_dict_2
+        probability = 0.6
+    else:  # pwr == 3
+        leet_dict = leet_dict_3
+        probability = 1.0
+
+    leet_text = []
+    for char in text:
+        lower_char = char.lower()
+        if lower_char in leet_dict and random.random() < probability:
+            if isinstance(leet_dict[lower_char], list):
+                leet_char = random.choice(leet_dict[lower_char])
+            else:
+                leet_char = leet_dict[lower_char]
+            leet_text.append(leet_char)
+        else:
+            leet_text.append(char)
+
+    return ''.join(leet_text)
+
+
 # ------------------zip ---------------------
 def zip_compress(data): # b'ABC'
     compressed_data = zlib.compress(data)
