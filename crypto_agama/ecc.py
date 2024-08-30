@@ -1,24 +1,127 @@
 # Agama_point 2020-23
 # crypto_agama.ecc
-
+import random, hashlib
 
 # ----- secp256k1  -----
 # P = (2**256 - 2**32 - 2**9 - 2**8 - 2**7 - 2**6 - 2**4 -1)
 # P = (2**256 - 2**32 - 977)
-P = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F  # Modul
+p = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F  # Modul
 # = 115792089237316195423570985008687907853269984665640564039457584007908834671663 (78)
-A = 0
-B = 7
+a = 0
+b = 7
 # y² = x³ + 7 (mod p)
 
 # ----- point G -----
 Gx = 0x79BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798
 Gy = 0x483ADA7726A3C4655DA4FBFC0E1108A8FD17B448A68554199C47D08FFB10D4B8
 
-# ----- Point addition (sčítání bodů) -----
-def point_addition(x1, y1, x2, y2, p):
+G = (Gx, Gy)
+n = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141  # Řád křivky
+
+def get_secp256k1(): # p, a, b, G, n
+    return p, a, b, G, n
+
+
+# --- ecc functions
+def point_addition(P, Q):
+    if P == Q:
+        return point_double(P)
+    if P == (0, 0):
+        return Q
+    if Q == (0, 0):
+        return P
+
+    Px, Py = P
+    Qx, Qy = Q
+
+    s = ((Qy - Py) * pow(Qx - Px, p - 2, p)) % p
+    Rx = (s ** 2 - Px - Qx) % p
+    Ry = (s * (Px - Rx) - Py) % p
+
+    return (Rx, Ry)
+
+
+def point_double(P):
+    Px, Py = P
+
+    s = ((3 * Px ** 2 + a) * pow(2 * Py, p - 2, p)) % p
+    Rx = (s ** 2 - 2 * Px) % p
+    Ry = (s * (Px - Rx) - Py) % p
+
+    return (Rx, Ry)
+
+
+def scalar_multiplication(k, P=G):
+    N = P
+    Q = None  # Inicializace k bodu na nekonečnu
+
+    while k:
+        if k & 1:
+            Q = point_addition(Q, N) if Q else N
+        N = point_double(N)
+        k >>= 1
+
+    return Q
+
+
+# ----------------------------- Signing a message
+def sign_message(private_key, message, debug_print=True):
+    # Hashing the message using SHA-256
+    message_hash = hashlib.sha256(message.encode('utf-8')).digest()
+    
+    # Generating a random number k
+    k = random.randrange(1, n)
+
+    # r = x coordinate of the point (k*G)
+    r, _ = scalar_multiplication(k)
+    r = r % n
+
+    # Calculate z
+    z = int.from_bytes(message_hash, byteorder='big')
+
+    # Calculate s = k^-1 * (z + r*private_key) mod n
+    k_inv = pow(k, -1, n)
+    s = (k_inv * (z + r * private_key)) % n
+
+    if debug_print:
+        print("random_k:", k, "\nhash_z:  ", z)
+
+    return r, s
+
+# ------------------------------- Verifying a signature
+def verify_signature(public_key, message, r, s, debug_print=True):
+    message_hash = hashlib.sha256(message.encode('utf-8')).digest()
+    z = int.from_bytes(message_hash, byteorder='big')
+
+    w = pow(s, -1, n)  # Inverse of s modulo n
+    u1 = (z * w) % n
+    u2 = (r * w) % n
+
+    X1, Y1 = scalar_multiplication(u1)  # u1*G
+    X2, Y2 = scalar_multiplication(u2, public_key)  # u2*Q
+
+    X, Y = point_addition((X1, Y1), (X2, Y2))
+
+    return (X % n) == r
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# ----- Point addition (sčítání bodů) ----- verze 1 "paradoxně" nejrychlejší?
+def point_addition1(x1, y1, x2, y2, p=p):
     if x1 == x2 and y1 == y2:
-        m = (3 * x1**2 + A) * pow(2 * y1, -1, p) % p  # Doubling the point
+        m = (3 * x1**2 + a) * pow(2 * y1, -1, p) % p  # Doubling the point
     else:
         m = (y2 - y1) * pow(x2 - x1, -1, p) % p  # Regular point addition
     
@@ -30,7 +133,7 @@ def point_addition(x1, y1, x2, y2, p):
 
 # Scalar multiplication (násobení bodu na křivce)
 #@measure_time
-def scalar_multiplication(k, x=Gx, y=Gy, p=P):
+def scalar_multiplication1(k, x=Gx, y=Gy, p=p):
     x_res, y_res = x, y
     for bit in bin(k)[3:]:
         x_res, y_res = point_addition(x_res, y_res, x_res, y_res, p)  # Point doubling
