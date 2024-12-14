@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-crypto_agama/agama_transform_tools 2016-24
+crypto_agama/agama_transform_tools 2016-25
 -----------------------------
 """
 
@@ -10,8 +10,10 @@ import binascii, zlib
 import base58, base64
 import re
 import ecdsa
+# import string
 
-__version__ = "0.5.2" # 2024/08
+
+__version__ = "0.5.3" # 2024/12
 
 DEBUG = False
 
@@ -71,7 +73,7 @@ wif_to_private_key(wif_key) # > ... 1 (hex)
 
 BASE_58_CHARS = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
 BASE_58_CHARS_LEN = len(BASE_58_CHARS)
-
+BECH32_ALPHABET = 'qpzry9x8gf2tvdw0s3jn54khce6mua7l'
 
 
 def hash_sha256_str(string):
@@ -236,6 +238,40 @@ def num_to_2ch(num):
             ch2 = chr((num - 1352) % 26 + 97)
         if ch1 == "[": ch1 = "*"
         return ch1 + ch2
+
+
+def bech_to_num(bech32_str: str) -> int:
+    """
+    Convert a Bech32 string to a number.
+    (separator "1" | for a human-readable part)    
+    Args: bech32_str (str): The Bech32 string to convert.    
+    Returns: int: The resulting number from the Bech32 string.
+    """
+    number = 0
+    bech32_str = bech32_str.lower()
+    for char in bech32_str:
+        if char not in BECH32_ALPHABET:
+            raise ValueError(f"Invalid character '{char}' in Bech32 string.")
+        number = number * 32 + BECH32_ALPHABET.index(char)
+    return number
+
+
+def num_to_bech(number: int) -> str:
+    """
+    Convert a number to a Bech32 string.    
+    Args: number (int): The number to convert.    
+    Returns: str: The resulting Bech32 string.
+    """
+    if number < 0:
+        raise ValueError("Number must be non-negative.")
+    
+    bech32_str = ''
+    while number > 0:
+        number, remainder = divmod(number, 32)
+        bech32_str = BECH32_ALPHABET[remainder] + bech32_str
+    
+    return bech32_str or BECH32_ALPHABET[0]  # Return 'q' for 0
+
 
 # ------------------------ hexdump -------------------------
 def group(a, *ns):
